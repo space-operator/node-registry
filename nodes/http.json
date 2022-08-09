@@ -1,0 +1,209 @@
+{
+    "version": 0.1,
+    "node_id": "http",
+    "extra.display_name": "HTTP Request",
+    "type": "native",
+    "extra.width": null,
+    "extra.height": null,
+    "sources": [
+        {
+            "name": "response",
+            "type": "JSON",
+            "required": true,
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "method",
+            "type": "string",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "GET",
+            "tooltip": "GET, POST, PATCH, etc.",
+            "passthrough": false
+        },
+        {
+            "name": "URL",
+            "type": "string",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "https://postman-echo.com/get",
+            "tooltip": "see https://postman-echo.com/",
+            "passthrough": false
+        },
+        {
+            "name": "auth",
+            "type": "string",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "https://postman-echo.com/get",
+            "tooltip": "see https://postman-echo.com/",
+            "passthrough": false
+        },
+        {
+            "name": "input_headers",
+            "type": "JSON",
+            "type_bounds": [
+                "JSON"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "output_headers",
+            "type": "JSON",
+            "type_bounds": [
+                "JSON"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "input_query_params",
+            "type": "JSON",
+            "type_bounds": [
+                "JSON"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "body_input",
+            "type": "JSON",
+            "type_bounds": [
+                "JSON"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "body_output",
+            "type": "JSON",
+            "type_bounds": [
+                "JSON"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "inputs.form.jsonschema": {
+        "title": "HTTP Request",
+        "type": "object",
+        "required": [
+            "title"
+        ],
+        "properties": {
+            "method": {
+                "type": "string",
+                "title": "Method",
+                "default": "GET"
+            },
+            "url": {
+                "type": "string",
+                "title": "URL",
+                "default": "https://postman-echo.com/get"
+            },
+            "auth": {
+                "type": "string",
+                "title": "Auth",
+                "default": "NoAuth"
+            },
+            "headers": {
+                "type": "array",
+                "title": "Headers",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "title": "Key"
+                        },
+                        "details": {
+                            "type": "string",
+                            "title": "Value"
+                        }
+                    }
+                }
+            },
+            "output_headers": {
+                "type": "array",
+                "title": "Output Headers",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "title": "Key"
+                        },
+                        "details": {
+                            "type": "string",
+                            "title": "Value"
+                        }
+                    }
+                }
+            },
+            "input_query_params": {
+                "type": "array",
+                "title": "Input Query Params",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "title": "Key"
+                        },
+                        "details": {
+                            "type": "string",
+                            "title": "Value"
+                        }
+                    }
+                }
+            },
+            "body_input": {
+                "type": "string",
+                "title": "Body Input"
+            },
+            "body_output": {
+                "type": "string",
+                "title": "Body Output"
+            }
+        }
+    },
+    "inputs.form.uischema": {
+        "ui:order": [
+            "method",
+            "url",
+            "auth",
+            "headers",
+            "output_headers",
+            "input_query_params",
+            "title",
+            "body_input",
+            "body_output"
+        ],
+        "body_input": {
+            "ui:widget": "textarea"
+        },
+        "body_output": {
+            "ui:widget": "textarea"
+        }
+    }
+}
