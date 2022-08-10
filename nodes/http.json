@@ -66,7 +66,6 @@
         },
         {
             "name": "output_headers",
-            "type": "JSON",
             "type_bounds": [
                 "JSON"
             ],
@@ -106,108 +105,106 @@
             "passthrough": false
         }
     ],
-    "targets_form": {
-        "json_schema": {
-            "title": "HTTP Request",
-            "type": "object",
-            "required": [
-                "title"
-            ],
-            "properties": {
-                "method": {
-                    "type": "string",
-                    "title": "Method",
-                    "default": "GET"
-                },
-                "url": {
-                    "type": "string",
-                    "title": "URL",
-                    "default": "https://postman-echo.com/get"
-                },
-                "auth": {
-                    "type": "string",
-                    "title": "Auth",
-                    "default": "NoAuth"
-                },
-                "headers": {
-                    "type": "array",
-                    "title": "Headers",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "title": {
-                                "type": "string",
-                                "title": "Key"
-                            },
-                            "details": {
-                                "type": "string",
-                                "title": "Value"
-                            }
+    "targets_form.json_schema": {
+        "title": "HTTP Request",
+        "type": "object",
+        "required": [
+            "title"
+        ],
+        "properties": {
+            "method": {
+                "type": "string",
+                "title": "Method",
+                "default": "GET"
+            },
+            "url": {
+                "type": "string",
+                "title": "URL",
+                "default": "https://postman-echo.com/get"
+            },
+            "auth": {
+                "type": "string",
+                "title": "Auth",
+                "default": "NoAuth"
+            },
+            "headers": {
+                "type": "array",
+                "title": "Headers",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "title": "Key"
+                        },
+                        "details": {
+                            "type": "string",
+                            "title": "Value"
                         }
                     }
-                },
-                "output_headers": {
-                    "type": "array",
-                    "title": "Output Headers",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "title": {
-                                "type": "string",
-                                "title": "Key"
-                            },
-                            "details": {
-                                "type": "string",
-                                "title": "Value"
-                            }
-                        }
-                    }
-                },
-                "input_query_params": {
-                    "type": "array",
-                    "title": "Input Query Params",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "title": {
-                                "type": "string",
-                                "title": "Key"
-                            },
-                            "details": {
-                                "type": "string",
-                                "title": "Value"
-                            }
-                        }
-                    }
-                },
-                "body_input": {
-                    "type": "string",
-                    "title": "Body Input"
-                },
-                "body_output": {
-                    "type": "string",
-                    "title": "Body Output"
                 }
-            }
-        },
-        "ui_schema": {
-            "ui:order": [
-                "method",
-                "url",
-                "auth",
-                "headers",
-                "output_headers",
-                "input_query_params",
-                "title",
-                "body_input",
-                "body_output"
-            ],
+            },
+            "output_headers": {
+                "type": "array",
+                "title": "Output Headers",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "title": "Key"
+                        },
+                        "details": {
+                            "type": "string",
+                            "title": "Value"
+                        }
+                    }
+                }
+            },
+            "input_query_params": {
+                "type": "array",
+                "title": "Input Query Params",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "title": "Key"
+                        },
+                        "details": {
+                            "type": "string",
+                            "title": "Value"
+                        }
+                    }
+                }
+            },
             "body_input": {
-                "ui:widget": "textarea"
+                "type": "string",
+                "title": "Body Input"
             },
             "body_output": {
-                "ui:widget": "textarea"
+                "type": "string",
+                "title": "Body Output"
             }
+        }
+    },
+    "targets_form.ui_schema": {
+        "ui:order": [
+            "method",
+            "url",
+            "auth",
+            "headers",
+            "output_headers",
+            "input_query_params",
+            "title",
+            "body_input",
+            "body_output"
+        ],
+        "body_input": {
+            "ui:widget": "textarea"
+        },
+        "body_output": {
+            "ui:widget": "textarea"
         }
     }
 }

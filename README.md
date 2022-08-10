@@ -43,9 +43,7 @@ Need both JSONSchema and UISchema
     }
   ],
   // node inputs form - for static entry
-  "targets_form": {
-    "json_schema": {},
-    "ui_schema": {}
-  }
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }
 ```
