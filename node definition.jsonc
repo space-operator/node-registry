@@ -1,14 +1,3 @@
-# node-registry
-A place to store and test all the available nodes
-
-
-## JSON to form schema
-https://rjsf-team.github.io/react-jsonschema-form/
-
-Need both JSONSchema and UISchema
-
-## Node Definition
-```
 {
   "type": "native", // native | WASM | custom
   "data": {
@@ -48,4 +37,3 @@ Need both JSONSchema and UISchema
     "ui_schema": {}
   }
 }
-```
