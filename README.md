@@ -16,8 +16,8 @@ Need both JSONSchema and UISchema
     "version": "0.1",
     "display_name": "Mint Token",
     "description": "Create a token",
-    "width": 0, // add non zero to override front-end
-    "height": 0,
+    "width": 250, 
+    "height": 0, // need to manually calculate height = 50 + 15 + max(input.count, output.count)*45
     "backgroundColor": "#fff"
   },
   // node outputs
