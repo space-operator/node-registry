@@ -17,7 +17,7 @@ Need both JSONSchema and UISchema
     "display_name": "Mint Token",
     "description": "Create a token",
     "width": 250, 
-    "height": 0, // need to manually calculate height = 50 + 15 + max(input.count, output.count)*45
+    "height": 0, // need to manually calculate height = 50 + 15 + max(sources.count, targets.count)*45
     "backgroundColor": "#fff"
   },
   // node outputs
