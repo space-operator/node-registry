@@ -1,9 +1,9 @@
 {
     "type": "native",
     "data": {
-        "node_id": "approve_collection_authority",
+        "node_id": "approve_use_authority",
         "version": "0.1",
-        "display_name": "Approve Collection Authority",
+        "display_name": "Approve Use Authority",
         "description": "",
         "width": 200,
         "height": 425,
