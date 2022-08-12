@@ -1,0 +1,34 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "get_left_uses",
+        "version": "0.1",
+        "display_name": "Get Left Uses",
+        "description": "",
+        "width": 200,
+        "height": 110,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "left_uses",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "mint_account",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

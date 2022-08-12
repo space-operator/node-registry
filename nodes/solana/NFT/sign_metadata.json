@@ -1,0 +1,64 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "sign_metadata",
+        "version": "0.1",
+        "display_name": "Sign Metadata",
+        "description": "",
+        "width": 200,
+        "height": 245,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "fee_payer",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "mint_account",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "creator",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "submit",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

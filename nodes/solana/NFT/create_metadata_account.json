@@ -1,0 +1,140 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "create_metadata_account",
+        "version": "0.1",
+        "display_name": "Create Metadata Account",
+        "description": "",
+        "width": 200,
+        "height": 110,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        },
+        {
+            "name": "metadata_account",
+            "type": "pubkey",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "is_mutable",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "mint_account",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "mint_authority",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "fee_payer",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "update_authority",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "metadata",
+            "type_bounds": [
+                "NFT_metadata"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "metadata_uri",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "uses",
+            "type_bounds": [
+                "NFT_uses"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "collection_mint_account",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "creators",
+            "type_bounds": [
+                "[]NFT_creator"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "submit",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

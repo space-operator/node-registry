@@ -1,0 +1,74 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "approve_collection_authority",
+        "version": "0.1",
+        "display_name": "Approve Collection Authority",
+        "description": "",
+        "width": 200,
+        "height": 290,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "new_collection_authority",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "update_authority",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "fee_payer",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "mint_account",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "submit",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

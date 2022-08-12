@@ -1,0 +1,94 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "auction_house_sell",
+        "version": "0.1",
+        "display_name": "Auction House Sell",
+        "description": "",
+        "width": 200,
+        "height": 425,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "treasury_mint_account",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "fee_payer",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "auction_house_authority",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": true,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "seller",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": true,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "seller_token_account",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": true,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "seller_token_mint_authority",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": true,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "sale_price",
+            "type_bounds": [
+                "u64"
+            ],
+            "required": true,
+            "defaultValue": true,
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

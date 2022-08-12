@@ -1,0 +1,96 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "create_master_edition",
+        "version": "0.1",
+        "display_name": "Create Master Edition",
+        "description": "",
+        "width": 200,
+        "height": 335,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        },
+        {
+            "name": "metadata_account",
+            "type": "pubkey",
+            "defaultValue": "",
+            "tooltip": ""
+        },
+        {
+            "name": "master_edition_account",
+            "type": "pubkey",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "mint_account",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "mint_authority",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "fee_payer",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "update_authority",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "max_supply",
+            "type_bounds": [
+                "u64"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "submit",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
