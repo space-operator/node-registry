@@ -1,0 +1,60 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "generate_keypair",
+        "version": "0.1",
+        "display_name": "Generate Keypair",
+        "description": "",
+        "width": 200,
+        "height": 200,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "pubkey",
+            "type": "pubkey",
+            "defaultValue": "",
+            "tooltip": ""
+        },
+        {
+            "name": "keypair",
+            "type": "keypair",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "seed",
+            "type_bounds": [
+                "string"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "private_key",
+            "type_bounds": [
+                "string"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "passphrase",
+            "type_bounds": [
+                "string"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

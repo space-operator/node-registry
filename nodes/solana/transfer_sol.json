@@ -1,12 +1,12 @@
 {
     "type": "native",
     "data": {
-        "node_id": "create_mint_account",
+        "node_id": "transfer_sol",
         "version": "0.1",
-        "display_name": "Create Mint Account",
+        "display_name": "Transfer SOL",
         "description": "",
-        "width": 0,
-        "height": 0,
+        "width": 200,
+        "height": 235,
         "backgroundColor": "#fff"
     },
     "sources": [
@@ -15,23 +15,19 @@
             "type": "string",
             "defaultValue": "",
             "tooltip": ""
+        },
+        {
+            "name": "tx",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
         }
     ],
     "targets": [
         {
-            "name": "fee_payer",
+            "name": "sender",
             "type_bounds": [
                 "keypair"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "decimals",
-            "type_bounds": [
-                "u8"
             ],
             "required": true,
             "defaultValue": "",
@@ -39,29 +35,19 @@
             "passthrough": false
         },
         {
-            "name": "authority",
+            "name": "recipient",
             "type_bounds": [
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": "",
             "tooltip": "",
-            "passthrough": true
+            "passthrough": false
         },
         {
-            "name": "mint_account",
+            "name": "amount",
             "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "memo",
-            "type_bounds": [
-                "string"
+                "f64"
             ],
             "required": true,
             "defaultValue": "",
