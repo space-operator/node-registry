@@ -1,0 +1,27 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "flow_output",
+        "version": "0.1",
+        "display_name": "Flow Output",
+        "description": "",
+        "width": 150,
+        "height": 150,
+        "backgroundColor": "#f2fcff"
+    },
+    "sources": [],
+    "targets": [
+        {
+            "name": "",
+            "type_bounds": [
+                "free"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

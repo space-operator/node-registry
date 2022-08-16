@@ -1,0 +1,23 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "flow_input",
+        "version": "0.1",
+        "display_name": "Flow Input",
+        "description": "",
+        "width": 150,
+        "height": 150,
+        "backgroundColor": "#f2fcff"
+    },
+    "sources": [
+        {
+            "name": "",
+            "type": "free",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
