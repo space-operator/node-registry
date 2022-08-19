@@ -1,0 +1,44 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "interflow",
+        "version": "0.1",
+        "display_name": "Interflow",
+        "description": "",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "sources": [
+        {
+            "name": "result",
+            "type": "JSON",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "flow",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "parameters",
+            "type_bounds": [
+                "JSON"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
