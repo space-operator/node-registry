@@ -22,6 +22,9 @@
             "passthrough": false
         }
     ],
-    "targets_form.json_schema": {},
+    "targets_form.json_schema": {
+        "title": "output label",
+        "type": "string"
+    },
     "targets_form.ui_schema": {}
 }
