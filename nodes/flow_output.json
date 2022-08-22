@@ -23,8 +23,18 @@
         }
     ],
     "targets_form.json_schema": {
-        "title": "output label",
-        "type": "string"
+        "type": "object",
+        "properties": {
+            "label": {
+                "type": "string",
+                "title": "Output Label",
+                "default": ""
+            }
+        }
     },
-    "targets_form.ui_schema": {}
+    "targets_form.ui_schema": {
+        "label": {
+            "ui:emptyValue": ""
+        }
+    }
 }

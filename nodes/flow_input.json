@@ -19,8 +19,18 @@
     ],
     "targets": [],
     "targets_form.json_schema": {
-        "title": "input label",
-        "type": "string"
+        "type": "object",
+        "properties": {
+            "label": {
+                "type": "string",
+                "title": "Input Label",
+                "default": ""
+            }
+        }
     },
-    "targets_form.ui_schema": {}
+    "targets_form.ui_schema": {
+        "label": {
+            "ui:emptyValue": ""
+        }
+    }
 }

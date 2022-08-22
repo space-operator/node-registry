@@ -1,0 +1,34 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "note",
+        "version": "0.1",
+        "display_name": "Note",
+        "description": "",
+        "width": 200,
+        "height": 350,
+        "backgroundColor": "#feffeb"
+    },
+    "sources": [
+        {
+            "name": "",
+            "type": "free",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "",
+            "type_bounds": [
+                "free"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
