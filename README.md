@@ -1,6 +1,9 @@
 # node-registry
 A place to store and test all the available nodes
 
+## Use form builder to build form!
+https://ginkgobioworks.github.io/react-json-schema-form-builder/
+https://github.com/ginkgobioworks/react-json-schema-form-builder
 
 ## JSON to form schema
 https://rjsf-team.github.io/react-jsonschema-form/
