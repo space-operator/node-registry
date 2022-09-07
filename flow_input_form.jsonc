@@ -1,0 +1,26 @@
+{
+    "required": [
+        // place in alphabetical order
+        "form_label"
+    ],
+    "properties": {
+        //String
+        "form_label": {
+            "type": "string",
+            "title": "display form label"
+        },
+        // Array of String
+        "form_label": {
+            "title": "display form label",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        //Integer
+        "form_label": {
+            "type": "integer",
+            "title": "display form label"
+        }
+    }
+}
