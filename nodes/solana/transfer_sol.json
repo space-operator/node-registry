@@ -37,7 +37,8 @@
         {
             "name": "recipient",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",

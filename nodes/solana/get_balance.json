@@ -21,7 +21,8 @@
         {
             "name": "pubkey",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",

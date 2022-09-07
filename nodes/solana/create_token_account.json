@@ -21,7 +21,8 @@
         {
             "name": "owner",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",
@@ -41,7 +42,8 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",

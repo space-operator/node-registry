@@ -21,7 +21,8 @@
         {
             "name": "use_authority",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",
@@ -51,7 +52,8 @@
         {
             "name": "token_account",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",
@@ -61,7 +63,8 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",
@@ -71,7 +74,8 @@
         {
             "name": "burner",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",

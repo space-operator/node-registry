@@ -21,7 +21,8 @@
         {
             "name": "treasury_mint_account",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",
@@ -61,7 +62,8 @@
         {
             "name": "seller_token_account",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": true,
@@ -71,7 +73,8 @@
         {
             "name": "seller_token_mint_authority",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair"
             ],
             "required": true,
             "defaultValue": true,

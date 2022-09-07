@@ -12,13 +12,13 @@
     "sources": [
         {
             "name": "response",
-            "type": "JSON",
+            "type": "json",
             "defaultValue": "",
             "tooltip": ""
         },
         {
             "name": "headers",
-            "type": "JSON",
+            "type": "json",
             "defaultValue": "",
             "tooltip": ""
         }
@@ -57,7 +57,7 @@
         {
             "name": "input_headers",
             "type_bounds": [
-                "JSON"
+                "json"
             ],
             "required": true,
             "defaultValue": "",
@@ -67,7 +67,7 @@
         {
             "name": "output_headers",
             "type_bounds": [
-                "JSON"
+                "json"
             ],
             "required": true,
             "defaultValue": "",
@@ -77,7 +77,7 @@
         {
             "name": "input_query_params",
             "type_bounds": [
-                "JSON"
+                "json"
             ],
             "required": true,
             "defaultValue": "",
@@ -87,7 +87,7 @@
         {
             "name": "body_input",
             "type_bounds": [
-                "JSON"
+                "json"
             ],
             "required": false,
             "defaultValue": "",
@@ -97,7 +97,7 @@
         {
             "name": "body_output",
             "type_bounds": [
-                "JSON"
+                "json"
             ],
             "required": false,
             "defaultValue": "",
