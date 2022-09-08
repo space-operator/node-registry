@@ -11,14 +11,8 @@
     },
     "sources": [
         {
-            "name": "metadata_url",
+            "name": "file_url",
             "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        },
-        {
-            "name": "updated_metadata",
-            "type": "json",
             "defaultValue": "",
             "tooltip": ""
         }

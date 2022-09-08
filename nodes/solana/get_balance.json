@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "balance",
-            "type": "string",
+            "type": "u64",
             "defaultValue": "",
             "tooltip": ""
         }

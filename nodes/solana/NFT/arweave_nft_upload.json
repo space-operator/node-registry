@@ -11,8 +11,14 @@
     },
     "sources": [
         {
-            "name": "file_url",
+            "name": "metadata_url",
             "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        },
+        {
+            "name": "updated_metadata",
+            "type": "json",
             "defaultValue": "",
             "tooltip": ""
         }
@@ -29,9 +35,9 @@
             "passthrough": true
         },
         {
-            "name": "file_path",
+            "name": "metadata",
             "type_bounds": [
-                "string"
+                "NFT_metadata"
             ],
             "required": true,
             "defaultValue": "",
