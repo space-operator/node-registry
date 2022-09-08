@@ -1,26 +1,67 @@
 {
-    "required": [
-        // place in alphabetical order
-        "form_label"
-    ],
-    "properties": {
-        //String
-        "form_label": {
-            "type": "string",
-            "title": "display form label"
-        },
-        // Array of String
-        "form_label": {
-            "title": "display form label",
-            "type": "array",
-            "items": {
-                "type": "string"
+    "targets_form.json_schema": {
+        // "required": [
+        //     // place in alphabetical order
+        //     "form_label"
+        // ],
+        "properties": {
+            //String for string, char, keypair, pubkey, json,
+            "form_label": {
+                "type": "string",
+                "title": "display form label"
+            },
+            // Array of string
+            "form_label": {
+                "title": "display form label",
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            // Array of K,V both string
+            "form_label": {
+                "type": "array",
+                "title": "display form label",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "title": "Key"
+                        },
+                        "details": {
+                            "type": "string",
+                            "title": "Value"
+                        }
+                    }
+                }
+            },
+            // //Integer
+            // "form_label": {
+            //     "type": "integer",
+            //     "title": "display form label"
+            // },
+            //Number u8, u16, u32, u64, f32, f64, i8, i16, i32, i64, isize, usize
+            "form_label": {
+                "type": "number",
+                "title": "display form label"
+            },
+            //boolean for bool
+            "form_label": {
+                "type": "boolean",
+                "title": "display form label",
+                "default": false,
+                "enum": [
+                    true,
+                    false
+                ]
             }
-        },
-        //Integer
-        "form_label": {
-            "type": "integer",
-            "title": "display form label"
         }
+    },
+    "targets_form.ui_schema": {
+        "ui:order": [
+            //place in alphabetical order
+            "form_label"
+        ]
     }
 }
