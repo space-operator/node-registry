@@ -108,9 +108,6 @@
     "targets_form.json_schema": {
         "title": "HTTP Request",
         "type": "object",
-        "required": [
-            "title"
-        ],
         "properties": {
             "method": {
                 "type": "string",
@@ -196,7 +193,6 @@
             "headers",
             "output_headers",
             "input_query_params",
-            "title",
             "body_input",
             "body_output"
         ],
