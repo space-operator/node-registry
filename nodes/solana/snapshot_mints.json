@@ -1,0 +1,68 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "snapshot_mints",
+        "version": "0.1",
+        "display_name": "Snapshot Mints",
+        "description": "",
+        "width": 200,
+        "height": 110,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+    ],
+    "targets": [
+        {
+            "name": "creator",
+            "type_bounds": [
+                "string"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+        {
+            "name": "position",
+            "type_bounds": [
+                "u64"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+        {
+            "name": "update_authority",
+            "type_bounds": [
+                "string"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+        {
+            "name": "v2",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+        {
+            "name": "output",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
