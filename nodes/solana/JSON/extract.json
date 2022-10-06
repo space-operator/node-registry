@@ -1,0 +1,44 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "json_extract",
+        "version": "0.1",
+        "display_name": "Json Extract",
+        "description": "Extracts a field from a JSON",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "targets": [
+        {
+            "name": "json_input",
+            "type": [
+                "json"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "field_path",
+            "type": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "e.g. /data/records/0/fields/url to select the url field value\nnote the /0/ is equivalent to [0], to select the first index in an array",
+            "passthrough": false
+        }
+    ],
+    "sources": [
+        {
+            "name": "value",
+            "type": "json",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

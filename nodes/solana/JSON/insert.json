@@ -1,0 +1,54 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "json_insert",
+        "version": "0.1",
+        "display_name": "Json Insert",
+        "description": "Inserts a field from a JSON",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "targets": [
+        {
+            "name": "json_input",
+            "type": [
+                "json"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "path",
+            "type": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "e.g. /data/records/0/fields/url to insert into url field's value\nnote the /0/ to select [0] in an array",
+            "passthrough": false
+        },
+        {
+            "name": "json_input",
+            "type": [
+                "json"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": true
+        }
+    ],
+    "sources": [
+        {
+            "name": "updated_json",
+            "type": "json",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

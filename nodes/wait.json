@@ -1,0 +1,37 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "wait",
+        "version": "0.1",
+        "display_name": "Wait",
+        "description": "Wait for an output to complete before continuing",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "sources": [],
+    "targets": [
+        {
+            "name": "value",
+            "type_bounds": [
+                "free"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "passthrough value",
+            "passthrough": true
+        },
+        {
+            "name": "wait_for",
+            "type_bounds": [
+                "free"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "output to wait for",
+            "passthrough": true
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
