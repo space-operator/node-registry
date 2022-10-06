@@ -55,7 +55,7 @@
             "passthrough": false
         },
         {
-            "name": "input_headers",
+            "name": "headers",
             "type_bounds": [
                 "json"
             ],
@@ -65,7 +65,7 @@
             "passthrough": false
         },
         {
-            "name": "output_headers",
+            "name": "query_params",
             "type_bounds": [
                 "json"
             ],
@@ -75,27 +75,7 @@
             "passthrough": false
         },
         {
-            "name": "input_query_params",
-            "type_bounds": [
-                "json"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "body_input",
-            "type_bounds": [
-                "json"
-            ],
-            "required": false,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "body_output",
+            "name": "body",
             "type_bounds": [
                 "json"
             ],
@@ -141,9 +121,9 @@
                     }
                 }
             },
-            "output_headers": {
+            "query_params": {
                 "type": "array",
-                "title": "Output Headers",
+                "title": "Query Params",
                 "items": {
                     "type": "object",
                     "properties": {
@@ -158,30 +138,9 @@
                     }
                 }
             },
-            "input_query_params": {
-                "type": "array",
-                "title": "Input Query Params",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "title": {
-                            "type": "string",
-                            "title": "Key"
-                        },
-                        "details": {
-                            "type": "string",
-                            "title": "Value"
-                        }
-                    }
-                }
-            },
-            "body_input": {
+            "body": {
                 "type": "string",
-                "title": "Body Input"
-            },
-            "body_output": {
-                "type": "string",
-                "title": "Body Output"
+                "title": "Body"
             }
         }
     },
@@ -191,10 +150,8 @@
             "url",
             "auth",
             "headers",
-            "output_headers",
-            "input_query_params",
-            "body_input",
-            "body_output"
+            "query_params",
+            "body"
         ],
         "body_input": {
             "ui:widget": "textarea"

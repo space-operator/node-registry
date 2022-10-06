@@ -25,7 +25,7 @@
             ],
             "required": true,
             "defaultValue": "",
-            "tooltip": "",
+            "tooltip": "Who pays for account rent and transaction fees",
             "passthrough": true
         },
         {
@@ -34,8 +34,8 @@
                 "u8"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": "0",
+            "tooltip": "NFTs should have decimal = 0\nUS dollars have 2 decimals\nFrom Metaplex documentation:\n'If the token has a master edition it is a NonFungible. If the token has no master edition(ensuring its supply can be > 1) and decimals of 0 it is a FungibleAsset. If the token has no master edition(ensuring its supply can be > 1) and decimals of > 0 it is a Fungible. If the token is a limited edition of a MasterEditon it is a NonFungibleEdition.'",
             "passthrough": false
         },
         {
@@ -45,7 +45,7 @@
             ],
             "required": true,
             "defaultValue": "",
-            "tooltip": "",
+            "tooltip": "Mint authority - who can mint more tokens",
             "passthrough": true
         },
         {
@@ -65,7 +65,7 @@
             ],
             "required": true,
             "defaultValue": "",
-            "tooltip": "",
+            "tooltip": "Additional notes",
             "passthrough": false
         },
         {
