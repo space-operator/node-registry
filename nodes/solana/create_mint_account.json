@@ -13,7 +13,7 @@
         {
             "name": "signature",
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         }
     ],
@@ -24,7 +24,7 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "Who pays for account rent and transaction fees",
             "passthrough": true
         },
@@ -34,7 +34,7 @@
                 "u8"
             ],
             "required": true,
-            "defaultValue": "0",
+            "defaultValue": null,
             "tooltip": "NFTs should have decimal = 0\nUS dollars have 2 decimals\nFrom Metaplex documentation:\n'If the token has a master edition it is a NonFungible. If the token has no master edition(ensuring its supply can be > 1) and decimals of 0 it is a FungibleAsset. If the token has no master edition(ensuring its supply can be > 1) and decimals of > 0 it is a Fungible. If the token is a limited edition of a MasterEditon it is a NonFungibleEdition.'",
             "passthrough": false
         },
@@ -44,7 +44,7 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "Mint authority - who can mint more tokens",
             "passthrough": true
         },
@@ -54,7 +54,7 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
@@ -63,7 +63,7 @@
             "type_bounds": [
                 "string"
             ],
-            "required": true,
+            "required": false,
             "defaultValue": "",
             "tooltip": "Additional notes",
             "passthrough": false
@@ -73,8 +73,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": true,
             "tooltip": "",
             "passthrough": false
         }

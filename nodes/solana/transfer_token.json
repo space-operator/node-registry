@@ -4,7 +4,7 @@
         "node_id": "transfer_token",
         "version": "0.1",
         "display_name": "Transfer Token",
-        "description": "",
+        "description": "Transfer a custom token",
         "width": 200,
         "height": 470,
         "backgroundColor": "#fff"
@@ -13,13 +13,13 @@
         {
             "name": "signature",
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         },
         {
             "name": "tx",
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         }
     ],
@@ -30,18 +30,19 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
-            "passthrough": false
+            "passthrough": true
         },
         {
             "name": "mint_account",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -51,7 +52,7 @@
                 "f64"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -59,23 +60,25 @@
             "name": "recipient",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
-            "passthrough": false
+            "passthrough": true
         },
         {
             "name": "sender_token_account",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "sender token account\n if empty, will be derived from sender owner",
+            "passthrough": true
         },
         {
             "name": "sender_owner",
@@ -83,16 +86,16 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
-            "passthrough": false
+            "passthrough": true
         },
         {
             "name": "allow_unfunded",
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
+            "required": false,
             "defaultValue": true,
             "tooltip": "",
             "passthrough": false
@@ -102,9 +105,19 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
+            "required": false,
             "defaultValue": true,
             "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "memo",
+            "type_bounds": [
+                "string"
+            ],
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "Additional notes",
             "passthrough": false
         },
         {
@@ -112,8 +125,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": true,
             "tooltip": "",
             "passthrough": false
         }

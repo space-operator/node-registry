@@ -4,7 +4,7 @@
         "node_id": "generate_keypair",
         "version": "0.1",
         "display_name": "Generate Keypair",
-        "description": "",
+        "description": "Generate or load a keypair and it's pubkey.\n\nWill generate a random keypair every run if no inputs are provided. This is useful for testing purpose.",
         "width": 200,
         "height": 200,
         "backgroundColor": "#fff"
@@ -13,13 +13,13 @@
         {
             "name": "pubkey",
             "type": "pubkey",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         },
         {
             "name": "keypair",
             "type": "keypair",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         }
     ],
@@ -30,8 +30,8 @@
                 "string"
             ],
             "required": false,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "12 word BIP39 mnemonic seed phrase",
             "passthrough": false
         },
         {
@@ -40,8 +40,8 @@
                 "string"
             ],
             "required": false,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "Load using a base 58 string, ignores seed/passphrase",
             "passthrough": false
         },
         {
@@ -50,7 +50,7 @@
                 "string"
             ],
             "required": false,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         }

@@ -4,7 +4,7 @@
         "node_id": "mint_token",
         "version": "0.1",
         "display_name": "Mint Token",
-        "description": "",
+        "description": "Identifies the token, determines who can mint, and how many",
         "width": 200,
         "height": 335,
         "backgroundColor": "#fff"
@@ -13,7 +13,7 @@
         {
             "name": "signature",
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         }
     ],
@@ -24,7 +24,7 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
@@ -34,27 +34,31 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
         {
             "name": "recipient",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
@@ -64,8 +68,8 @@
                 "f64"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "NFTs should have amount = 1",
             "passthrough": false
         },
         {
@@ -73,8 +77,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": true,
             "tooltip": "",
             "passthrough": false
         }

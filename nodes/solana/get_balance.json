@@ -4,7 +4,7 @@
         "node_id": "get_balance",
         "version": "0.1",
         "display_name": "Get Balance",
-        "description": "",
+        "description": "Get the balance of the account",
         "width": 200,
         "height": 110,
         "backgroundColor": "#fff"
@@ -13,7 +13,7 @@
         {
             "name": "balance",
             "type": "u64",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         }
     ],
@@ -25,7 +25,7 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         }

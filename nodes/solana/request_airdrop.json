@@ -4,7 +4,7 @@
         "node_id": "request_airdrop",
         "version": "0.1",
         "display_name": "Request Airdrop",
-        "description": "",
+        "description": "Airdrop SOL for testing purposes\n\nCurrently takes 30s to complete, pass the signature to a wait command",
         "width": 200,
         "height": 155,
         "backgroundColor": "#fff"
@@ -13,7 +13,7 @@
         {
             "name": "signature",
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         }
     ],
@@ -22,21 +22,22 @@
             "name": "pubkey",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
-            "passthrough": false
+            "passthrough": true
         },
         {
             "name": "amount",
             "type_bounds": [
                 "u64"
             ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "required": false,
+            "defaultValue": 1000000000,
+            "tooltip": "in lamports, 1 SOL = 1,000,000,000 lamports",
             "passthrough": false
         }
     ],
