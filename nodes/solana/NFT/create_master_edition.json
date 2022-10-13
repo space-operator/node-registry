@@ -13,19 +13,19 @@
         {
             "name": "signature",
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         },
         {
             "name": "metadata_account",
             "type": "pubkey",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         },
         {
             "name": "master_edition_account",
             "type": "pubkey",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         }
     ],
@@ -34,10 +34,11 @@
             "name": "mint_account",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
@@ -45,10 +46,11 @@
             "name": "mint_authority",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -58,7 +60,7 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
@@ -68,7 +70,7 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -78,8 +80,8 @@
                 "u64"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "How many copies you can print. Leave empty for unlimited\n1/1 NFTs should have supply 0",
             "passthrough": false
         },
         {
@@ -88,7 +90,7 @@
                 "bool"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         }

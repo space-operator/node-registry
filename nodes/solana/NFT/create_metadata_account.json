@@ -13,13 +13,13 @@
         {
             "name": "signature",
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         },
         {
             "name": "metadata_account",
             "type": "pubkey",
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": ""
         }
     ],
@@ -30,29 +30,31 @@
                 "bool"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "Whether Metadata Account can be updated",
             "passthrough": true
         },
         {
             "name": "mint_account",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "Token Mint Account",
             "passthrough": false
         },
         {
             "name": "mint_authority",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
@@ -62,7 +64,7 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
@@ -72,8 +74,8 @@
                 "keypair"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "Who can update the on-chain metadata",
             "passthrough": false
         },
         {
@@ -82,7 +84,7 @@
                 "NFT_metadata"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -92,7 +94,7 @@
                 "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -102,20 +104,31 @@
                 "NFT_uses"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "How many and which type of uses each NFT will have.\nUses:\nBurn is a single-time use and is burned after use.\nSingle is a single-time use and does not burn the token.\nMultiple allows up to the specified number of uses",
             "passthrough": false
         },
         {
             "name": "collection_mint_account",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": true
+        },
+        {
+            "name": "collection_details",
+            "type_bounds": [
+                "u64"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "Only applies to Collection NFTs and is automatically set. To facility migration, set the collection size manually.",
+            "passthrough": false
         },
         {
             "name": "creators",
@@ -123,8 +136,8 @@
                 "[]NFT_creator"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
+            "defaultValue": null,
+            "tooltip": "Creators and their share of royalties. Limited to 5 creators",
             "passthrough": false
         },
         {
@@ -133,7 +146,7 @@
                 "bool"
             ],
             "required": true,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         }
