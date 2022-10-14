@@ -12,7 +12,7 @@
     "targets": [
         {
             "name": "print",
-            "type": [
+            "type_bounds": [
                 "free"
             ],
             "required": true,

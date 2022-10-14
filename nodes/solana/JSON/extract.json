@@ -12,7 +12,7 @@
     "targets": [
         {
             "name": "json_input",
-            "type": [
+            "type_bounds": [
                 "json"
             ],
             "required": true,
@@ -22,7 +22,7 @@
         },
         {
             "name": "field_path",
-            "type": [
+            "type_bounds": [
                 "string"
             ],
             "required": true,
