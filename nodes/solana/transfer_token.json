@@ -21,6 +21,12 @@
             "type": "string",
             "defaultValue": null,
             "tooltip": ""
+        },
+        {
+            "name": "recipient_token_account",
+            "type": "pubkey",
+            "defaultValue": null,
+            "tooltip": ""
         }
     ],
     "targets": [

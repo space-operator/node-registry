@@ -123,6 +123,16 @@
             "passthrough": true
         },
         {
+            "name": "collection_details",
+            "type_bounds": [
+                "u64"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "Only applies to Collection NFTs and is automatically set. To facility migration, set the collection size manually.",
+            "passthrough": false
+        },
+        {
             "name": "creators",
             "type_bounds": [
                 "json"

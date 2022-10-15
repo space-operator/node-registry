@@ -37,6 +37,12 @@
             "type": "json",
             "defaultValue": "",
             "tooltip": ""
+        },
+        {
+            "name": "trimmed_json",
+            "type": "json",
+            "defaultValue": "",
+            "tooltip": ""
         }
     ],
     "targets_form.json_schema": {},
