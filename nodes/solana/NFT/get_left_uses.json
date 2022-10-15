@@ -22,7 +22,8 @@
             "name": "mint_account",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": "",

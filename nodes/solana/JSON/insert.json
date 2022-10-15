@@ -31,7 +31,7 @@
             "passthrough": false
         },
         {
-            "name": "json_input",
+            "name": "value",
             "type_bounds": [
                 "json"
             ],

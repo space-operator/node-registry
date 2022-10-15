@@ -61,7 +61,8 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": null,
@@ -71,7 +72,8 @@
         {
             "name": "update_authority",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": null,
@@ -119,16 +121,6 @@
             "defaultValue": null,
             "tooltip": "",
             "passthrough": true
-        },
-        {
-            "name": "collection_details",
-            "type_bounds": [
-                "u64"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "tooltip": "Only applies to Collection NFTs and is automatically set. To facility migration, set the collection size manually.",
-            "passthrough": false
         },
         {
             "name": "creators",

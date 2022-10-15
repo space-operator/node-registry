@@ -22,7 +22,8 @@
             "name": "owner",
             "type_bounds": [
                 "pubkey",
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": null,
@@ -32,7 +33,8 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": null,
@@ -54,7 +56,8 @@
         {
             "name": "token_account",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": null,
