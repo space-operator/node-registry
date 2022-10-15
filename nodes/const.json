@@ -1,0 +1,24 @@
+{
+    "type": "native",
+    "data": {
+        "width": 350,
+        "height": 500,
+        "node_id": "const",
+        "version": "0.1",
+        "description": "",
+        "display_name": "Const",
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "Source",
+            "type": "free",
+            "required": true,
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets": [],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
