@@ -81,7 +81,7 @@
         {
             "name": "metadata",
             "type_bounds": [
-                "NFT_metadata"
+                "json"
             ],
             "required": true,
             "defaultValue": null,
