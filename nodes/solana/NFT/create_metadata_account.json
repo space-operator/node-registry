@@ -61,7 +61,8 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": null,
@@ -71,7 +72,8 @@
         {
             "name": "update_authority",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": null,
@@ -81,7 +83,7 @@
         {
             "name": "metadata",
             "type_bounds": [
-                "NFT_metadata"
+                "json"
             ],
             "required": true,
             "defaultValue": null,
@@ -101,7 +103,7 @@
         {
             "name": "uses",
             "type_bounds": [
-                "NFT_uses"
+                "json"
             ],
             "required": true,
             "defaultValue": null,
@@ -133,7 +135,7 @@
         {
             "name": "creators",
             "type_bounds": [
-                "[]NFT_creator"
+                "json"
             ],
             "required": true,
             "defaultValue": null,

@@ -27,7 +27,8 @@
         {
             "name": "sender",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": null,

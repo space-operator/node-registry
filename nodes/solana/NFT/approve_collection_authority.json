@@ -21,7 +21,9 @@
         {
             "name": "new_collection_authority",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": "",
@@ -31,7 +33,8 @@
         {
             "name": "update_authority",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": "",
@@ -41,7 +44,8 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair"
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": "",
@@ -51,7 +55,9 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey"
+                "pubkey",
+                "keypair",
+                "string"
             ],
             "required": true,
             "defaultValue": "",
