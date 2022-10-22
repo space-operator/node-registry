@@ -103,8 +103,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": true,
             "tooltip": "",
             "passthrough": false
         }

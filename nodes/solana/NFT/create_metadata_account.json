@@ -147,8 +147,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": null,
+            "required": false,
+            "defaultValue": true,
             "tooltip": "",
             "passthrough": false
         }
