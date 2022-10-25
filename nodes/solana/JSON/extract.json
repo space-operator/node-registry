@@ -51,8 +51,7 @@
         "properties": {
             "json_input": {
                 "title": "JSON Input",
-                "type": "string",
-                "default": "{}"
+                "type": "string"
             },
             "field_path": {
                 "title": "Field Path",
