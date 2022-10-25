@@ -45,6 +45,28 @@
             "tooltip": ""
         }
     ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    "targets_form.json_schema": {
+        "type": "object",
+        "title": "JSON Extract",
+        "properties": {
+            "json_input": {
+                "title": "JSON Input",
+                "type": "string",
+                "default": "{}"
+            },
+            "field_path": {
+                "title": "Field Path",
+                "type": "string"
+            }
+        }
+    },
+    "targets_form.ui_schema": {
+        "json_input": {
+            "ui:widget": "textarea"
+        },
+        "ui:order": [
+            "json_input",
+            "field_path"
+        ]
+    }
 }
