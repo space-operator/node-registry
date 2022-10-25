@@ -1,0 +1,51 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "foreach",
+        "version": "0.1",
+        "display_name": "Foreach",
+        "description": "Loop over elements of an array",
+        "width": 250,
+        "height": 100,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "element",
+            "type": "json",
+            "defaultValue": null,
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "array",
+            "type_bounds": [
+                "json"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "passthrough": false,
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {
+        "type": "object",
+        "title": "Foreach",
+        "properties": {
+            "array": {
+                "title": "array",
+                "type": "string",
+                "default": "[]"
+            }
+        }
+    },
+    "targets_form.ui_schema": {
+        "array": {
+            "ui:widget": "textarea"
+        },
+        "ui:order": [
+            "array"
+        ]
+    }
+}
