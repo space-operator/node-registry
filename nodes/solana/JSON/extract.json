@@ -34,7 +34,7 @@
     "sources": [
         {
             "name": "value",
-            "type": "json",
+            "type": "free",
             "defaultValue": "",
             "tooltip": ""
         },
