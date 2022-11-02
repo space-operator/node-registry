@@ -9,14 +9,7 @@
         "height": 155,
         "backgroundColor": "#ffd9b3"
     },
-    "sources": [
-        {
-            "name": "result",
-            "type": "json",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
+    "sources": [],
     "targets": [
         {
             "name": "flow",
@@ -24,17 +17,7 @@
                 "string"
             ],
             "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "parameters",
-            "type_bounds": [
-                "json"
-            ],
-            "required": false,
-            "defaultValue": "",
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         }
