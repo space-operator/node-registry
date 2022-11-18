@@ -40,7 +40,7 @@
             "passthrough": false
         },
         {
-            "name": "authority",
+            "name": "mint_authority",
             "type_bounds": [
                 "keypair",
                 "string"
@@ -48,6 +48,18 @@
             "required": true,
             "defaultValue": null,
             "tooltip": "Mint authority - who can mint more tokens",
+            "passthrough": true
+        },
+        {
+            "name": "freeze_authority",
+            "type_bounds": [
+                "keypair",
+                "string",
+                "pubkey"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
             "passthrough": true
         },
         {
