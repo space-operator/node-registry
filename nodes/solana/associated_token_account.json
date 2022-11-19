@@ -1,0 +1,75 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "associated_token_account",
+        "version": "0.1",
+        "display_name": "Associated Token Account",
+        "description": "",
+        "width": 200,
+        "height": 290,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "associated_token_account",
+            "type": "pubkey",
+            "defaultValue": null,
+            "tooltip": ""
+        },
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": null,
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "owner",
+            "type_bounds": [
+                "pubkey",
+                "keypair",
+                "string"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "fee_payer",
+            "type_bounds": [
+                "keypair",
+                "string"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "mint_account",
+            "type_bounds": [
+                "pubkey",
+                "keypair",
+                "string"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "submit",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": false,
+            "defaultValue": true,
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
