@@ -1,0 +1,46 @@
+{
+    "type": "WASM",
+    "data": {
+        "node_id": "split",
+        "version": "0.1",
+        "display_name": "Split",
+        "description": "Splits input by delimiter",
+        "width": 200,
+        "height": 180,
+        "backgroundColor": "#ffd9b3"
+    },
+    "targets": [
+        {
+            "name": "input",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "delimiter",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "sources": [
+        {
+            "name": "output",
+            "type": {
+                "array": "string"
+            },
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

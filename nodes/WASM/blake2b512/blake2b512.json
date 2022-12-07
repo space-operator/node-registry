@@ -1,0 +1,34 @@
+{
+    "type": "WASM",
+    "data": {
+        "node_id": "blake2b512",
+        "version": "0.1",
+        "display_name": "BLAKE2b-512",
+        "description": "Calculates blake2b-512 hash",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "targets": [
+        {
+            "name": "input",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "sources": [
+        {
+            "name": "output",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

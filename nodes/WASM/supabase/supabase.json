@@ -1,0 +1,44 @@
+{
+    "type": "WASM",
+    "data": {
+        "node_id": "supabase",
+        "version": "0.1",
+        "display_name": "Supabase",
+        "description": "Read table from Supabase. Needs SUPABASE_URL and SUPABASE_ANON_KEY",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "targets": [
+        {
+            "name": "bucket",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "select",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "sources": [
+        {
+            "name": "output",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

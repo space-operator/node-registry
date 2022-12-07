@@ -1,0 +1,15 @@
+[package]
+name = "md5"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+lto = true
+strip = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+hex = "0.4.3"
+md5 = "0.7.0"
