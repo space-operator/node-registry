@@ -3,8 +3,8 @@
     "data": {
         "node_id": "environment",
         "version": "0.1",
-        "display_name": "Environment",
-        "description": "Reads environment variable and returns it",
+        "display_name": "Environment Variable",
+        "description": "Read environment variable and return it",
         "width": 200,
         "height": 155,
         "backgroundColor": "#ffd9b3"
@@ -29,6 +29,14 @@
             "tooltip": ""
         }
     ],
-    "targets_form.json_schema": {},
+    "targets_form.json_schema": {
+        "type": "object",
+        "properties": {
+            "variable name": {
+                "type": "string",
+                "title": "Variable Name"
+            }
+        }
+    },
     "targets_form.ui_schema": {}
 }

@@ -5,7 +5,7 @@ fn main(lat: f32, lon: f32) -> Box<String> {
     let response = Request::get("https://api.openweathermap.org/data/2.5/weather")
         .query("lat", lat)
         .query("lon", lon)
-        .query("appid", "1b9e9e002f78967f4c2c9a4dfd1a3125")
+        .query("appid", "7f5a1fda2803b4fd2577113493da20cc")
         .call()
         .unwrap()
         .into_string()

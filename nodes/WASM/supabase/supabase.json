@@ -11,7 +11,7 @@
     },
     "targets": [
         {
-            "name": "bucket",
+            "name": "table",
             "type_bounds": [
                 "string"
             ],

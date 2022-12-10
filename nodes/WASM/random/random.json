@@ -3,7 +3,7 @@
     "data": {
         "node_id": "random",
         "version": "0.1",
-        "display_name": "Random",
+        "display_name": "Random Number",
         "description": "Calculates random number in range",
         "width": 200,
         "height": 180,
