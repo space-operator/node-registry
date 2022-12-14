@@ -5,7 +5,7 @@
         "version": "0.1",
         "display_name": "wallet",
         "description": "",
-        "width": 200,
+        "width": 350,
         "height": 155,
         "backgroundColor": "#baf2b1"
     },
