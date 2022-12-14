@@ -1,0 +1,7 @@
+[workspace]
+members = [
+  "value",
+  "cmds-solana",
+  "flow-lib",
+]
+
