@@ -1,5 +1,5 @@
 [workspace]
-members = ["cmds/*"]
+members = ["rust/*"]
 
 [profile.release]
 lto = true
