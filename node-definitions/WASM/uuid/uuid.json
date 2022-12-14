@@ -1,0 +1,23 @@
+{
+    "type": "WASM",
+    "data": {
+        "node_id": "uuid",
+        "version": "0.1",
+        "display_name": "Uuid",
+        "description": "Generates a UUID (v4 uuid with random data)",
+        "width": 200,
+        "height": 180,
+        "backgroundColor": "#ffd9b3"
+    },
+    "targets": [],
+    "sources": [
+        {
+            "name": "uuid",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
