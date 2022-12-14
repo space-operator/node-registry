@@ -1,2 +1,2 @@
-**/WASM/**/target
 target
+Cargo.lock

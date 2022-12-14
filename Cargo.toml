@@ -1,7 +1,2 @@
 [workspace]
-members = [
-  "value",
-  "cmds-solana",
-  "flow-lib",
-]
-
+members = ["crates/*"]
