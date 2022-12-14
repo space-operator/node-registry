@@ -1,5 +1,7 @@
+use serde::{Deserialize, Serialize};
 use url::{Host, Position, Url};
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct UrlObject {
     scheme: String,
     username: String,
@@ -15,8 +17,8 @@ pub struct UrlObject {
     cannot_be_a_base: bool,
 }
 
-//#[no_mangle]
-fn main(url: &String) -> Box<UrlObject> {
+#[no_mangle]
+fn main(url: &String) -> Box<String> {
     let parsed_url = Url::parse(url).unwrap();
     let to_string = |s: &str| s.to_string();
     let url_object = UrlObject {
@@ -41,7 +43,9 @@ fn main(url: &String) -> Box<UrlObject> {
         fragment: parsed_url.fragment().map(to_string),
         cannot_be_a_base: parsed_url.cannot_be_a_base(),
     };
-    Box::new(url_object)
+
+    let url_serialized = serde_json::to_string(&url_object).unwrap();
+    Box::new(url_serialized)
 }
 
 #[cfg(test)]
@@ -52,6 +56,7 @@ mod tests {
     fn url_field_parsing_works() {
         let my_url =
             main(&"https://github.com/rust-lang/rust/issues?labels=E-easy&state=open".to_string());
+        let my_url: UrlObject = serde_json::from_str(&my_url).unwrap();
         assert_eq!(my_url.scheme, "https".to_string());
         assert_eq!(my_url.username, "");
         assert_eq!(my_url.password, None);
