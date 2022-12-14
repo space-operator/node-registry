@@ -33,7 +33,7 @@ fn is_match(text: &String, regex: &String) -> Box<String> {
             error: err.to_string(),
         },
     };
-    let is_match = serde_json::to_string(&is_match_result).unwrap();
+    let _is_match = serde_json::to_string(&is_match_result).unwrap();
 
     let capture_group = re
         .unwrap()
