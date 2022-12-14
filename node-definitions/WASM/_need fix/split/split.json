@@ -34,9 +34,7 @@
     "sources": [
         {
             "name": "output",
-            "type": {
-                "array": "string"
-            },
+            "type": "json",
             "defaultValue": "",
             "tooltip": ""
         }

@@ -2,7 +2,7 @@
     "type": "WASM",
     "data": {
         "node_id": "weather",
-        "version": "0.1",
+        "version": "0.2",
         "display_name": "Weather",
         "description": "Retrieves current weather data from https://api.openweathermap.org/data/2.5/weather",
         "width": 200,
