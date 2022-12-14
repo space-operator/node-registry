@@ -1,0 +1,6 @@
+[workspace]
+members = ["cmds/*"]
+
+[profile.release]
+lto = true
+strip = true
