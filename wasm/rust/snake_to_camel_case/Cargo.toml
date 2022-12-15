@@ -1,5 +1,5 @@
 [package]
-name = "snake_to_camel"
+name = "snake_to_camel_case"
 version = "0.1.0"
 edition = "2021"
 
