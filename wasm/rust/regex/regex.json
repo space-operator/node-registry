@@ -2,7 +2,7 @@
     "type": "WASM",
     "data": {
         "node_id": "regex",
-        "version": "0.1",
+        "version": "0.3",
         "display_name": "Regex",
         "description": "Regex",
         "width": 200,
@@ -33,7 +33,7 @@
     ],
     "sources": [
         {
-            "name": "is_match",
+            "name": "result",
             "type": "string",
             "defaultValue": "",
             "tooltip": ""
