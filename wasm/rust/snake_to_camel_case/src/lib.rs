@@ -1,6 +1,6 @@
 use convert_case::{Case, Casing};
 
-// #[no_mangle]
+#[no_mangle]
 fn main(input: &String) -> Box<String> {
     let result = input.to_case(Case::Camel);
     Box::new(result)
