@@ -2,7 +2,7 @@
     "type": "WASM",
     "data": {
         "node_id": "uuid",
-        "version": "0.1",
+        "version": "0.2",
         "display_name": "Uuid",
         "description": "Generates a UUID (v4 uuid with random data)",
         "width": 200,
