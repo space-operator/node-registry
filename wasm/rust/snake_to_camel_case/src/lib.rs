@@ -1,6 +1,6 @@
 use convert_case::{Case, Casing};
 
-#[no_mangle]
+// #[no_mangle]
 fn main(input: &String) -> Box<String> {
     let result = input.to_case(Case::Camel);
     Box::new(result)
@@ -11,9 +11,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_camel_to_snake_case() {
-        let input = "camelCase".to_string();
+    fn test_snake_to_camel_case() {
+        let input = "camel_case".to_string();
         let result = *main(&input);
-        assert_eq!(*result, "camel_case".to_string());
+        assert_eq!(*result, "camelCase".to_string());
     }
 }
