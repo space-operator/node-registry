@@ -1,0 +1,19 @@
+[package]
+name = "insertion_sort"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_json = "1.0.89"
+
+
+
+
+[profile.release]
+lto = true
+strip = true
+
+[lib]
+crate-type = ["cdylib"]
