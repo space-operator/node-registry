@@ -1,10 +1,10 @@
 {
     "type": "WASM",
     "data": {
-        "node_id": "to_uppercase",
+        "node_id": "to_lowercase",
         "version": "0.1",
-        "display_name": "To uppercase",
-        "description": "Converts a string to uppercase",
+        "display_name": "To lowercase",
+        "description": "Converts a string to lowercase",
         "width": 200,
         "height": 180,
         "backgroundColor": "#ffd9b3"
