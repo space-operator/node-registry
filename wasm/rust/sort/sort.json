@@ -1,33 +1,33 @@
 {
     "type": "WASM",
     "data": {
-        "node_id": "regex",
-        "version": "0.4",
-        "display_name": "Regex",
-        "description": "Regex",
+        "node_id": "sort",
+        "version": "0.1",
+        "display_name": "Sort Array",
+        "description": "Node which performs sorting of arrays of nulls, numbers or strings in asc or desc mode",
         "width": 200,
         "height": 155,
         "backgroundColor": "#ffd9b3"
     },
     "targets": [
         {
-            "name": "text",
+            "name": "array",
             "type_bounds": [
                 "string"
             ],
             "required": true,
             "defaultValue": "",
-            "tooltip": "try '@ a 123 @ b !bar 234 @ a foo 345'",
+            "tooltip": "",
             "passthrough": false
         },
         {
-            "name": "pattern",
+            "name": "ordering",
             "type_bounds": [
                 "string"
             ],
             "required": true,
             "defaultValue": "",
-            "tooltip": "try '@ ([a-z]+)(?: (?P<NamedGroup>[a-z]+))?(?: !([a-z]+))? ([0-9]+)'",
+            "tooltip": "pass 'asc' or 'desc'",
             "passthrough": false
         }
     ],

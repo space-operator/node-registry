@@ -1,8 +1,15 @@
 use std::collections::HashMap;
-use std::fmt::Display;
 
 use regex::{Error as RegexError, Regex};
-use serde::{Serialize, Serializer};
+use serde::Serialize;
+
+use util::*;
+
+#[cfg(not(test))]
+#[no_mangle]
+fn main(text: &String, regex: &String) -> Box<String> {
+    iter_captures(text, regex)
+}
 
 #[derive(Serialize)]
 struct Captures {
@@ -11,13 +18,7 @@ struct Captures {
     named: HashMap<String, Option<String>>,
 }
 
-#[cfg(not(test))]
-#[no_mangle]
-fn main(text: &String, regex: &String) -> Box<String> {
-    iter_captures(text, regex)
-}
-
-fn iter_captures(text: &String, regex: &String) -> Box<String> {
+pub fn iter_captures(text: &String, regex: &String) -> Box<String> {
     serialize_result(iter_captures_impl(text, regex))
 }
 
@@ -43,39 +44,6 @@ fn iter_captures_impl(text: &String, regex: &String) -> Result<Vec<Captures>, Re
                 .collect(),
         })
         .collect())
-}
-
-#[derive(Serialize)]
-#[serde(tag = "status", rename_all = "lowercase")]
-#[serde(bound(serialize = "T: Serialize, E: Display"))]
-enum ResultSer<T, E> {
-    Ok {
-        value: T,
-    },
-    Error {
-        #[serde(serialize_with = "use_display")]
-        error: E,
-    },
-}
-
-fn serialize_result<T, E>(result: Result<T, E>) -> Box<String>
-where
-    T: Serialize,
-    E: Display,
-{
-    let result = match result {
-        Ok(value) => ResultSer::Ok { value },
-        Err(error) => ResultSer::Error { error },
-    };
-    Box::new(serde_json::to_string(&result).unwrap())
-}
-
-fn use_display<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
-where
-    T: Display,
-    S: Serializer,
-{
-    serializer.collect_str(value)
 }
 
 #[cfg(test)]
@@ -134,5 +102,44 @@ mod tests {
                 ]\
             }"
         );
+    }
+}
+
+mod util {
+    use std::fmt::Display;
+
+    use serde::{Serialize, Serializer};
+
+    #[derive(Serialize)]
+    #[serde(tag = "status", rename_all = "lowercase")]
+    #[serde(bound(serialize = "T: Serialize, E: Display"))]
+    pub enum ResultSer<T, E> {
+        Ok {
+            value: T,
+        },
+        Error {
+            #[serde(serialize_with = "use_display")]
+            error: E,
+        },
+    }
+
+    pub fn serialize_result<T, E>(result: Result<T, E>) -> Box<String>
+    where
+        T: Serialize,
+        E: Display,
+    {
+        let result = match result {
+            Ok(value) => ResultSer::Ok { value },
+            Err(error) => ResultSer::Error { error },
+        };
+        Box::new(serde_json::to_string(&result).unwrap())
+    }
+
+    pub fn use_display<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: Display,
+        S: Serializer,
+    {
+        serializer.collect_str(value)
     }
 }
