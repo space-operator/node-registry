@@ -1,10 +1,10 @@
 {
     "type": "WASM",
     "data": {
-        "node_id": "camel_to_snake_case",
+        "node_id": "to_snake_case",
         "version": "0.1",
-        "display_name": "Camel to Snake case",
-        "description": "Converts a string from Camel case to Snake case",
+        "display_name": "to snake_case",
+        "description": "Converts a string to Snake case",
         "width": 200,
         "height": 180,
         "backgroundColor": "#ffd9b3"
