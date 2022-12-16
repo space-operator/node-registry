@@ -15,3 +15,15 @@ fn main(numbers: &String) -> Box<String> {
 
     Box::new(serde_json::to_string(&numbers).unwrap())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_insertion_sort() {
+        let numbers = Box::new(String::from("[3, 2, 1]"));
+        let result = main(&numbers);
+        assert_eq!(*result, "[1,2,3]");
+    }
+}

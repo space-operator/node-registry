@@ -2,7 +2,6 @@
 fn main(numbers: &String) -> Box<String> {
     let mut numbers: Vec<i64> = serde_json::from_str(&numbers).unwrap();
 
-    // quicksort
     numbers = quicksort(numbers);
 
     Box::new(serde_json::to_string(&numbers).unwrap())
@@ -27,4 +26,16 @@ fn quicksort(arr: Vec<i64>) -> Vec<i64> {
     left.push(pivot);
     left.append(&mut right);
     left
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_quicksort() {
+        let numbers = Box::new(String::from("[3, 2, 1]"));
+        let result = main(&numbers);
+        assert_eq!(*result, "[1,2,3]");
+    }
 }
