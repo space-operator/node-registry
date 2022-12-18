@@ -74,15 +74,14 @@ pub struct Inputs {
     pub method: Method,
     pub url: String,
     pub auth: Auth,
-    pub input_headers: HashMap<String, String>,
-    pub output_headers: HashMap<String, String>,
-    pub input_query_params: HashMap<String, String>,
+    pub headers: HashMap<String, String>,
+    pub query_params: HashMap<String, String>,
     pub body: Option<Value>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Outputs {
-    output_headers: HashMap<String, String>,
+    headers: HashMap<String, String>,
     body: Option<Value>,
 }
 
@@ -92,9 +91,8 @@ const HTTP_REQUEST: &str = "http_request";
 const METHOD: &str = "method";
 const URL: &str = "url";
 const AUTH: &str = "auth";
-const INPUT_HEADERS: &str = "input_headers";
-const OUTPUT_HEADERS: &str = "output_headers";
-const QUERY_PARAMS: &str = "input_query_params";
+const HEADERS: &str = "headers";
+const QUERY_PARAMS: &str = "query_params";
 const BODY: &str = "body";
 
 #[async_trait]
@@ -124,13 +122,7 @@ impl CommandTrait for RequestHttp {
                 passthrough: false,
             },
             CmdInput {
-                name: INPUT_HEADERS.into(),
-                type_bounds: [ValueType::Json].to_vec(),
-                required: false,
-                passthrough: false,
-            },
-            CmdInput {
-                name: OUTPUT_HEADERS.into(),
+                name: HEADERS.into(),
                 type_bounds: [ValueType::Json].to_vec(),
                 required: false,
                 passthrough: false,
@@ -158,7 +150,7 @@ impl CommandTrait for RequestHttp {
                 r#type: ValueType::Json,
             },
             CmdOutput {
-                name: OUTPUT_HEADERS.into(),
+                name: HEADERS.into(),
                 r#type: ValueType::Pubkey,
             },
         ]
@@ -169,17 +161,17 @@ impl CommandTrait for RequestHttp {
         let inputs: Inputs = value::from_map(inputs)?;
         let client = reqwest::Client::new();
         let mut req = client.request(inputs.method.into(), inputs.url.clone());
-        if !inputs.input_query_params.is_empty() {
+        if !inputs.query_params.is_empty() {
             let query = inputs
-                .input_query_params
+                .query_params
                 .iter()
                 .map(|(field_name, field_value)| (field_name, field_value))
                 .collect::<HashMap<_, _>>();
             req = req.query(&query);
         }
-        if !inputs.input_headers.is_empty() {
+        if !inputs.headers.is_empty() {
             let headers = inputs
-                .input_headers
+                .headers
                 .iter()
                 .flat_map(|(header_name, header_value)| {
                     let header_name = HeaderName::from_str(header_name).map_err(|_| {
@@ -219,22 +211,18 @@ impl CommandTrait for RequestHttp {
             );
         }
         let mut output = Outputs::default();
-        if !inputs.output_headers.is_empty() {
-            let headers = resp.headers();
-            for (header_name, _field_name) in inputs.output_headers.iter() {
-                let header_val = headers.get(header_name).ok_or_else(|| {
-                    anyhow::anyhow!("HttpHeaderNotFound: {}", header_name.clone())
-                })?;
-                let header_val = header_val
-                    .to_str()
-                    .map_err(|_| {
-                        anyhow::anyhow!("InvalidHttpHeaderValueOutput: {}", header_name.clone())
-                    })?
-                    .into();
-                output
-                    .output_headers
-                    .insert(header_name.clone(), header_val);
-            }
+        let headers = resp.headers();
+        for (header_name, _field_name) in inputs.headers.iter() {
+            let header_val = headers
+                .get(header_name)
+                .ok_or_else(|| anyhow::anyhow!("HttpHeaderNotFound: {}", header_name.clone()))?;
+            let header_val = header_val
+                .to_str()
+                .map_err(|_| {
+                    anyhow::anyhow!("InvalidHttpHeaderValueOutput: {}", header_name.clone())
+                })?
+                .into();
+            output.headers.insert(header_name.clone(), header_val);
         }
 
         let body: Value = resp
@@ -270,10 +258,9 @@ mod tests {
                     method: "GET".into(),
                     url: "https://api.coingecko.com/api/v3/simple/price".into(),
                     auth: Auth::NoAuth,
-                    input_headers: HashMap::new(),
-                    input_query_params: query_params,
+                    query_params,
                     body: None,
-                    output_headers: HashMap::new(),
+                    headers: HashMap::new(),
                 })
                 .unwrap(),
             )
@@ -282,6 +269,6 @@ mod tests {
 
         dbg!(&output);
         assert!(output.contains_key(BODY));
-        assert!(output.contains_key(OUTPUT_HEADERS));
+        assert!(output.contains_key(HEADERS));
     }
 }
