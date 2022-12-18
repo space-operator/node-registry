@@ -593,63 +593,63 @@ fn sort_comb(array: &mut [Value], ordering: SortOrdering) -> Result<(), CompareE
     Ok(())
 }
 
-fn sort_cycle(array: &mut [Value], ordering: SortOrdering) -> Result<(), CompareError> {
-    // cycle sort
+// fn sort_cycle(array: &mut [Value], ordering: SortOrdering) -> Result<(), CompareError> {
+//     // cycle sort
 
-    let mut writes = 0;
+//     let mut writes = 0;
 
-    let compare = |a: &Value, b: &Value| match ordering {
-        SortOrdering::Ascending => compare(a, b),
-        SortOrdering::Descending => compare(b, a),
-    };
+//     let compare = |a: &Value, b: &Value| match ordering {
+//         SortOrdering::Ascending => compare(a, b),
+//         SortOrdering::Descending => compare(b, a),
+//     };
 
-    let mut cycle_start = 0;
-    while writes < array.len() {
-        let item = array[cycle_start].clone();
+//     let mut cycle_start = 0;
+//     while writes < array.len() {
+//         let item = array[cycle_start].clone();
 
-        let mut pos = cycle_start;
-        for i in cycle_start + 1..array.len() {
-            if compare(&array[i], &item)? == Ordering::Less {
-                pos += 1;
-            }
-        }
+//         let mut pos = cycle_start;
+//         for i in cycle_start + 1..array.len() {
+//             if compare(&array[i], &item)? == Ordering::Less {
+//                 pos += 1;
+//             }
+//         }
 
-        if pos == cycle_start {
-            cycle_start += 1;
-            continue;
-        }
+//         if pos == cycle_start {
+//             cycle_start += 1;
+//             continue;
+//         }
 
-        while compare(&item, &array[pos])? == Ordering::Equal {
-            pos += 1;
-        }
+//         while compare(&item, &array[pos])? == Ordering::Equal {
+//             pos += 1;
+//         }
 
-        array.swap(pos, cycle_start);
+//         array.swap(pos, cycle_start);
 
-        writes += 1;
+//         writes += 1;
 
-        while pos != cycle_start {
-            pos = cycle_start;
+//         while pos != cycle_start {
+//             pos = cycle_start;
 
-            for i in cycle_start + 1..array.len() {
-                if compare(&array[i], &item)? == Ordering::Less {
-                    pos += 1;
-                }
-            }
+//             for i in cycle_start + 1..array.len() {
+//                 if compare(&array[i], &item)? == Ordering::Less {
+//                     pos += 1;
+//                 }
+//             }
 
-            while compare(&item, &array[pos])? == Ordering::Equal {
-                pos += 1;
-            }
+//             while compare(&item, &array[pos])? == Ordering::Equal {
+//                 pos += 1;
+//             }
 
-            array.swap(pos, cycle_start);
+//             array.swap(pos, cycle_start);
 
-            writes += 1;
-        }
+//             writes += 1;
+//         }
 
-        cycle_start += 1;
-    }
+//         cycle_start += 1;
+//     }
 
-    Ok(())
-}
+//     Ok(())
+// }
 
 fn sort_strand(array: &mut [Value], ordering: SortOrdering) -> Result<(), CompareError> {
     // strand sort
