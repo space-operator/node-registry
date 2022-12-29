@@ -1,6 +1,6 @@
-use crate::tokens;
-use serde::ser::SerializeStruct;
 use solana_sdk::signer::keypair::Keypair;
+
+pub(crate) const TOKEN: &str = "$$k";
 
 pub type Target = Keypair;
 
@@ -27,9 +27,7 @@ pub fn serialize<S>(k: &Target, s: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    let mut s = s.serialize_struct(tokens::KEYPAIR, 0)?;
-    s.serialize_field("", &crate::Bytes(&k.to_bytes()))?;
-    s.end()
+    s.serialize_newtype_struct(TOKEN, &crate::Bytes(&k.to_bytes()))
 }
 
 struct Visitor;
@@ -38,7 +36,7 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
     type Value = Keypair;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("keypair, or bs58 string")
+        formatter.write_str("keypair")
     }
 
     fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
@@ -62,6 +60,22 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
         self.visit_bytes(&buf[..size])
     }
 
+    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::SeqAccess<'de>,
+    {
+        let mut buf = [0u8; 64];
+        let mut iter_mut = buf.iter_mut();
+        loop {
+            match (seq.next_element()?, iter_mut.next()) {
+                (Some(value), Some(ptr)) => *ptr = value,
+                (None, None) => break,
+                _ => return Err(serde::de::Error::custom("expected array of 64 elements")),
+            }
+        }
+        Keypair::from_bytes(&buf).map_err(|_| serde::de::Error::custom("invalid keypair"))
+    }
+
     fn visit_newtype_struct<D>(self, d: D) -> Result<Self::Value, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -74,7 +88,7 @@ pub fn deserialize<'de, D>(d: D) -> Result<Target, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    d.deserialize_newtype_struct(tokens::KEYPAIR, Visitor)
+    d.deserialize_newtype_struct(TOKEN, Visitor)
 }
 
 #[cfg(test)]
@@ -87,20 +101,47 @@ mod tests {
         deserialize(d).unwrap()
     }
 
-    fn j(s: &str) -> serde_json::Deserializer<serde_json::de::StrRead> {
-        serde_json::Deserializer::from_str(s)
-    }
-
     #[test]
     fn test_deserialize_value() {
         let k = Keypair::new();
-        assert_eq!(de(Value::Keypair(k.to_bytes())), k);
+        assert_eq!(de(Value::B64(k.to_bytes())), k);
         assert_eq!(de(Value::String(k.to_base58_string())), k);
     }
 
     #[test]
-    fn test_deserialize_json() {
+    fn test_serialize() {
         let k = Keypair::new();
-        assert_eq!(de(&mut j(&format!("\"{}\"", k.to_base58_string()))), k);
+        assert_eq!(
+            serialize(&k, crate::ser::Serializer).unwrap(),
+            Value::B64(k.to_bytes()),
+        )
+    }
+
+    #[test]
+    fn test_enum() {
+        #[derive(serde::Deserialize, PartialEq, Debug)]
+        #[serde(untagged)]
+        pub enum UntaggedEnum {
+            PrivateKey {
+                #[serde(with = "super")]
+                private_key: Keypair,
+            },
+            Seed {
+                #[serde(default)]
+                seed: String,
+                #[serde(default)]
+                passphrase: String,
+            },
+        }
+        assert_eq!(
+            crate::from_map::<UntaggedEnum>(crate::Map::from([(
+                "private_key".to_owned(),
+                Value::B64([0; 64])
+            )]))
+            .unwrap(),
+            UntaggedEnum::PrivateKey {
+                private_key: Keypair::from_bytes(&[0; 64]).unwrap()
+            }
+        );
     }
 }

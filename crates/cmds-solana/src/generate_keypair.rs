@@ -154,7 +154,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_key() {
+    async fn test_private_key() {
         let private_key =
             "56Ngo8EY5ZWmYKDZAmKYcUf2y2LZVRSMMnptGp9JtQuSZHyU3Pwhhkmj5YVf89VTQZqrzkabhybWdWwJWCa74aYu";
         let input = value::map! {
@@ -163,11 +163,11 @@ mod tests {
         let cmd = GenerateKeypair;
         let output = cmd.run(Context::default(), input).await.unwrap();
         let output = value::from_map::<Output>(output).unwrap();
+        assert_eq!(output.keypair.to_base58_string(), "56Ngo8EY5ZWmYKDZAmKYcUf2y2LZVRSMMnptGp9JtQuSZHyU3Pwhhkmj5YVf89VTQZqrzkabhybWdWwJWCa74aYu");
         assert_eq!(
             output.pubkey.to_string(),
             "GQZRKDqVzM4DXGGMEUNdnBD3CC4TTywh3PwgjYPBm8W9"
         );
-        assert_eq!(output.keypair.to_base58_string(), "56Ngo8EY5ZWmYKDZAmKYcUf2y2LZVRSMMnptGp9JtQuSZHyU3Pwhhkmj5YVf89VTQZqrzkabhybWdWwJWCa74aYu");
     }
 
     #[tokio::test]

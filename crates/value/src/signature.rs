@@ -1,6 +1,6 @@
-use crate::tokens;
-use serde::ser::SerializeStruct;
 use solana_sdk::signature::Signature;
+
+pub(crate) const TOKEN: &str = "$$s";
 
 pub type Target = Signature;
 
@@ -27,9 +27,7 @@ pub fn serialize<S>(sig: &Target, s: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    let mut s = s.serialize_struct(tokens::SIGNATURE, 0)?;
-    s.serialize_field("", &crate::Bytes(sig.as_ref()))?;
-    s.end()
+    s.serialize_newtype_struct(TOKEN, &crate::Bytes(sig.as_ref()))
 }
 
 struct Visitor;
@@ -65,6 +63,22 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
         self.visit_bytes(&buf[..size])
     }
 
+    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::SeqAccess<'de>,
+    {
+        let mut buf = [0u8; 64];
+        let mut iter_mut = buf.iter_mut();
+        loop {
+            match (seq.next_element()?, iter_mut.next()) {
+                (Some(value), Some(ptr)) => *ptr = value,
+                (None, None) => break,
+                _ => return Err(serde::de::Error::custom("expected array of 64 elements")),
+            }
+        }
+        Ok(Signature::new(&buf))
+    }
+
     fn visit_newtype_struct<D>(self, d: D) -> Result<Self::Value, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -77,7 +91,7 @@ pub fn deserialize<'de, D>(d: D) -> Result<Target, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    d.deserialize_newtype_struct(tokens::SIGNATURE, Visitor)
+    d.deserialize_newtype_struct(TOKEN, Visitor)
 }
 
 #[cfg(test)]
@@ -89,20 +103,19 @@ mod tests {
         deserialize(d).unwrap()
     }
 
-    fn j(s: &str) -> serde_json::Deserializer<serde_json::de::StrRead> {
-        serde_json::Deserializer::from_str(s)
-    }
-
     #[test]
     fn test_deserialize_value() {
         let s = Signature::new_unique();
-        assert_eq!(de(Value::Signature(s)), s);
+        assert_eq!(de(Value::B64(s.into())), s);
         assert_eq!(de(Value::String(s.to_string())), s);
     }
 
     #[test]
-    fn test_deserialize_json() {
+    fn test_serialize() {
         let s = Signature::new_unique();
-        assert_eq!(de(&mut j(&format!("\"{}\"", s))), s);
+        assert_eq!(
+            serialize(&s, crate::ser::Serializer).unwrap(),
+            Value::B64(s.into())
+        );
     }
 }

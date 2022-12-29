@@ -3,7 +3,7 @@ use crate::{
     context::Context,
 };
 use std::borrow::Cow;
-use value::Value;
+// use value::Value;
 
 pub type CommandError = anyhow::Error;
 
@@ -17,7 +17,10 @@ pub trait CommandTrait: Send + Sync + 'static {
 
     async fn run(&self, ctx: Context, params: ValueSet) -> Result<ValueSet, CommandError>;
 
-    fn read_form_data(&self, data: serde_json::Value) -> ValueSet {
+    fn read_form_data(&self, _: serde_json::Value) -> ValueSet {
+        ValueSet::new()
+        /*
+         * TODO
         let mut result = ValueSet::new();
         for i in self.inputs() {
             if let Some(json) = data.get(&i.name) {
@@ -25,6 +28,7 @@ pub trait CommandTrait: Send + Sync + 'static {
             }
         }
         result
+        */
     }
 
     fn passthrough_outputs(&self, inputs: &ValueSet) -> ValueSet {

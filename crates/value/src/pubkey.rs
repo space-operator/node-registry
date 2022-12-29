@@ -1,6 +1,6 @@
-use crate::tokens;
-use serde::ser::SerializeStruct;
 use solana_sdk::pubkey::Pubkey;
+
+pub(crate) const TOKEN: &str = "$$p";
 
 pub type Target = Pubkey;
 
@@ -27,9 +27,7 @@ pub fn serialize<S>(p: &Target, s: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    let mut s = s.serialize_struct(tokens::PUBKEY, 0)?;
-    s.serialize_field("", &crate::Bytes(&p.to_bytes()))?;
-    s.end()
+    s.serialize_newtype_struct(TOKEN, &crate::Bytes(p.as_ref()))
 }
 
 struct Visitor;
@@ -67,6 +65,28 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
         self.visit_bytes(&buf[..size])
     }
 
+    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::SeqAccess<'de>,
+    {
+        let mut buf = [0u8; 64];
+        let mut size = 0;
+        let mut iter_mut = buf.iter_mut();
+        loop {
+            match (seq.next_element()?, iter_mut.next()) {
+                (Some(value), Some(ptr)) => {
+                    size += 1;
+                    *ptr = value;
+                }
+                (None, None) | (None, Some(_)) => break,
+                (Some(_), None) => {
+                    return Err(serde::de::Error::custom("array has more than 64 elements"));
+                }
+            }
+        }
+        self.visit_bytes(&buf[..size])
+    }
+
     fn visit_newtype_struct<D>(self, d: D) -> Result<Self::Value, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -79,7 +99,7 @@ pub fn deserialize<'de, D>(d: D) -> Result<Target, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    d.deserialize_newtype_struct(tokens::PUBKEY, Visitor)
+    d.deserialize_newtype_struct(TOKEN, Visitor)
 }
 
 #[cfg(test)]
@@ -94,33 +114,23 @@ mod tests {
         deserialize(d).unwrap()
     }
 
-    fn j(s: &str) -> serde_json::Deserializer<serde_json::de::StrRead> {
-        serde_json::Deserializer::from_str(s)
-    }
-
     #[test]
     fn test_deserialize_value() {
         let id = solana_sdk::feature_set::add_set_compute_unit_price_ix::id();
-        assert_eq!(de(Value::String(id.to_string())), id,);
-        assert_eq!(de(Value::Pubkey(id)), id);
+        assert_eq!(de(Value::String(id.to_string())), id);
+        assert_eq!(de(Value::B32(id.to_bytes())), id);
 
         let k = Keypair::new();
         let pk = k.pubkey();
-        assert_eq!(de(Value::Keypair(k.to_bytes())), pk);
+        assert_eq!(de(Value::B64(k.to_bytes())), pk);
     }
 
     #[test]
-    fn test_deserialize_json() {
-        let id: Pubkey = "98std1NSHqXi9WYvFShfVepRdCoq1qvsp8fsR2XZtG8g"
-            .parse()
-            .unwrap();
+    fn test_serialize() {
+        let id = solana_sdk::feature_set::add_set_compute_unit_price_ix::id();
         assert_eq!(
-            de(&mut j("\"98std1NSHqXi9WYvFShfVepRdCoq1qvsp8fsR2XZtG8g\"")),
-            id
+            serialize(&id, crate::ser::Serializer).unwrap(),
+            Value::B32(id.to_bytes())
         );
-
-        let k = Keypair::new();
-        let pk = k.pubkey();
-        assert_eq!(de(&mut j(&format!("\"{}\"", k.to_base58_string()))), pk);
     }
 }
