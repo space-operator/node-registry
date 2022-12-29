@@ -1,7 +1,7 @@
 {
     "type": "native",
     "data": {
-        "width": 350,
+        "width": 300,
         "height": 200,
         "node_id": "const",
         "version": "0.1",
