@@ -1,7 +1,7 @@
 {
     "type": "native",
     "data": {
-        "node_id": "http",
+        "node_id": "http_request",
         "version": "0.1",
         "display_name": "HTTP Request",
         "description": "",
@@ -49,9 +49,9 @@
             "type_bounds": [
                 "string"
             ],
-            "required": true,
-            "defaultValue": "https://postman-echo.com/get",
-            "tooltip": "see https://postman-echo.com/",
+            "required": false,
+            "defaultValue": "",
+            "tooltip": "NoAuth",
             "passthrough": false
         },
         {
@@ -59,7 +59,7 @@
             "type_bounds": [
                 "json"
             ],
-            "required": true,
+            "required": false,
             "defaultValue": "",
             "tooltip": "",
             "passthrough": false
@@ -69,7 +69,7 @@
             "type_bounds": [
                 "json"
             ],
-            "required": true,
+            "required": false,
             "defaultValue": "",
             "tooltip": "",
             "passthrough": false
