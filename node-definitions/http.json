@@ -11,7 +11,7 @@
     },
     "sources": [
         {
-            "name": "response",
+            "name": "body",
             "type": "json",
             "defaultValue": "",
             "tooltip": ""
@@ -35,7 +35,7 @@
             "passthrough": false
         },
         {
-            "name": "URL",
+            "name": "url",
             "type_bounds": [
                 "string"
             ],

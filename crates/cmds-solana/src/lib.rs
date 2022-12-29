@@ -5,6 +5,7 @@ pub mod generate_keypair;
 pub mod get_balance;
 pub mod mint_token;
 pub mod request_airdrop;
+pub mod request_http;
 pub mod transfer_sol;
 pub mod transfer_token;
 pub mod wallet;
