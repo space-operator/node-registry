@@ -79,15 +79,20 @@ impl CommandTrait for UpdateCreators {
     async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let input: Input = value::from_map(inputs)?;
 
-        let sig = update_creator(
+        let mut tx = update_creator(
             &ctx.solana_client,
-            input.keypair,
+            input.keypair.clone_keypair(),
             input.mint_account,
             input.creator.to_string(),
             input.append,
         )
         .await
         .map_err(crate::Error::custom)?;
+
+        let recent_blockhash = ctx.solana_client.get_latest_blockhash().await?;
+        try_sign_wallet(&ctx, &mut tx, &[&input.keypair], recent_blockhash).await?;
+
+        let sig = submit_transaction(&ctx.solana_client, tx).await?;
 
         Ok(value::to_map(&Output { signature: sig })?)
     }
