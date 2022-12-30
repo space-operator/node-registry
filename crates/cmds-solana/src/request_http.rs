@@ -11,33 +11,33 @@ pub struct RequestHttp;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Method {
-    Connect,
-    Delete,
-    Get,
-    Head,
-    Options,
-    Patch,
-    Post,
-    Put,
-    Trace,
+    CONNECT,
+    DELETE,
+    GET,
+    HEAD,
+    OPTIONS,
+    PATCH,
+    POST,
+    PUT,
+    TRACE,
 }
 
 impl From<&str> for Method {
     fn from(method: &str) -> Self {
         let method = method.to_lowercase();
         match method.as_str() {
-            "connect" => Method::Connect,
-            "delete" => Method::Delete,
-            "get" => Method::Get,
-            "head" => Method::Head,
-            "options" => Method::Options,
-            "patch" => Method::Patch,
-            "post" => Method::Post,
-            "put" => Method::Put,
-            "trace" => Method::Trace,
+            "connect" => Method::CONNECT,
+            "delete" => Method::DELETE,
+            "get" => Method::GET,
+            "head" => Method::HEAD,
+            "options" => Method::OPTIONS,
+            "patch" => Method::PATCH,
+            "post" => Method::POST,
+            "put" => Method::PUT,
+            "trace" => Method::TRACE,
             _ => {
                 error!("Unsupported method: {}; Using normal Get", method);
-                Method::Get
+                Method::GET
             }
         }
     }
@@ -46,15 +46,15 @@ impl From<&str> for Method {
 impl From<Method> for reqwest::Method {
     fn from(method: Method) -> reqwest::Method {
         match method {
-            Method::Connect => reqwest::Method::CONNECT,
-            Method::Delete => reqwest::Method::DELETE,
-            Method::Get => reqwest::Method::GET,
-            Method::Head => reqwest::Method::HEAD,
-            Method::Options => reqwest::Method::OPTIONS,
-            Method::Patch => reqwest::Method::PATCH,
-            Method::Post => reqwest::Method::POST,
-            Method::Put => reqwest::Method::PUT,
-            Method::Trace => reqwest::Method::TRACE,
+            Method::CONNECT => reqwest::Method::CONNECT,
+            Method::DELETE => reqwest::Method::DELETE,
+            Method::GET => reqwest::Method::GET,
+            Method::HEAD => reqwest::Method::HEAD,
+            Method::OPTIONS => reqwest::Method::OPTIONS,
+            Method::PATCH => reqwest::Method::PATCH,
+            Method::POST => reqwest::Method::POST,
+            Method::PUT => reqwest::Method::PUT,
+            Method::TRACE => reqwest::Method::TRACE,
         }
     }
 }
@@ -73,9 +73,9 @@ pub enum Auth {
 pub struct Inputs {
     pub method: Method,
     pub url: String,
-    pub auth: Auth,
-    pub headers: HashMap<String, String>,
-    pub query_params: HashMap<String, String>,
+    pub auth: Option<Auth>,
+    pub headers: Option<HashMap<String, String>>,
+    pub query_params: Option<HashMap<String, String>>,
     pub body: Option<Value>,
 }
 
@@ -85,6 +85,7 @@ pub struct Outputs {
     body: Option<Value>,
 }
 
+// Command Name
 const HTTP_REQUEST: &str = "http_request";
 
 // Inputs
@@ -118,7 +119,7 @@ impl CommandTrait for RequestHttp {
             CmdInput {
                 name: AUTH.into(),
                 type_bounds: [ValueType::Json].to_vec(),
-                required: true,
+                required: false,
                 passthrough: false,
             },
             CmdInput {
@@ -151,7 +152,7 @@ impl CommandTrait for RequestHttp {
             },
             CmdOutput {
                 name: HEADERS.into(),
-                r#type: ValueType::Pubkey,
+                r#type: ValueType::Json,
             },
         ]
         .to_vec()
@@ -159,19 +160,22 @@ impl CommandTrait for RequestHttp {
 
     async fn run(&self, _ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let inputs: Inputs = value::from_map(inputs)?;
+
         let client = reqwest::Client::new();
+
+        // Build request
         let mut req = client.request(inputs.method.into(), inputs.url.clone());
-        if !inputs.query_params.is_empty() {
-            let query = inputs
-                .query_params
+
+        if let Some(query_params) = &inputs.query_params {
+            let query = query_params
                 .iter()
                 .map(|(field_name, field_value)| (field_name, field_value))
                 .collect::<HashMap<_, _>>();
             req = req.query(&query);
         }
-        if !inputs.headers.is_empty() {
-            let headers = inputs
-                .headers
+
+        if let Some(headers) = &inputs.headers {
+            let headers = headers
                 .iter()
                 .flat_map(|(header_name, header_value)| {
                     let header_name = HeaderName::from_str(header_name).map_err(|_| {
@@ -185,23 +189,32 @@ impl CommandTrait for RequestHttp {
                 .collect::<HeaderMap>();
             req = req.headers(headers);
         }
-        match &inputs.auth {
-            Auth::Basic { username, password } => {
-                req = req.basic_auth(username, password.as_ref());
+
+        if let Some(auth) = &inputs.auth {
+            match auth {
+                Auth::Basic { username, password } => {
+                    req = req.basic_auth(username, password.as_ref());
+                }
+                Auth::Bearer(token) => {
+                    req = req.bearer_auth(token);
+                }
+                Auth::NoAuth => (),
             }
-            Auth::Bearer(token) => {
-                req = req.bearer_auth(token);
-            }
-            Auth::NoAuth => (),
         }
+
         if let Some(body) = inputs.body {
             req = req.json(&body);
         }
+
+        // Run the request
         let resp = req
             .send()
             .await
             .map_err(|_| anyhow::anyhow!("HttpRequestError"))?;
+
+        // Check the status
         let status = resp.status();
+
         if !status.is_success() {
             let body = resp.text().await.ok();
             bail!(
@@ -210,27 +223,35 @@ impl CommandTrait for RequestHttp {
                 body.unwrap_or_default()
             );
         }
+
+        // Build outputs
         let mut output = Outputs::default();
+
         let headers = resp.headers();
-        for (header_name, _field_name) in inputs.headers.iter() {
-            let header_val = headers
-                .get(header_name)
-                .ok_or_else(|| anyhow::anyhow!("HttpHeaderNotFound: {}", header_name.clone()))?;
-            let header_val = header_val
-                .to_str()
-                .map_err(|_| {
-                    anyhow::anyhow!("InvalidHttpHeaderValueOutput: {}", header_name.clone())
-                })?
-                .into();
-            output.headers.insert(header_name.clone(), header_val);
+
+        if let Some(_) = &inputs.headers {
+            for (header_name, _field_name) in headers.iter() {
+                let header_val = headers.get(header_name).ok_or_else(|| {
+                    anyhow::anyhow!("HttpHeaderNotFound: {}", header_name.clone())
+                })?;
+                let header_val = header_val
+                    .to_str()
+                    .map_err(|_| {
+                        anyhow::anyhow!("InvalidHttpHeaderValueOutput: {}", header_name.clone())
+                    })?
+                    .into();
+                output.headers.insert(header_name.to_string(), header_val);
+            }
         }
 
         let body: Value = resp
             .json()
             .await
             .map_err(|_| anyhow::anyhow!("ReadHttpJsonBody"))?;
+
         output.body = Some(body.into());
 
+        // Return outputs
         Ok(value::to_map(&output)?)
     }
 }
@@ -257,10 +278,10 @@ mod tests {
                 value::to_map(&Inputs {
                     method: "GET".into(),
                     url: "https://api.coingecko.com/api/v3/simple/price".into(),
-                    auth: Auth::NoAuth,
-                    query_params,
+                    auth: Some(Auth::NoAuth),
+                    query_params: Some(query_params),
                     body: None,
-                    headers: HashMap::new(),
+                    headers: None,
                 })
                 .unwrap(),
             )
