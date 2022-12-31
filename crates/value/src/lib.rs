@@ -103,6 +103,50 @@ impl Default for Value {
     }
 }
 
+impl From<serde_json::Value> for Value {
+    fn from(value: serde_json::Value) -> Self {
+        match value {
+            serde_json::Value::Null => Value::Null,
+            serde_json::Value::Bool(b) => Value::Bool(b),
+            serde_json::Value::Number(n) => {
+                if let Some(u) = n.as_u64() {
+                    Value::U64(u)
+                } else if let Some(i) = n.as_i64() {
+                    if i < 0 {
+                        Value::I64(i)
+                    } else {
+                        Value::U64(i as u64)
+                    }
+                } else {
+                    let s = n.to_string();
+                    if let Some(u) = s.parse::<u128>().ok() {
+                        Value::U128(u)
+                    } else if let Some(i) = s.parse::<i128>().ok() {
+                        Value::I128(i)
+                    } else if let Some(d) = s.parse::<Decimal>().ok() {
+                        Value::Decimal(d)
+                    } else if let Some(d) = Decimal::from_scientific(&s).ok() {
+                        Value::Decimal(d)
+                    } else if let Some(f) = s.parse::<f64>().ok() {
+                        Value::F64(f)
+                    } else {
+                        // unlikely to happen
+                        // if happen, probably a bug in serde_json
+                        Value::String(s)
+                    }
+                }
+            }
+            serde_json::Value::String(s) => Value::String(s),
+            serde_json::Value::Array(vec) => {
+                Value::Array(vec.into_iter().map(Value::from).collect())
+            }
+            serde_json::Value::Object(map) => {
+                Value::Map(map.into_iter().map(|(k, v)| (k, Value::from(v))).collect())
+            }
+        }
+    }
+}
+
 impl From<String> for Value {
     fn from(x: String) -> Self {
         Self::String(x)
