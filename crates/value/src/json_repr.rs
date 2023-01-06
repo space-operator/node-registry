@@ -196,7 +196,7 @@ where
     A: VariantAccess<'de>,
     T: std::str::FromStr,
 {
-    let s = a.newtype_variant::<&str>()?;
+    let s = a.newtype_variant::<Cow<'_, str>>()?;
     s.parse::<T>()
         .map_err(|_| serde::de::Error::custom(format!("invalid number: {}", s)))
 }
