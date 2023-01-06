@@ -196,7 +196,6 @@ where
     A: VariantAccess<'de>,
     T: std::str::FromStr,
 {
-    // number doens't need escaping, so we can use &str here
     let s = a.newtype_variant::<&str>()?;
     s.parse::<T>()
         .map_err(|_| serde::de::Error::custom(format!("invalid number: {}", s)))
@@ -207,9 +206,8 @@ where
     A: VariantAccess<'de>,
 {
     let mut buf = [0u8; N];
-    // base58 doesn't need escaping, so we can use &str here
-    let s = a.newtype_variant::<&str>()?;
-    let size = bs58::decode(s)
+    let s = a.newtype_variant::<Cow<'_, str>>()?;
+    let size = bs58::decode(&*s)
         .into(&mut buf)
         .map_err(|_| serde::de::Error::custom("invalid base58"))?;
     if size != N {
@@ -225,9 +223,8 @@ fn b64_str<'de, A>(a: A) -> Result<bytes::Bytes, A::Error>
 where
     A: VariantAccess<'de>,
 {
-    // base64 doesn't need escaping, so we can use &str here
-    let s = a.newtype_variant::<&str>()?;
-    base64::decode(s)
+    let s = a.newtype_variant::<Cow<'_, str>>()?;
+    base64::decode(&*s)
         .map_err(|_| serde::de::Error::custom("invalid base64"))
         .map(Into::into)
 }
