@@ -1,0 +1,17 @@
+[package]
+name = "random_vec_u64"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = "0.8.4"
+serde_json = "1.0.89"
+
+[profile.release]
+lto = true
+strip = true
+
+[lib]
+crate-type = ["cdylib"]
