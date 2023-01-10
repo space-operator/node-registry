@@ -2,7 +2,7 @@ use crate::Value;
 
 #[derive(Clone, Copy, Debug)]
 #[repr(u32)]
-pub enum ValueType {
+pub enum Variant {
     Null = 0,
     String = 1,
     Bool = 2,
@@ -19,7 +19,7 @@ pub enum ValueType {
     Map = 13,
 }
 
-impl ValueType {
+impl Variant {
     pub const fn variant(&self) -> (u32, &'static str) {
         let idx = *self as u32;
         (idx, keys::ALL[idx as usize])
@@ -50,7 +50,7 @@ pub mod keys {
 struct ValueTypeVisitor;
 
 impl<'de> serde::de::Visitor<'de> for ValueTypeVisitor {
-    type Value = ValueType;
+    type Value = Variant;
 
     fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         f.write_str("ValueType")
@@ -61,20 +61,20 @@ impl<'de> serde::de::Visitor<'de> for ValueTypeVisitor {
         E: serde::de::Error,
     {
         Ok(match v {
-            0 => ValueType::Null,
-            1 => ValueType::String,
-            2 => ValueType::Bool,
-            3 => ValueType::U64,
-            4 => ValueType::I64,
-            5 => ValueType::F64,
-            6 => ValueType::Decimal,
-            7 => ValueType::I128,
-            8 => ValueType::U128,
-            9 => ValueType::B32,
-            10 => ValueType::B64,
-            11 => ValueType::Bytes,
-            12 => ValueType::Array,
-            13 => ValueType::Map,
+            0 => Variant::Null,
+            1 => Variant::String,
+            2 => Variant::Bool,
+            3 => Variant::U64,
+            4 => Variant::I64,
+            5 => Variant::F64,
+            6 => Variant::Decimal,
+            7 => Variant::I128,
+            8 => Variant::U128,
+            9 => Variant::B32,
+            10 => Variant::B64,
+            11 => Variant::Bytes,
+            12 => Variant::Array,
+            13 => Variant::Map,
             _ => {
                 return Err(serde::de::Error::invalid_value(
                     serde::de::Unexpected::Unsigned(v as u64),
@@ -89,20 +89,20 @@ impl<'de> serde::de::Visitor<'de> for ValueTypeVisitor {
         E: serde::de::Error,
     {
         Ok(match v {
-            keys::NULL => ValueType::Null,
-            keys::STRING => ValueType::String,
-            keys::BOOL => ValueType::Bool,
-            keys::U64 => ValueType::U64,
-            keys::I64 => ValueType::I64,
-            keys::F64 => ValueType::F64,
-            keys::DECIMAL => ValueType::Decimal,
-            keys::I128 => ValueType::I128,
-            keys::U128 => ValueType::U128,
-            keys::B32 => ValueType::B32,
-            keys::B64 => ValueType::B64,
-            keys::BYTES => ValueType::Bytes,
-            keys::ARRAY => ValueType::Array,
-            keys::MAP => ValueType::Map,
+            keys::NULL => Variant::Null,
+            keys::STRING => Variant::String,
+            keys::BOOL => Variant::Bool,
+            keys::U64 => Variant::U64,
+            keys::I64 => Variant::I64,
+            keys::F64 => Variant::F64,
+            keys::DECIMAL => Variant::Decimal,
+            keys::I128 => Variant::I128,
+            keys::U128 => Variant::U128,
+            keys::B32 => Variant::B32,
+            keys::B64 => Variant::B64,
+            keys::BYTES => Variant::Bytes,
+            keys::ARRAY => Variant::Array,
+            keys::MAP => Variant::Map,
             _ => {
                 return Err(serde::de::Error::invalid_value(
                     serde::de::Unexpected::Str(v),
@@ -113,7 +113,7 @@ impl<'de> serde::de::Visitor<'de> for ValueTypeVisitor {
     }
 }
 
-impl<'de> serde::Deserialize<'de> for ValueType {
+impl<'de> serde::Deserialize<'de> for Variant {
     fn deserialize<D>(d: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -127,22 +127,22 @@ impl<'de> serde::Deserialize<'de> for ValueType {
 }
 
 impl Value {
-    pub fn kind(&self) -> ValueType {
+    pub fn kind(&self) -> Variant {
         match self {
-            Value::Null => ValueType::Null,
-            Value::String(_) => ValueType::String,
-            Value::Bool(_) => ValueType::Bool,
-            Value::U64(_) => ValueType::U64,
-            Value::I64(_) => ValueType::I64,
-            Value::F64(_) => ValueType::F64,
-            Value::Decimal(_) => ValueType::Decimal,
-            Value::I128(_) => ValueType::I128,
-            Value::U128(_) => ValueType::U128,
-            Value::B32(_) => ValueType::B32,
-            Value::B64(_) => ValueType::B64,
-            Value::Bytes(_) => ValueType::Bytes,
-            Value::Array(_) => ValueType::Array,
-            Value::Map(_) => ValueType::Map,
+            Value::Null => Variant::Null,
+            Value::String(_) => Variant::String,
+            Value::Bool(_) => Variant::Bool,
+            Value::U64(_) => Variant::U64,
+            Value::I64(_) => Variant::I64,
+            Value::F64(_) => Variant::F64,
+            Value::Decimal(_) => Variant::Decimal,
+            Value::I128(_) => Variant::I128,
+            Value::U128(_) => Variant::U128,
+            Value::B32(_) => Variant::B32,
+            Value::B64(_) => Variant::B64,
+            Value::Bytes(_) => Variant::Bytes,
+            Value::Array(_) => Variant::Array,
+            Value::Map(_) => Variant::Map,
         }
     }
 }

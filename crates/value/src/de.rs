@@ -1,6 +1,6 @@
 //! Turn a `Value` into an abitrary Rust type `T: Deserialize`.
 
-use crate::{value_type::ValueType, Error, Map, Value};
+use crate::{value_type::Variant, Error, Map, Value};
 use rust_decimal::{prelude::ToPrimitive, Decimal};
 use serde::de::value::SeqDeserializer;
 
@@ -26,24 +26,24 @@ impl<'de> serde::de::Visitor<'de> for ValueVisitor {
         A: serde::de::EnumAccess<'de>,
     {
         use serde::de::VariantAccess;
-        let (ty, a) = data.variant::<ValueType>()?;
+        let (ty, a) = data.variant::<Variant>()?;
         match ty {
-            ValueType::Null => Ok(Value::Null),
-            ValueType::String => Ok(Value::String(a.newtype_variant()?)),
-            ValueType::Bool => Ok(Value::Bool(a.newtype_variant()?)),
-            ValueType::U64 => Ok(Value::U64(a.newtype_variant()?)),
-            ValueType::I64 => Ok(Value::I64(a.newtype_variant()?)),
-            ValueType::F64 => Ok(Value::F64(a.newtype_variant()?)),
-            ValueType::Decimal => Ok(Value::Decimal(Decimal::deserialize(
+            Variant::Null => Ok(Value::Null),
+            Variant::String => Ok(Value::String(a.newtype_variant()?)),
+            Variant::Bool => Ok(Value::Bool(a.newtype_variant()?)),
+            Variant::U64 => Ok(Value::U64(a.newtype_variant()?)),
+            Variant::I64 => Ok(Value::I64(a.newtype_variant()?)),
+            Variant::F64 => Ok(Value::F64(a.newtype_variant()?)),
+            Variant::Decimal => Ok(Value::Decimal(Decimal::deserialize(
                 a.newtype_variant::<ConstBytes<16>>()?.0,
             ))),
-            ValueType::I128 => Ok(Value::I128(a.newtype_variant()?)),
-            ValueType::U128 => Ok(Value::U128(a.newtype_variant()?)),
-            ValueType::B32 => Ok(Value::B32(a.newtype_variant::<ConstBytes<32>>()?.0)),
-            ValueType::B64 => Ok(Value::B64(a.newtype_variant::<ConstBytes<64>>()?.0)),
-            ValueType::Bytes => Ok(Value::Bytes(a.newtype_variant()?)),
-            ValueType::Array => Ok(Value::Array(a.newtype_variant()?)),
-            ValueType::Map => Ok(Value::Map(a.newtype_variant()?)),
+            Variant::I128 => Ok(Value::I128(a.newtype_variant()?)),
+            Variant::U128 => Ok(Value::U128(a.newtype_variant()?)),
+            Variant::B32 => Ok(Value::B32(a.newtype_variant::<ConstBytes<32>>()?.0)),
+            Variant::B64 => Ok(Value::B64(a.newtype_variant::<ConstBytes<64>>()?.0)),
+            Variant::Bytes => Ok(Value::Bytes(a.newtype_variant()?)),
+            Variant::Array => Ok(Value::Array(a.newtype_variant()?)),
+            Variant::Map => Ok(Value::Map(a.newtype_variant()?)),
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::{value_type::ValueType, Value};
+use crate::{value_type::Variant, Value};
 use serde::de::VariantAccess;
 use std::borrow::Cow;
 
@@ -92,9 +92,9 @@ impl<'de> serde::de::Visitor<'de> for EnumVisitor {
     where
         A: serde::de::EnumAccess<'de>,
     {
-        let (ty, a) = data.variant::<ValueType>()?;
+        let (ty, a) = data.variant::<Variant>()?;
         match ty {
-            ValueType::Null => {
+            Variant::Null => {
                 let num = a.newtype_variant::<u64>()?;
                 if num != 0 {
                     return Err(serde::de::Error::invalid_value(
@@ -104,19 +104,19 @@ impl<'de> serde::de::Visitor<'de> for EnumVisitor {
                 }
                 Ok(Value::Null)
             }
-            ValueType::String => Ok(Value::String(a.newtype_variant()?)),
-            ValueType::Bool => Ok(Value::Bool(a.newtype_variant()?)),
-            ValueType::U64 => Ok(Value::U64(number_from_str(a)?)),
-            ValueType::I64 => Ok(Value::I64(number_from_str(a)?)),
-            ValueType::F64 => Ok(Value::F64(number_from_str(a)?)),
-            ValueType::Decimal => Ok(Value::Decimal(number_from_str(a)?)),
-            ValueType::I128 => Ok(Value::I128(number_from_str(a)?)),
-            ValueType::U128 => Ok(Value::U128(number_from_str(a)?)),
-            ValueType::B32 => Ok(Value::B32(b58_str(a)?)),
-            ValueType::B64 => Ok(Value::B64(b58_str(a)?)),
-            ValueType::Bytes => Ok(Value::Bytes(b64_str(a)?)),
-            ValueType::Array => Ok(Value::Array(a.newtype_variant::<JsonArray>()?.0)),
-            ValueType::Map => Ok(Value::Map(a.newtype_variant::<JsonMap>()?.0)),
+            Variant::String => Ok(Value::String(a.newtype_variant()?)),
+            Variant::Bool => Ok(Value::Bool(a.newtype_variant()?)),
+            Variant::U64 => Ok(Value::U64(number_from_str(a)?)),
+            Variant::I64 => Ok(Value::I64(number_from_str(a)?)),
+            Variant::F64 => Ok(Value::F64(number_from_str(a)?)),
+            Variant::Decimal => Ok(Value::Decimal(number_from_str(a)?)),
+            Variant::I128 => Ok(Value::I128(number_from_str(a)?)),
+            Variant::U128 => Ok(Value::U128(number_from_str(a)?)),
+            Variant::B32 => Ok(Value::B32(b58_str(a)?)),
+            Variant::B64 => Ok(Value::B64(b58_str(a)?)),
+            Variant::Bytes => Ok(Value::Bytes(b64_str(a)?)),
+            Variant::Array => Ok(Value::Array(a.newtype_variant::<JsonArray>()?.0)),
+            Variant::Map => Ok(Value::Map(a.newtype_variant::<JsonMap>()?.0)),
         }
     }
 }
