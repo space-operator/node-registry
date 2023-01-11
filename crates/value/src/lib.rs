@@ -1,19 +1,23 @@
-use ed25519_dalek::KEYPAIR_LENGTH;
 use rust_decimal::Decimal;
-use serde::{Deserialize, Serialize};
-use solana_sdk::{pubkey::Pubkey, signature::Signature};
 use thiserror::Error as ThisError;
+
+pub(crate) mod value_type;
+
+pub(crate) const TOKEN: &str = "$V";
 
 pub mod crud;
 pub mod de;
-pub mod json;
+pub mod json_repr;
 pub mod macros;
 pub mod ser;
 
 // custom serialize and deserialize modules
 pub mod decimal;
+#[cfg(feature = "solana")]
 pub mod keypair;
+#[cfg(feature = "solana")]
 pub mod pubkey;
+#[cfg(feature = "solana")]
 pub mod signature;
 
 pub fn from_value<T>(value: Value) -> Result<T, Error>
@@ -50,13 +54,6 @@ where
     })
 }
 
-pub(crate) mod tokens {
-    pub(crate) const DECIMAL: &str = "$$decimal";
-    pub(crate) const PUBKEY: &str = "$$pubkey";
-    pub(crate) const KEYPAIR: &str = "$$keypair";
-    pub(crate) const SIGNATURE: &str = "$$signature";
-}
-
 // allow for switching HashMap implementation
 pub type HashMap<K, V> = indexmap::IndexMap<K, V>;
 
@@ -65,146 +62,28 @@ pub type Key = String;
 
 pub type Map = self::HashMap<Key, Value>;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum ValueType {
-    #[serde(rename = "bool")]
-    Bool,
-    #[serde(rename = "u8")]
-    U8,
-    #[serde(rename = "u16")]
-    U16,
-    #[serde(rename = "u32")]
-    U32,
-    #[serde(rename = "u64")]
-    U64,
-    #[serde(rename = "u128")]
-    U128,
-    #[serde(rename = "i8")]
-    I8,
-    #[serde(rename = "i16")]
-    I16,
-    #[serde(rename = "i32")]
-    I32,
-    #[serde(rename = "i64")]
-    I64,
-    #[serde(rename = "f32")]
-    F32,
-    #[serde(rename = "f64")]
-    F64,
-    #[serde(rename = "pubkey")]
-    Pubkey,
-    #[serde(rename = "keypair")]
-    Keypair,
-    #[serde(rename = "signature")]
-    Signature,
-    #[serde(rename = "string")]
-    String,
-    #[serde(rename = "array")]
-    Array(Box<ValueType>),
-    #[serde(rename = "object")]
-    Map(HashMap<Key, ValueType>),
-    #[serde(rename = "json")]
-    Json,
-    #[serde(alias = "file")]
-    #[serde(rename = "free")]
-    Free,
-}
-
-impl ValueType {
-    pub fn is_complex(&self) -> bool {
-        matches!(
-            self,
-            ValueType::Map(_) | ValueType::Array(_) | ValueType::String
-        )
-    }
-
-    pub fn is_number(&self) -> bool {
-        matches!(
-            self,
-            ValueType::U8
-                | ValueType::U16
-                | ValueType::U32
-                | ValueType::U64
-                | ValueType::U128
-                | ValueType::I8
-                | ValueType::I16
-                | ValueType::I32
-                | ValueType::I64
-                | ValueType::F32
-                | ValueType::F64
-        )
-    }
-}
-
 #[derive(Clone, PartialEq)]
 pub enum Value {
     Null,
     String(String),
     Bool(bool),
-    I8(i8),
-    I16(i16),
-    I32(i32),
-    I64(i64),
-    U8(u8),
-    U16(u16),
-    U32(u32),
     U64(u64),
-    F32(f32),
+    I64(i64),
     F64(f64),
     Decimal(Decimal),
+    I128(i128),
     U128(u128),
-    Pubkey(Pubkey),
-    // ed25519_dalek::Keypair is 252 bytes
-    Keypair([u8; KEYPAIR_LENGTH]),
-    Signature(Signature),
+    B32([u8; 32]),
+    B64([u8; 64]),
+    Bytes(bytes::Bytes),
     Array(Vec<Self>),
     Map(Map),
 }
 
 impl Value {
-    pub fn to_type(&self) -> Option<ValueType> {
-        Some(match self {
-            Value::String(_) => ValueType::String,
-            Value::Bool(_) => ValueType::Bool,
-            Value::I8(_) => ValueType::I8,
-            Value::I16(_) => ValueType::I16,
-            Value::I32(_) => ValueType::I32,
-            Value::I64(_) => ValueType::I64,
-            Value::U8(_) => ValueType::U8,
-            Value::U16(_) => ValueType::U16,
-            Value::U32(_) => ValueType::U32,
-            Value::U64(_) => ValueType::U64,
-            Value::F32(_) => ValueType::F32,
-            Value::F64(_) => ValueType::F64,
-            Value::U128(_) => ValueType::U128,
-            Value::Pubkey(_) => ValueType::Pubkey,
-            Value::Keypair(_) => ValueType::Keypair,
-            Value::Signature(_) => ValueType::Signature,
-            Value::Array(v) => ValueType::Array(Box::new(v.get(0).map(|it| it.to_type())??)),
-            Value::Map(v) => ValueType::Map(
-                v.iter()
-                    .filter_map(|(key, value)| value.to_type().map(|r#type| (key.clone(), r#type)))
-                    .collect(),
-            ),
-            _ => return None,
-        })
-    }
-
-    pub fn from_json(s: &str) -> Result<Self, serde_json::Error> {
-        serde_json::from_str(s)
-    }
-
-    pub fn from_json_value(v: serde_json::Value) -> Self {
-        // Value is a superset of serde_json::Value,
-        // so this should never fail
-        serde_json::from_value(v).expect("should never fail")
-    }
-
-    pub fn to_json_value(&self) -> serde_json::Value {
-        serde_json::to_value(self).expect("should never fail")
-    }
-
     pub fn new_keypair_bs58(s: &str) -> Result<Self, Error> {
+        // and Ed25519 keypair
+        const KEYPAIR_LENGTH: usize = 64;
         let mut buf = [0u8; KEYPAIR_LENGTH];
         let size = bs58::decode(s).into(&mut buf)?;
         if size != KEYPAIR_LENGTH {
@@ -214,7 +93,7 @@ impl Value {
             });
         }
 
-        Ok(Value::Keypair(buf))
+        Ok(Value::B64(buf))
     }
 }
 
@@ -224,32 +103,238 @@ impl Default for Value {
     }
 }
 
+impl From<serde_json::Value> for Value {
+    fn from(value: serde_json::Value) -> Self {
+        match value {
+            serde_json::Value::Null => Value::Null,
+            serde_json::Value::Bool(b) => Value::Bool(b),
+            serde_json::Value::Number(n) => {
+                if let Some(u) = n.as_u64() {
+                    Value::U64(u)
+                } else if let Some(i) = n.as_i64() {
+                    if i < 0 {
+                        Value::I64(i)
+                    } else {
+                        Value::U64(i as u64)
+                    }
+                } else {
+                    let s = n.to_string();
+                    if let Some(u) = s.parse::<u128>().ok() {
+                        Value::U128(u)
+                    } else if let Some(i) = s.parse::<i128>().ok() {
+                        Value::I128(i)
+                    } else if let Some(d) = s.parse::<Decimal>().ok() {
+                        Value::Decimal(d)
+                    } else if let Some(d) = Decimal::from_scientific(&s).ok() {
+                        Value::Decimal(d)
+                    } else if let Some(f) = s.parse::<f64>().ok() {
+                        Value::F64(f)
+                    } else {
+                        // unlikely to happen
+                        // if happen, probably a bug in serde_json
+                        Value::String(s)
+                    }
+                }
+            }
+            serde_json::Value::String(s) => Value::String(s),
+            serde_json::Value::Array(vec) => {
+                Value::Array(vec.into_iter().map(Value::from).collect())
+            }
+            serde_json::Value::Object(map) => {
+                Value::Map(map.into_iter().map(|(k, v)| (k, Value::from(v))).collect())
+            }
+        }
+    }
+}
+
+impl From<String> for Value {
+    fn from(x: String) -> Self {
+        Self::String(x)
+    }
+}
+
+impl From<&str> for Value {
+    fn from(x: &str) -> Self {
+        Self::String(x.to_owned())
+    }
+}
+
+impl From<bool> for Value {
+    fn from(x: bool) -> Self {
+        Self::Bool(x)
+    }
+}
+
+impl From<u8> for Value {
+    fn from(x: u8) -> Self {
+        Self::U64(x as u64)
+    }
+}
+
+impl From<u16> for Value {
+    fn from(x: u16) -> Self {
+        Self::U64(x as u64)
+    }
+}
+
+impl From<u32> for Value {
+    fn from(x: u32) -> Self {
+        Self::U64(x as u64)
+    }
+}
+
+impl From<u64> for Value {
+    fn from(x: u64) -> Self {
+        Self::U64(x)
+    }
+}
+
+impl From<u128> for Value {
+    fn from(x: u128) -> Self {
+        Self::U128(x)
+    }
+}
+
+impl From<i8> for Value {
+    fn from(x: i8) -> Self {
+        Self::I64(x as i64)
+    }
+}
+
+impl From<i16> for Value {
+    fn from(x: i16) -> Self {
+        Self::I64(x as i64)
+    }
+}
+
+impl From<i32> for Value {
+    fn from(x: i32) -> Self {
+        Self::I64(x as i64)
+    }
+}
+
+impl From<i64> for Value {
+    fn from(x: i64) -> Self {
+        Self::I64(x)
+    }
+}
+
+impl From<i128> for Value {
+    fn from(x: i128) -> Self {
+        Self::I128(x)
+    }
+}
+
+impl From<f32> for Value {
+    fn from(x: f32) -> Self {
+        Self::F64(x as f64)
+    }
+}
+
+impl From<f64> for Value {
+    fn from(x: f64) -> Self {
+        Self::F64(x)
+    }
+}
+
+impl From<[u8; 32]> for Value {
+    fn from(x: [u8; 32]) -> Self {
+        Self::B32(x)
+    }
+}
+
+impl From<[u8; 64]> for Value {
+    fn from(x: [u8; 64]) -> Self {
+        Self::B64(x)
+    }
+}
+
+#[cfg(feature = "solana")]
+impl From<solana_sdk::pubkey::Pubkey> for Value {
+    fn from(x: solana_sdk::pubkey::Pubkey) -> Self {
+        Self::B32(x.to_bytes())
+    }
+}
+
+#[cfg(feature = "solana")]
+impl From<solana_sdk::signer::keypair::Keypair> for Value {
+    fn from(x: solana_sdk::signer::keypair::Keypair) -> Self {
+        Self::B64(x.to_bytes())
+    }
+}
+
+#[cfg(feature = "solana")]
+impl From<solana_sdk::signature::Signature> for Value {
+    fn from(x: solana_sdk::signature::Signature) -> Self {
+        Self::B64(x.into())
+    }
+}
+
+impl From<bytes::Bytes> for Value {
+    fn from(x: bytes::Bytes) -> Self {
+        match x.len() {
+            32 => Self::B32(<_>::try_from(&*x).unwrap()),
+            64 => Self::B64(<_>::try_from(&*x).unwrap()),
+            _ => Self::Bytes(x),
+        }
+    }
+}
+
+impl From<&[u8]> for Value {
+    fn from(x: &[u8]) -> Self {
+        match x.len() {
+            32 => Self::B32(<_>::try_from(x).unwrap()),
+            64 => Self::B64(<_>::try_from(x).unwrap()),
+            _ => Self::Bytes(bytes::Bytes::copy_from_slice(x)),
+        }
+    }
+}
+
+impl From<Vec<u8>> for Value {
+    fn from(x: Vec<u8>) -> Self {
+        match x.len() {
+            32 => Self::B32(<_>::try_from(&*x).unwrap()),
+            64 => Self::B64(<_>::try_from(&*x).unwrap()),
+            _ => Self::Bytes(x.into()),
+        }
+    }
+}
+
+impl From<Vec<Value>> for Value {
+    fn from(x: Vec<Value>) -> Self {
+        Self::Array(x)
+    }
+}
+
+impl From<Map> for Value {
+    fn from(x: Map) -> Self {
+        Self::Map(x)
+    }
+}
+
 impl std::fmt::Debug for Value {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Value::Null => f.debug_tuple("Null").finish(),
             Value::String(x) => f.debug_tuple("String").field(x).finish(),
             Value::Bool(x) => f.debug_tuple("Bool").field(x).finish(),
-            Value::I8(x) => f.debug_tuple("I8").field(x).finish(),
-            Value::I16(x) => f.debug_tuple("I16").field(x).finish(),
-            Value::I32(x) => f.debug_tuple("I32").field(x).finish(),
             Value::I64(x) => f.debug_tuple("I64").field(x).finish(),
-            Value::U8(x) => f.debug_tuple("U8").field(x).finish(),
-            Value::U16(x) => f.debug_tuple("U16").field(x).finish(),
-            Value::U32(x) => f.debug_tuple("U32").field(x).finish(),
             Value::U64(x) => f.debug_tuple("U64").field(x).finish(),
-            Value::F32(x) => f.debug_tuple("F32").field(x).finish(),
             Value::F64(x) => f.debug_tuple("F64").field(x).finish(),
             Value::Decimal(x) => f.debug_tuple("Decimal").field(x).finish(),
+            Value::I128(x) => f.debug_tuple("I128").field(x).finish(),
             Value::U128(x) => f.debug_tuple("U128").field(x).finish(),
-            Value::Pubkey(x) => f.debug_tuple("Pubkey").field(x).finish(),
-            Value::Keypair(x) => f
-                .debug_tuple("Keypair")
-                .field(&bs58::encode(&x).into_string())
-                .finish(),
-            Value::Signature(x) => f.debug_tuple("Signature").field(x).finish(),
             Value::Array(x) => f.debug_tuple("Array").field(x).finish(),
             Value::Map(x) => f.debug_tuple("Map").field(x).finish(),
+            Value::Bytes(x) => f.debug_tuple("Bytes").field(&x.len()).finish(),
+            Value::B32(x) => f
+                .debug_tuple("B32")
+                .field(&bs58::encode(x).into_string())
+                .finish(),
+            Value::B64(x) => f
+                .debug_tuple("B64")
+                .field(&bs58::encode(x).into_string())
+                .finish(),
         }
     }
 }
@@ -326,8 +411,39 @@ where
 
     fn visit_some<D>(self, d: D) -> Result<Self::Value, D::Error>
     where
-        D: serde::de::Deserializer<'de>,
+        D: serde::Deserializer<'de>,
     {
         d.deserialize_any(self.0).map(Some)
     }
 }
+
+/*
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn de_pubkey() {
+        from_value::<Pubkey>(Value::Pubkey(Pubkey::new(&[0; 32]))).unwrap();
+    }
+
+    #[test]
+    fn serde() {
+        #[derive(Deserialize, Serialize, Debug)]
+        struct Foo {
+            key: Value,
+            pk: Pubkey,
+        }
+
+        let value = Value::Map(map! {
+            "key" => Value::Map(map! {
+                "a" => Value::I8(0),
+                "b" => Value::Pubkey(Pubkey::new(&[1; 32])),
+            }),
+            "pk" => Value::Pubkey(Pubkey::new(&[0; 32])),
+        });
+        let v = to_value(&from_value::<Foo>(value.clone()).unwrap()).unwrap();
+        assert_eq!(v, value);
+    }
+}
+*/

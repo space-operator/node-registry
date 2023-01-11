@@ -1,14 +1,12 @@
-use crate::tokens;
 use rust_decimal::Decimal;
-use serde::ser::SerializeStruct;
+
+pub(crate) const TOKEN: &str = "$$d";
 
 pub fn serialize<S>(d: &Decimal, s: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    let mut s = s.serialize_struct(tokens::DECIMAL, 0)?;
-    s.serialize_field("", &crate::Bytes(&d.serialize()))?;
-    s.end()
+    s.serialize_newtype_struct(TOKEN, &crate::Bytes(&d.serialize()))
 }
 
 struct DecimalVisitor;
@@ -50,6 +48,7 @@ impl<'de> serde::de::Visitor<'de> for DecimalVisitor {
     where
         E: serde::de::Error,
     {
+        // TODO: this is lossy
         Decimal::try_from(v).map_err(serde::de::Error::custom)
     }
 
@@ -57,7 +56,12 @@ impl<'de> serde::de::Visitor<'de> for DecimalVisitor {
     where
         E: serde::de::Error,
     {
-        v.parse().map_err(serde::de::Error::custom)
+        let v = v.trim();
+        if v.bytes().any(|c| c == b'e' || c == b'E') {
+            Decimal::from_scientific(v).map_err(serde::de::Error::custom)
+        } else {
+            v.parse().map_err(serde::de::Error::custom)
+        }
     }
 
     fn visit_newtype_struct<D>(self, d: D) -> Result<Self::Value, D::Error>
@@ -72,7 +76,7 @@ pub fn deserialize<'de, D>(d: D) -> Result<Decimal, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    d.deserialize_newtype_struct(tokens::DECIMAL, DecimalVisitor)
+    d.deserialize_newtype_struct(TOKEN, DecimalVisitor)
 }
 
 #[cfg(test)]
@@ -85,24 +89,23 @@ mod tests {
         deserialize(d).unwrap()
     }
 
-    fn j(s: &str) -> serde_json::Deserializer<serde_json::de::StrRead> {
-        serde_json::Deserializer::from_str(s)
-    }
-
     #[test]
     fn test_deserialize_value() {
-        assert_eq!(de(Value::U32(100)), dec!(100));
-        assert_eq!(de(Value::I32(-1)), dec!(-1));
+        assert_eq!(de(Value::U64(100)), dec!(100));
+        assert_eq!(de(Value::I64(-1)), dec!(-1));
         assert_eq!(de(Value::Decimal(Decimal::MAX)), Decimal::MAX);
         assert_eq!(de(Value::F64(1231.2221)), dec!(1231.2221));
         assert_eq!(de(Value::String("1234.0".to_owned())), dec!(1234));
+        assert_eq!(de(Value::String("  1234.0".to_owned())), dec!(1234));
+        assert_eq!(de(Value::String("1e5".to_owned())), dec!(100000));
+        assert_eq!(de(Value::String("  1e5".to_owned())), dec!(100000));
     }
 
     #[test]
-    fn test_deserialize_json() {
-        assert_eq!(de(&mut j("100")), dec!(100));
-        assert_eq!(de(&mut j("\"100\"")), dec!(100));
-        assert_eq!(de(&mut j("100.1234")), dec!(100.1234));
-        // assert_eq!(de(&mut j("79228162514264337593543950335")), Decimal::MAX);
+    fn test_serialize() {
+        assert_eq!(
+            serialize(&Decimal::MAX, crate::ser::Serializer).unwrap(),
+            Value::Decimal(Decimal::MAX)
+        );
     }
 }

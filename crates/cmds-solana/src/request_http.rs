@@ -1,8 +1,7 @@
-use std::str::FromStr;
-
 use anyhow::bail;
 use log::error;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
+use std::str::FromStr;
 
 use crate::prelude::*;
 
@@ -244,12 +243,12 @@ impl CommandTrait for RequestHttp {
             }
         }
 
-        let body: Value = resp
+        let body: serde_json::Value = resp
             .json()
             .await
             .map_err(|_| anyhow::anyhow!("ReadHttpJsonBody"))?;
 
-        output.body = Some(body.into());
+        output.body = Some(Value::from(body));
 
         // Return outputs
         Ok(value::to_map(&output)?)
@@ -288,8 +287,10 @@ mod tests {
             .await
             .unwrap();
 
+        let output: Outputs = value::from_map(output).unwrap();
         dbg!(&output);
-        assert!(output.contains_key(BODY));
-        assert!(output.contains_key(HEADERS));
+        let body = output.body.unwrap();
+        let price = value::crud::get(&body, &["ethereum", "usd"]).unwrap();
+        dbg!(price);
     }
 }

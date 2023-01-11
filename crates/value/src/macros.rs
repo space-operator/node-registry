@@ -9,7 +9,7 @@ macro_rules! map {
             let _cap = $crate::map!(@count $($key),*);
             let mut _map = $crate::Map::with_capacity(_cap);
             $(
-                let _ = _map.insert($crate::Key::from($key), $value);
+                let _ = _map.insert($crate::Key::from($key), $crate::Value::from($value));
             )*
             _map
         }

@@ -1,10 +1,54 @@
-use crate::ValueType;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use std::{collections::HashMap, num::NonZeroU64, str::FromStr};
 use thiserror::Error as ThisError;
 use url::Url;
 use uuid::Uuid;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ValueType {
+    #[serde(rename = "bool")]
+    Bool,
+    #[serde(rename = "u8")]
+    U8,
+    #[serde(rename = "u16")]
+    U16,
+    #[serde(rename = "u32")]
+    U32,
+    #[serde(rename = "u64")]
+    U64,
+    #[serde(rename = "u128")]
+    U128,
+    #[serde(rename = "i8")]
+    I8,
+    #[serde(rename = "i16")]
+    I16,
+    #[serde(rename = "i32")]
+    I32,
+    #[serde(rename = "i64")]
+    I64,
+    #[serde(rename = "f32")]
+    F32,
+    #[serde(rename = "f64")]
+    F64,
+    #[serde(rename = "pubkey")]
+    Pubkey,
+    #[serde(rename = "keypair")]
+    Keypair,
+    #[serde(rename = "signature")]
+    Signature,
+    #[serde(rename = "string")]
+    String,
+    #[serde(rename = "array")]
+    Array(Box<ValueType>),
+    #[serde(rename = "object")]
+    Map(HashMap<value::Key, ValueType>),
+    #[serde(rename = "json")]
+    Json,
+    #[serde(alias = "file")]
+    #[serde(rename = "free")]
+    Free,
+}
 
 pub mod client;
 
@@ -136,7 +180,7 @@ impl SolanaNet {
     }
 
     pub fn from_url(url: &str) -> Result<Self, UnknownNetwork> {
-        Ok(match url.strip_suffix("/") {
+        Ok(match url.strip_suffix('/') {
             Some("https://api.devnet.solana.com") => SolanaNet::Devnet,
             Some("https://api.testnet.solana.com") => SolanaNet::Testnet,
             Some("https://api.mainnet-beta.solana.com") => SolanaNet::Mainnet,

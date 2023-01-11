@@ -28,17 +28,12 @@ impl bundlr_sdk::Signer for BundlrSigner {
                 .clone();
             let ctx = self.ctx.clone();
             let pubkey = self.keypair.pubkey();
-            let sig = rt
-                .block_on(async move {
-                    tokio::time::timeout(
-                        super::SIGNATURE_TIMEOUT,
-                        ctx.request_signature(pubkey, msg),
-                    )
+            rt.block_on(async move {
+                tokio::time::timeout(super::SIGNATURE_TIMEOUT, ctx.request_signature(pubkey, msg))
                     .await
-                })
-                .map_err(|e| BundlrError::SigningError(e.to_string()))?
-                .map_err(|e| BundlrError::SigningError(e.to_string()))?;
-            sig
+            })
+            .map_err(|e| BundlrError::SigningError(e.to_string()))?
+            .map_err(|e| BundlrError::SigningError(e.to_string()))?
         } else {
             self.keypair.sign_message(&msg)
         };
