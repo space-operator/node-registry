@@ -3,6 +3,7 @@
 use crate::{CommandType, FlowId, SolanaNet, ValueType};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
+use serde_with::serde_as;
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -65,6 +66,7 @@ where
     ignore_error(de, "edge")
 }
 
+#[serde_as]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ClientConfig {
     pub id: FlowId,
@@ -74,6 +76,7 @@ pub struct ClientConfig {
     #[serde(deserialize_with = "ignore_error_edge")]
     pub edges: Vec<Edge>,
     #[serde(default)]
+    #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
     pub environment: HashMap<String, String>,
 }
 

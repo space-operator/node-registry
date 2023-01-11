@@ -27,10 +27,14 @@ pub enum ValueType {
     I32,
     #[serde(rename = "i64")]
     I64,
+    #[serde(rename = "i128")]
+    I128,
     #[serde(rename = "f32")]
     F32,
     #[serde(rename = "f64")]
     F64,
+    #[serde(rename = "decimal")]
+    Decimal,
     #[serde(rename = "pubkey")]
     Pubkey,
     #[serde(rename = "keypair")]
@@ -45,9 +49,9 @@ pub enum ValueType {
     Map(HashMap<value::Key, ValueType>),
     #[serde(rename = "json")]
     Json,
-    #[serde(alias = "file")]
     #[serde(rename = "free")]
     Free,
+    Other(String),
 }
 
 pub mod client;
@@ -190,13 +194,7 @@ impl SolanaNet {
 }
 
 impl FlowConfig {
-    pub fn from_client_config(config: JsonValue) -> Result<Self, serde_json::Error> {
-        let config: client::ClientConfig = serde_json::from_value(config)?;
-
-        Ok(Self::from_client_config_parsed(config))
-    }
-
-    pub fn from_client_config_parsed(config: client::ClientConfig) -> Self {
+    pub fn new(config: client::ClientConfig) -> Self {
         fn get_name_from_id(names: &HashMap<Uuid, String>, id: &Uuid) -> Option<String> {
             match names.get(id) {
                 Some(name) => Some(name.clone()),
@@ -254,5 +252,11 @@ impl FlowConfig {
             nodes,
             edges,
         }
+    }
+
+    pub fn parse_json(config: JsonValue) -> Result<Self, serde_json::Error> {
+        let config: client::ClientConfig = serde_json::from_value(config)?;
+
+        Ok(Self::new(config))
     }
 }

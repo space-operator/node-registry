@@ -17,6 +17,7 @@ bs58 = "0.4"
 indexmap = { version = "1.9.1", features = ["serde-1"] }
 bytes = { version = "1", features = ["serde"] }
 itoa = "1"
+ryu = "1"
 base64 = "0.13"
 solana-sdk = { version = "1", optional = true }
 

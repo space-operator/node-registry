@@ -45,7 +45,7 @@ impl<'a> serde::Serialize for JsonRepr<'a> {
             Value::I64(v) => {
                 s.serialize_newtype_variant(NAME, i, k, itoa::Buffer::new().format(*v))
             }
-            Value::F64(v) => s.serialize_newtype_variant(NAME, i, k, &v.to_string()),
+            Value::F64(v) => s.serialize_newtype_variant(NAME, i, k, ryu::Buffer::new().format(*v)),
             Value::Decimal(v) => {
                 // TODO: no alloc impl
                 s.serialize_newtype_variant(NAME, i, k, &v.to_string())
