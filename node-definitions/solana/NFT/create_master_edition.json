@@ -66,12 +66,33 @@
             "passthrough": true
         },
         {
+            "name": "is_proxy",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "Whether a Proxy Authority is signing the Update Authority",
+            "passthrough": true
+        },
+        {
+            "name": "proxy_authority",
+            "type_bounds": [
+                "pubkey",
+                "string"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
             "name": "update_authority",
             "type_bounds": [
                 "keypair",
                 "string"
             ],
-            "required": true,
+            "required": false,
             "defaultValue": null,
             "tooltip": "",
             "passthrough": false
