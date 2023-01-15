@@ -10,7 +10,8 @@ pub mod transfer_sol;
 pub mod transfer_token;
 pub mod wallet;
 
-pub mod metaboss;
+// pub mod metaboss;
+pub mod create_proxy;
 pub mod nft;
 
 pub mod error;
