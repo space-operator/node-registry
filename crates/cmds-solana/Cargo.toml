@@ -40,6 +40,8 @@ value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
 # metaboss_utils = { git = "https://github.com/space-operator/metaboss_utils.git", rev = "9f237fd10b6e5478bf7fd395482d58b71fe2811a" }
 space-wrapper = { path = "/home/amir/code/space-operator/space-wrapper/programs/space-wrapper" }
+anchor-lang = "0.26.0"
+anchor-spl = "0.26.0"
 
 [dev-dependencies]
 rust_decimal_macros = "1.26"
