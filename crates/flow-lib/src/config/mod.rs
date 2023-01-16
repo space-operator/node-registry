@@ -127,7 +127,8 @@ impl Default for ContextConfig {
                 gzip: true,
             },
             solana_client: SolanaClientConfig {
-                solana_net: SolanaNet::Devnet,
+                url: "https://api.devnet.solana.com".to_owned(),
+                cluster: SolanaNet::Devnet,
             },
             environment: HashMap::new(),
         }
@@ -142,7 +143,8 @@ pub struct HttpClientConfig {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SolanaClientConfig {
-    pub solana_net: SolanaNet,
+    pub url: String,
+    pub cluster: SolanaNet,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -151,7 +153,7 @@ pub enum SolanaNet {
     Devnet,
     #[serde(rename = "testnet")]
     Testnet,
-    #[serde(rename = "mainnet")]
+    #[serde(rename = "mainnet-beta")]
     Mainnet,
 }
 
@@ -166,7 +168,7 @@ impl FromStr for SolanaNet {
         match s {
             "devnet" => Ok(Self::Devnet),
             "testnet" => Ok(Self::Testnet),
-            "mainnet" => Ok(Self::Mainnet),
+            "mainnet-beta" => Ok(Self::Mainnet),
             s => Err(UnknownNetwork(s.to_owned())),
         }
     }
@@ -245,7 +247,8 @@ impl FlowConfig {
                     gzip: true,
                 },
                 solana_client: SolanaClientConfig {
-                    solana_net: config.network,
+                    url: config.current_network.url,
+                    cluster: config.current_network.cluster,
                 },
                 environment: config.environment,
             },

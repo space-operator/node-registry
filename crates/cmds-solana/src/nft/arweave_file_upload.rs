@@ -73,7 +73,11 @@ impl CommandTrait for ArweaveFileUpload {
             fund_bundlr,
         } = value::from_map(inputs)?;
 
-        let mut uploader = Uploader::new(ctx.solana_client.clone(), fee_payer.clone_keypair())?;
+        let mut uploader = Uploader::new(
+            ctx.solana_client.clone(),
+            ctx.cfg.solana_client.cluster,
+            fee_payer.clone_keypair(),
+        )?;
 
         if fund_bundlr {
             uploader.lazy_fund(&file_path, &ctx).await?;

@@ -70,7 +70,6 @@ where
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ClientConfig {
     pub id: FlowId,
-    pub network: SolanaNet,
     #[serde(deserialize_with = "ignore_error_node")]
     pub nodes: Vec<Node>,
     #[serde(deserialize_with = "ignore_error_edge")]
@@ -78,6 +77,25 @@ pub struct ClientConfig {
     #[serde(default)]
     #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
     pub environment: HashMap<String, String>,
+    // TODO: remove default value
+    #[serde(default)]
+    #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
+    pub current_network: Network,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Network {
+    pub url: String,
+    pub cluster: SolanaNet,
+}
+
+impl Default for Network {
+    fn default() -> Self {
+        Self {
+            url: "https://api.devnet.solana.com".to_owned(),
+            cluster: SolanaNet::Devnet,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

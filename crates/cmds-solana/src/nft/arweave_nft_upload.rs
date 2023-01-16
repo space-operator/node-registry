@@ -83,7 +83,11 @@ impl CommandTrait for ArweaveNftUpload {
             fund_bundlr,
         } = value::from_map(inputs)?;
 
-        let mut uploader = Uploader::new(ctx.solana_client.clone(), fee_payer.clone_keypair())?;
+        let mut uploader = Uploader::new(
+            ctx.solana_client.clone(),
+            ctx.cfg.solana_client.cluster,
+            fee_payer.clone_keypair(),
+        )?;
 
         if fund_bundlr {
             uploader.lazy_fund_metadata(&metadata, &ctx).await?;
@@ -127,9 +131,13 @@ pub(crate) struct Uploader {
 }
 
 impl Uploader {
-    pub fn new(client: Arc<RpcClient>, fee_payer: Keypair) -> crate::Result<Uploader> {
+    pub fn new(
+        client: Arc<RpcClient>,
+        cluster: SolanaNet,
+        fee_payer: Keypair,
+    ) -> crate::Result<Uploader> {
         // Get Bundlr Network URL
-        let node_url = match SolanaNet::from_url(&client.url()).map_err(crate::Error::custom)? {
+        let node_url = match cluster {
             SolanaNet::Mainnet => "https://node1.bundlr.network".to_owned(),
             SolanaNet::Devnet => "https://devnet.bundlr.network".to_owned(),
             SolanaNet::Testnet => return Err(crate::Error::BundlrNotAvailableOnTestnet),
