@@ -51,6 +51,7 @@ pub mod signer {
 
 #[derive(Clone)]
 pub struct Context {
+    pub cfg: ContextConfig,
     pub solana_client: Arc<SolanaClient>,
     pub environment: HashMap<String, String>,
     pub user: User,
@@ -96,14 +97,16 @@ impl Default for User {
 
 impl Context {
     pub fn from_cfg(
+        // TODO: pass by value
         cfg: &ContextConfig,
         user: User,
         sig_svc: signer::Svc,
         extensions: Extensions,
     ) -> Self {
-        let solana_client = SolanaClient::new(cfg.solana_client.solana_net.url().into());
+        let solana_client = SolanaClient::new(cfg.solana_client.url.clone());
 
         Self {
+            cfg: cfg.clone(),
             solana_client: Arc::new(solana_client),
             environment: cfg.environment.clone(),
             user,
