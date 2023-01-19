@@ -106,6 +106,8 @@ pub struct InputStruct {
     pub mint_account: Pubkey,
     #[serde(with = "value::pubkey")]
     pub mint_authority: Pubkey,
+    #[serde(with = "value::pubkey::opt")]
+    pub proxy_authority: Option<Pubkey>,
     #[serde(with = "value::keypair")]
     pub fee_payer: Keypair,
     pub max_supply: u64,
@@ -139,6 +141,22 @@ const SIGNATURE: &str = "signature";
 const METADATA_ACCOUNT: &str = "metadata_account";
 const MASTER_EDITION_ACCOUNT: &str = "master_edition_account";
 
+fn find_proxy_authority_address(authority: &Pubkey) -> Pubkey {
+    let (expected_pda, bump_seed) = Pubkey::find_program_address(
+        &[b"proxy", &authority.to_bytes()],
+        &Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
+    );
+
+    let actual_pda = Pubkey::create_program_address(
+        &[b"proxy", &authority.to_bytes(), &[bump_seed]],
+        &Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
+    )
+    .unwrap();
+
+    assert_eq!(expected_pda, actual_pda);
+    dbg!(actual_pda)
+}
+
 #[async_trait]
 impl CommandTrait for CreateMasterEdition {
     fn name(&self) -> Name {
@@ -168,7 +186,7 @@ impl CommandTrait for CreateMasterEdition {
             CmdInput {
                 name: UPDATE_AUTHORITY.into(),
                 type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
-                required: true,
+                required: false,
                 passthrough: false,
             },
             CmdInput {
