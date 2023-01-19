@@ -11,8 +11,12 @@ solana-client = "1.14"
 solana-program = "1.14"
 spl-token = { version = "3.2", features = ["no-entrypoint"] }
 spl-memo = { version = "3.0", features = ["no-entrypoint"] }
-spl-associated-token-account = { version = "1.1", features = ["no-entrypoint"] }
-mpl-token-metadata = "1.4"
+# spl-associated-token-account = { version = "1.1", features = ["no-entrypoint"] }
+spl-associated-token-account = { version = "=1.1.1", features = [
+    "no-entrypoint",
+] }
+# mpl-token-metadata = "1.4"
+mpl-token-metadata = "=1.7.0-alpha.2"
 async-trait = "0.1"
 tiny-bip39 = "0.8"
 inventory = "0.3"
@@ -21,12 +25,18 @@ rust_decimal = { version = "1.26", features = ["maths"] }
 bincode = "1"
 base64 = "0.13"
 serde_json = "1"
-reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls", "gzip"] }
+reqwest = { version = "0.11", default-features = false, features = [
+    "json",
+    "rustls-tls",
+    "gzip",
+] }
 tokio = { version = "1", features = ["time", "macros"] }
 mime_guess = "2"
 borsh = "0.9"
 bytes = "1"
-bundlr-sdk = { version = "0.3.0", default-features = false, features = ["solana"] }
+bundlr-sdk = { version = "0.3.0", default-features = false, features = [
+    "solana",
+] }
 ed25519-dalek = "1"
 futures = "0.3"
 thiserror = "1"
@@ -36,10 +46,13 @@ serde_with = "2.1"
 rhai = "1.10.1"
 indexmap = { version = "1.9.1", features = ["serde-1"] }
 bs58 = "0.4"
-
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
-metaboss_utils = { git = "https://github.com/space-operator/metaboss_utils.git", rev = "9f237fd10b6e5478bf7fd395482d58b71fe2811a" }
+# metaboss_utils = { git = "https://github.com/space-operator/metaboss_utils.git", rev = "9f237fd10b6e5478bf7fd395482d58b71fe2811a" }
+space-wrapper = { path = "../../../../space-wrapper/programs/space-wrapper", version = "0.1.0", features = [
+    "cpi",
+] }
+anchor-lang="0.26.0"
 
 [dev-dependencies]
 rust_decimal_macros = "1.26"

@@ -1,20 +1,19 @@
 pub mod associated_token_account;
 pub mod create_mint_account;
 pub mod create_token_account;
+pub mod error;
 pub mod generate_keypair;
 pub mod get_balance;
+// pub mod metaboss;
 pub mod mint_token;
+pub mod nft;
+pub mod proxy_authority;
 pub mod request_airdrop;
 pub mod request_http;
 pub mod transfer_sol;
 pub mod transfer_token;
-pub mod wallet;
-
-pub mod metaboss;
-pub mod nft;
-
-pub mod error;
 pub mod utils;
+pub mod wallet;
 
 pub use error::{Error, Result};
 
