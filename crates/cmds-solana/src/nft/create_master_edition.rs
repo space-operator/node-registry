@@ -85,6 +85,39 @@ impl CreateMasterEdition {
 
         Ok((minimum_balance_for_rent_exemption, instructions))
     }
+
+    #[allow(clippy::too_many_arguments)]
+    async fn command_proxy_create_metadata_accounts(
+        &self,
+        rpc_client: &RpcClient,
+        metadata_pubkey: Pubkey,
+        master_edition_pubkey: Pubkey,
+        mint: Pubkey,
+        mint_authority: Pubkey,
+        payer: Pubkey,
+        proxy_authority: Pubkey,
+        max_supply: u64,
+    ) -> crate::Result<(u64, Vec<Instruction>)> {
+        let minimum_balance_for_rent_exemption = rpc_client
+            .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
+                mpl_token_metadata::state::MasterEditionV2,
+            >())
+            .await?;
+
+        let instructions = vec![create_proxy_create_master_edition_instruction(
+            &payer,
+            &proxy_authority,
+            &master_edition_pubkey,
+            &mint,
+            &mint_authority,
+            &metadata_pubkey,
+            &mpl_token_metadata::id(),
+            &spl_token::id(),
+            max_supply,
+        )];
+
+        Ok((minimum_balance_for_rent_exemption, instructions))
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -231,7 +264,7 @@ impl CommandTrait for CreateMasterEdition {
 
                 let proxy_authority = find_proxy_authority_address(&fee_payer.pubkey());
                 let (minimum_balance_for_rent_exemption, instructions) = self
-                    .command_create_master_edition(
+                    .command_proxy_create_metadata_accounts(
                         &ctx.solana_client,
                         metadata_account,
                         master_edition_account,
@@ -243,11 +276,9 @@ impl CommandTrait for CreateMasterEdition {
                     )
                     .await?;
 
-                let fee_payer_pubkey = fee_payer.pubkey();
-
                 let (mut transaction, recent_blockhash) = execute(
                     &ctx.solana_client,
-                    &fee_payer_pubkey,
+                    &fee_payer.pubkey(),
                     &instructions,
                     minimum_balance_for_rent_exemption,
                 )
