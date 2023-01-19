@@ -49,7 +49,7 @@ bs58 = "0.4"
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
 # metaboss_utils = { git = "https://github.com/space-operator/metaboss_utils.git", rev = "9f237fd10b6e5478bf7fd395482d58b71fe2811a" }
-space-wrapper = { path = "../../../../space-wrapper/programs/space-wrapper", version = "0.1.0", features = [
+space-wrapper = { path = "../../../space-wrapper/programs/space-wrapper", version = "0.1.0", features = [
     "cpi",
 ] }
 anchor-lang="0.26.0"

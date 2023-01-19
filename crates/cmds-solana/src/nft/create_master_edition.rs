@@ -106,8 +106,6 @@ pub struct InputStruct {
     pub mint_account: Pubkey,
     #[serde(with = "value::pubkey")]
     pub mint_authority: Pubkey,
-    #[serde(with = "value::pubkey::opt")]
-    pub proxy_authority: Option<Pubkey>,
     #[serde(with = "value::keypair")]
     pub fee_payer: Keypair,
     pub max_supply: u64,
@@ -129,10 +127,10 @@ const CREATE_MASTER_EDITION: &str = "create_master_edition";
 
 // Inputs
 const PROXY_AS_UPDATE_AUTHORITY: &str = "proxy_as_update_authority";
+const UPDATE_AUTHORITY: &str = "update_authority";
 const MINT_ACCOUNT: &str = "mint_account";
 const MINT_AUTHORITY: &str = "mint_authority";
 const FEE_PAYER: &str = "fee_payer";
-const UPDATE_AUTHORITY: &str = "update_authority";
 const MAX_SUPPLY: &str = "max_supply";
 const SUBMIT: &str = "submit";
 
@@ -140,22 +138,6 @@ const SUBMIT: &str = "submit";
 const SIGNATURE: &str = "signature";
 const METADATA_ACCOUNT: &str = "metadata_account";
 const MASTER_EDITION_ACCOUNT: &str = "master_edition_account";
-
-fn find_proxy_authority_address(authority: &Pubkey) -> Pubkey {
-    let (expected_pda, bump_seed) = Pubkey::find_program_address(
-        &[b"proxy", &authority.to_bytes()],
-        &Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
-    );
-
-    let actual_pda = Pubkey::create_program_address(
-        &[b"proxy", &authority.to_bytes(), &[bump_seed]],
-        &Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
-    )
-    .unwrap();
-
-    assert_eq!(expected_pda, actual_pda);
-    dbg!(actual_pda)
-}
 
 #[async_trait]
 impl CommandTrait for CreateMasterEdition {
@@ -249,7 +231,7 @@ impl CommandTrait for CreateMasterEdition {
 
                 let proxy_authority = find_proxy_authority_address(&fee_payer.pubkey());
                 let (minimum_balance_for_rent_exemption, instructions) = self
-                    .command_proxy_create_metadata_accounts(
+                    .command_create_master_edition(
                         &ctx.solana_client,
                         metadata_account,
                         master_edition_account,
@@ -312,11 +294,9 @@ impl CommandTrait for CreateMasterEdition {
                     )
                     .await?;
 
-                let fee_payer_pubkey = fee_payer.pubkey();
-
                 let (mut transaction, recent_blockhash) = execute(
                     &ctx.solana_client,
-                    &fee_payer_pubkey,
+                    &fee_payer.pubkey(),
                     &instructions,
                     minimum_balance_for_rent_exemption,
                 )
