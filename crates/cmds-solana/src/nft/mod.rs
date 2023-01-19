@@ -10,6 +10,7 @@ pub mod create_master_edition;
 pub mod create_metadata_account;
 pub mod get_left_uses;
 pub mod sign_metadata;
+pub mod verify_collection;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct NftMetadata {
