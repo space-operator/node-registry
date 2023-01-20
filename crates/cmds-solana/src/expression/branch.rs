@@ -19,7 +19,7 @@ impl BranchCommand {
         0
     }
 }
-
+ 
 pub const BRANCH_CMD: &str = "branch";
 
 // Inputs
