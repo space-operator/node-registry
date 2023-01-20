@@ -1,2 +1,8 @@
 [workspace]
 members = ["crates/*"]
+
+# [patch."https://github.com/space-operator/metaboss_utils.git"]
+# metaboss_utils = { path = "../metaboss_utils" }
+
+# [patch."https://github.com/space-operator/space-wrapper.git"]
+# space-wrapper = { path = "../space-wrapper/programs/space-wrapper" }
