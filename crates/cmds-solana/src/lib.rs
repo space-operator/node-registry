@@ -15,6 +15,8 @@ pub mod transfer_token;
 pub mod utils;
 pub mod wallet;
 
+pub mod clockwork;
+
 pub use error::{Error, Result};
 
 pub mod prelude {
