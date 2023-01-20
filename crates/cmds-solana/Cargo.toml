@@ -39,7 +39,10 @@ bs58 = "0.4"
 
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
-metaboss_utils = { git = "https://github.com/space-operator/metaboss_utils.git", rev = "9f237fd10b6e5478bf7fd395482d58b71fe2811a" }
+
+[dependencies.metaboss_utils]
+git = "https://github.com/space-operator/metaboss_utils.git"
+rev = "5bc91d67f84a3f7ec609c63a0cd4cd83c6018a0f"
 
 [dev-dependencies]
 rust_decimal_macros = "1.26"

@@ -64,11 +64,16 @@ impl CommandTrait for SetImmutable {
 
         let args = SetImmutableArgs {
             client: &ctx.solana_client,
-            keypair: Arc::new(input.keypair),
+            keypair: Arc::new(input.keypair.clone_keypair()),
             mint_account: input.mint_account,
         };
 
-        let sig = set_immutable(args).await.map_err(crate::Error::custom)?;
+        let mut tx = set_immutable(args).await.map_err(crate::Error::custom)?;
+
+        let recent_blockhash = ctx.solana_client.get_latest_blockhash().await?;
+        try_sign_wallet(&ctx, &mut tx, &[&input.keypair], recent_blockhash).await?;
+
+        let sig = submit_transaction(&ctx.solana_client, tx).await?;
 
         Ok(value::to_map(&Output { signature: sig })?)
     }
