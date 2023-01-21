@@ -18,7 +18,7 @@ use value::Error as ValueError;
 pub mod bundlr_signer;
 pub use bundlr_signer::BundlrSigner;
 
-pub const SIGNATURE_TIMEOUT: Duration = Duration::from_secs(60);
+pub const SIGNATURE_TIMEOUT: Duration = Duration::from_secs(60 * 5);
 
 pub trait KeypairExt {
     fn clone_keypair(&self) -> Self;
