@@ -417,11 +417,11 @@ where
     }
 }
 
-/*
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    /*
     #[test]
     fn de_pubkey() {
         from_value::<Pubkey>(Value::Pubkey(Pubkey::new(&[0; 32]))).unwrap();
@@ -445,5 +445,28 @@ mod tests {
         let v = to_value(&from_value::<Foo>(value.clone()).unwrap()).unwrap();
         assert_eq!(v, value);
     }
+    */
+
+    #[test]
+    fn test_solana_instruction() {
+        use solana_sdk::instruction::{AccountMeta, Instruction};
+        use solana_sdk::pubkey;
+
+        let i = Instruction::new_with_bytes(
+            pubkey!("ESxeViFP4r7THzVx9hJDkhj4HrNGSjJSFRPbGaAb97hN"),
+            &[100; 1024],
+            vec![AccountMeta {
+                pubkey: pubkey!("ESxeViFP4r7THzVx9hJDkhj4HrNGSjJSFRPbGaAb97hN"),
+                is_signer: true,
+                is_writable: false,
+            }],
+        );
+
+        let v = to_value(&i).unwrap();
+        dbg!(&v);
+
+        let i1: Instruction = from_value(v).unwrap();
+
+        assert_eq!(i, i1);
+    }
 }
-*/
