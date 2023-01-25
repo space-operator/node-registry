@@ -1,0 +1,64 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "update_payment",
+        "version": "0.1",
+        "display_name": "Update Payment",
+        "description": "",
+        "width": 200,
+        "height": 425,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": null,
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+           {
+            "name": "payer",
+            "type_bounds": [
+                "string","keypair"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "recipient",
+            "type_bounds": [
+                "string","keypair", "pubkey"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "token_mint",
+            "type_bounds": [
+                "string","pubkey","keypair"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "amount",
+            "type_bounds": [
+                "u64"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
