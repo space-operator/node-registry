@@ -39,6 +39,14 @@ pub trait CommandTrait: Send + Sync + 'static {
         }
         res
     }
+
+    async fn steps(&self) -> u32 {
+        0
+    }
+
+    async fn run1(&self, ctx: Context, params: ValueSet) -> Result<(), CommandError> {
+        Ok(())
+    }
 }
 
 #[derive(Clone)]

@@ -1,7 +1,7 @@
-use crate::ContextConfig;
+use crate::{ContextConfig, ValueSet};
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
-use solana_sdk::{pubkey::Pubkey, signature::Signature};
+use solana_sdk::{instruction::Instruction, pubkey::Pubkey, signature::Signature};
 use std::{any::Any, collections::HashMap, sync::Arc};
 use tower::{Service, ServiceExt};
 use uuid::Uuid;
@@ -113,6 +113,14 @@ impl Context {
             extensions: Arc::new(extensions),
             signer: sig_svc,
         }
+    }
+
+    pub async fn send_output(
+        &self,
+        output: ValueSet,
+        instructions: Vec<Instruction>,
+    ) -> Result<Signature, anyhow::Error> {
+        Err(anyhow::anyhow!("unimplemented"))
     }
 
     pub async fn request_signature(
