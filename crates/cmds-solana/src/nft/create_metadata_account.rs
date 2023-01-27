@@ -202,8 +202,8 @@ pub struct InputStruct {
     pub metadata: NftMetadata,
     pub metadata_uri: String,
     pub uses: NftUses,
-    #[serde(with = "value::pubkey")]
-    pub collection_mint_account: Pubkey,
+    // #[serde(with = "value::pubkey::opt")]
+    // pub collection_mint_account: Option<Pubkey>,
     pub creators: Vec<NftCreator>,
     pub collection_details: Option<u64>,
     #[serde(default = "value::default::bool_true")]
@@ -343,7 +343,7 @@ impl CommandTrait for CreateMetadataAccount {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, ctx: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
         match value::from_map(inputs.clone())? {
             Input::Proxy {
                 proxy_as_update_authority,
@@ -356,11 +356,27 @@ impl CommandTrait for CreateMetadataAccount {
                     metadata,
                     metadata_uri,
                     uses,
-                    collection_mint_account,
+                    // collection_mint_account,
                     creators,
                     collection_details,
                     submit,
-                } = value::from_map(inputs)?;
+                } = value::from_map(inputs.clone())?;
+
+                // let collection = match collection_mint_account {
+                //     Some(collection) => Some(Collection {
+                //         verified: false,
+                //         key:collection,
+                //     }),
+                //     _ => None,
+                // };
+
+                let collection = match inputs.remove("collection_mint_account") {
+                    Some(Value::B32(collection)) => Some(Collection {
+                        verified: false,
+                        key:Pubkey::new_from_array(collection),
+                    }),
+                    _ => None,
+                };
 
                 let collection_details =
                     collection_details.map(|size| CollectionDetails::V1 { size });
@@ -368,10 +384,7 @@ impl CommandTrait for CreateMetadataAccount {
                 let (metadata_account, _) =
                     mpl_token_metadata::pda::find_metadata_account(&mint_account);
 
-                let collection = Some(Collection {
-                    verified: false,
-                    key: collection_mint_account,
-                });
+             
                 let creators: Vec<Creator> = creators.into_iter().map(Creator::from).collect();
 
                 let proxy_authority = find_proxy_authority_address(&fee_payer.pubkey());
@@ -426,11 +439,18 @@ impl CommandTrait for CreateMetadataAccount {
                     metadata,
                     metadata_uri,
                     uses,
-                    collection_mint_account,
                     creators,
                     collection_details,
                     submit,
-                } = value::from_map(inputs)?;
+                } = value::from_map(inputs.clone())?;
+
+                let collection = match inputs.remove("collection_mint_account") {
+                    Some(Value::B32(collection)) => Some(Collection {
+                        verified: false,
+                        key:Pubkey::new_from_array(collection),
+                    }),
+                    _ => None,
+                };
 
                 let collection_details =
                     collection_details.map(|size| CollectionDetails::V1 { size });
@@ -438,10 +458,7 @@ impl CommandTrait for CreateMetadataAccount {
                 let (metadata_account, _) =
                     mpl_token_metadata::pda::find_metadata_account(&mint_account);
 
-                let collection = Some(Collection {
-                    verified: false,
-                    key: collection_mint_account,
-                });
+              
                 let creators: Vec<Creator> = creators.into_iter().map(Creator::from).collect();
                 let (minimum_balance_for_rent_exemption, instructions) = self
                     .command_create_metadata_accounts(
