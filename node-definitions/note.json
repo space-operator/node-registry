@@ -6,7 +6,7 @@
         "display_name": "Note",
         "description": "",
         "width": 200,
-        "height": 350,
+        "height": 200,
         "backgroundColor": "#FFFF99"
     },
     "sources": [

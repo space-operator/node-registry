@@ -48,6 +48,7 @@ bs58 = "0.4"
 anchor-lang="0.26.0"
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
+fasteval = "0.2.4"
 
 [dependencies.metaboss_utils]
 git = "https://github.com/space-operator/metaboss_utils.git"
