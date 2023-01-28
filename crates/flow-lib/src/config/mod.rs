@@ -46,7 +46,7 @@ pub enum ValueType {
     #[serde(rename = "array")]
     Array(Box<ValueType>),
     #[serde(rename = "object")]
-    Map(HashMap<value::Key, ValueType>),
+    Map(indexmap::IndexMap<value::Key, ValueType>),
     #[serde(rename = "json")]
     Json,
     #[serde(rename = "free")]
