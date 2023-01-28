@@ -54,6 +54,10 @@ pub enum Error {
     WorkerStopped,
     #[error("time-out waiting for signature")]
     SignatureTimedOut,
+    #[error("an error occured while running rhai expression: {0}")]
+    RhaiExecutionError(String),
+    #[error("value not found in field \"{0}\"")]
+    ValueNotFound(String),
 }
 
 impl Error {

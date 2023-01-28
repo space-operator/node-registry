@@ -291,7 +291,7 @@ impl CommandTrait for Payment {
 
     async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let trigger = match value::from_map(inputs.clone())? {
-            Input::IsImmediate { is_immediate } => Trigger::Immediate,
+            Input::IsImmediate { is_immediate: _ } => Trigger::Immediate,
             Input::Schedule {
                 schedule,
                 is_skippable,

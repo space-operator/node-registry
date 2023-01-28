@@ -12,7 +12,7 @@ pub mod nft;
 pub mod proxy_authority;
 pub mod request_airdrop;
 pub mod request_http;
-pub mod to_vec;
+pub mod std;
 pub mod transfer_sol;
 pub mod transfer_token;
 pub mod utils;
