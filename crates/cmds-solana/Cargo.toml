@@ -54,10 +54,10 @@ anchor-lang="0.26.0"
 anchor-spl="0.26.0"
 # clockwork-client = { version = "1.4.0" }
 # clockwork-utils = { version = "1.4.0" }
-clockwork-client = {git="https://github.com/clockwork-xyz/clockwork.git", rev="512677377e64cbf207ea0b1041147dfa2db00362"}
-clockwork-utils = {git="https://github.com/clockwork-xyz/clockwork.git", rev="512677377e64cbf207ea0b1041147dfa2db00362"}
-clockwork-thread-program = {git="https://github.com/clockwork-xyz/clockwork.git", rev="512677377e64cbf207ea0b1041147dfa2db00362"}
-payments = {path = "../../../../../clockwork-examples/payments/programs/payments"}
+clockwork-utils = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
+clockwork-client = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
+clockwork-thread-program = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
+payments = {git = "https://github.com/enzotar/examples.git", rev="704d40a85a19ad88aaa283f1e5a41b32af61ef97"}
 
 [dev-dependencies]
 rust_decimal_macros = "1.26"

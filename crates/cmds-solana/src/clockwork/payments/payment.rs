@@ -106,6 +106,7 @@ impl Payment {
         recipient: Pubkey,
         recipient_ata_pubkey: Pubkey,
         amount: u64,
+        trigger: Trigger,
     ) -> crate::Result<(u64, Vec<Instruction>)> {
         // FIXME min rent
         let minimum_balance_for_rent_exemption = rpc_client
@@ -125,7 +126,7 @@ impl Payment {
         dbg!(&distribute_payment_ix);
 
         let instructions = vec![
-            thread_delete(payer, thread),
+            // thread_delete(payer, thread),
             create_payment(
                 payer,
                 authority_token_account,
@@ -140,7 +141,7 @@ impl Payment {
                 vec![distribute_payment_ix],
                 payer,
                 thread,
-                Trigger::Immediate,
+                trigger,
             ),
         ];
         dbg!(&instructions);
@@ -152,12 +153,17 @@ impl Payment {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum Input {
-    IsImmediate { is_immediate: bool },
-    // Schedule { schedule: String },
-    // MonitorAccount {
-    //     #[serde(with = "value::pubkey")]
-    //     monitor_account: Pubkey,
-    // },
+    IsImmediate {
+        is_immediate: bool,
+    },
+    Schedule {
+        schedule: String,
+        is_skippable: bool,
+    },
+    MonitorAccount {
+        #[serde(with = "value::pubkey")]
+        monitor_account: Pubkey,
+    },
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -284,128 +290,76 @@ impl CommandTrait for Payment {
     }
 
     async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        match value::from_map(inputs.clone())? {
-            Input::IsImmediate { is_immediate } => {
-                let InputStruct {
-                    payer,
-                    token_account,
-                    token_mint,
-                    recipient,
-                    amount,
-                } = value::from_map(inputs)?;
+        let trigger = match value::from_map(inputs.clone())? {
+            Input::IsImmediate { is_immediate } => Trigger::Immediate,
+            Input::Schedule {
+                schedule,
+                is_skippable,
+            } => Trigger::Cron {
+                schedule,
+                skippable: is_skippable,
+            },
+            Input::MonitorAccount { monitor_account } => {
+                Trigger::Account {
+                    address: monitor_account,
+                    offset: 0, // FIXME
+                    size: 32,  //FIXME
+                }
+            }
+        };
 
-                // Thread Authority is the Payer
-                let thread_authority = payer.pubkey();
+        let InputStruct {
+            payer,
+            token_account,
+            token_mint,
+            recipient,
+            amount,
+        } = value::from_map(inputs)?;
 
-                // Derive PDAs
-                // create into a command
-                let payment = ClockworkPayment::pubkey(payer.pubkey(), token_mint, recipient);
-                let thread = Thread::pubkey(thread_authority, "payment".into());
+        // Thread Authority is the Payer
+        let thread_authority = payer.pubkey();
 
-                // Get recipient's Associated Token Account
-                let recipient_ata_pubkey = get_associated_token_address(&recipient, &token_mint);
+        // Derive PDAs
+        // create into a command
+        let payment = ClockworkPayment::pubkey(payer.pubkey(), token_mint, recipient);
+        let thread = Thread::pubkey(thread_authority, "payment".into());
 
-                // Create Instructions
-                let (minimum_balance_for_rent_exemption, instructions) = self
-                    .command_create_payment(
-                        &ctx.solana_client,
-                        payer.pubkey(),
-                        token_account,
-                        token_mint,
-                        payment,
-                        thread,
-                        recipient,
-                        recipient_ata_pubkey,
-                        amount,
-                    )
-                    .await?;
+        // Get recipient's Associated Token Account
+        let recipient_ata_pubkey = get_associated_token_address(&recipient, &token_mint);
 
-                let (mut transaction, recent_blockhash) = execute(
-                    &ctx.solana_client,
-                    &payer.pubkey(),
-                    &instructions,
-                    minimum_balance_for_rent_exemption,
-                )
-                .await?;
+        // Create Instructions
+        let (minimum_balance_for_rent_exemption, instructions) = self
+            .command_create_payment(
+                &ctx.solana_client,
+                payer.pubkey(),
+                token_account,
+                token_mint,
+                payment,
+                thread,
+                recipient,
+                recipient_ata_pubkey,
+                amount,
+                trigger,
+            )
+            .await?;
 
-                println!(
-                    "thread: 🔗 {}",
-                    explorer().thread_url(thread, thread_program_ID)
-                );
-                try_sign_wallet(&ctx, &mut transaction, &[&payer], recent_blockhash).await?;
+        let (mut transaction, recent_blockhash) = execute(
+            &ctx.solana_client,
+            &payer.pubkey(),
+            &instructions,
+            minimum_balance_for_rent_exemption,
+        )
+        .await?;
 
-                let signature = submit_transaction(&ctx.solana_client, transaction).await?;
+        println!(
+            "thread: 🔗 {}",
+            explorer().thread_url(thread, thread_program_ID)
+        );
+        try_sign_wallet(&ctx, &mut transaction, &[&payer], recent_blockhash).await?;
 
-                Ok(value::to_map(&Output { thread, signature })?)
-            } // Input::Schedule { schedule } => {
-              //     let InputStruct {
-              //         payer,
-              //         token_mint,
-              //         recipient,
-              //         amount,
-              //     } = value::from_map(inputs)?;
+        let signature = submit_transaction(&ctx.solana_client, transaction).await?;
 
-              //     let collection_details =
-              //         collection_details.map(|size| CollectionDetails::V1 { size });
-
-              //     let (metadata_account, _) =
-              //         mpl_token_metadata::pda::find_metadata_account(&mint_account);
-
-              //     let collection = Some(Collection {
-              //         verified: false,
-              //         key: collection_mint_account,
-              //     });
-              //     let creators: Vec<Creator> = creators.into_iter().map(Creator::from).collect();
-              //     let (minimum_balance_for_rent_exemption, instructions) = self
-              //         .command_create_metadata_accounts(
-              //             &ctx.solana_client,
-              //             metadata_account,
-              //             mint_account,
-              //             mint_authority,
-              //             fee_payer.pubkey(),
-              //             update_authority.pubkey(),
-              //             metadata.name.clone(),
-              //             metadata.symbol.clone(),
-              //             metadata_uri,
-              //             Some(creators),
-              //             metadata.seller_fee_basis_points,
-              //             true,
-              //             is_mutable,
-              //             collection,
-              //             Uses::from(uses),
-              //             collection_details,
-              //         )
-              //         .await?;
-
-              //     let (mut transaction, recent_blockhash) = execute(
-              //         &ctx.solana_client,
-              //         &fee_payer.pubkey(),
-              //         &instructions,
-              //         minimum_balance_for_rent_exemption,
-              //     )
-              //     .await?;
-
-              //     try_sign_wallet(
-              //         &ctx,
-              //         &mut transaction,
-              //         &[&update_authority, &fee_payer],
-              //         recent_blockhash,
-              //     )
-              //     .await?;
-
-              //     let signature = if submit {
-              //         Some(submit_transaction(&ctx.solana_client, transaction).await?)
-              //     } else {
-              //         None
-              //     };
-
-              //     Ok(value::to_map(&Output {
-              //         metadata_account,
-              //         signature,
-              //     })?);
-              // }
-              // Input::MonitorAccount { monitor_account } => {}
-        }
+        Ok(value::to_map(&Output { thread, signature })?)
     }
 }
 
