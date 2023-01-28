@@ -1,5 +1,4 @@
 use crate::prelude::*;
-
 #[derive(Debug)]
 pub struct ScriptCommand;
 
@@ -72,7 +71,6 @@ impl CommandTrait for ScriptCommand {
             )
             .into());
         };
-
         let values = match inputs
             .remove(VALUES)
             .ok_or_else(|| crate::Error::ValueNotFound(VALUES.into()))?
@@ -104,6 +102,33 @@ impl CommandTrait for ScriptCommand {
                 }
                 Value::Bool(n) => {
                     expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
+                }
+                Value::Array(n) => {
+                    let n = n
+                        .iter()
+                        .map(|v| {
+                            let value = match v {
+                                Value::Null => "null".into(),
+                                Value::String(v) => v.to_string(),
+                                Value::Decimal(v) => v.to_string(),
+                                Value::U64(v) => v.to_string(),
+                                Value::I64(v) => v.to_string(),
+                                Value::U128(v) => v.to_string(),
+                                Value::I128(v) => v.to_string(),
+                                Value::F64(v) => v.to_string(),
+                                Value::Bytes(v) => String::from_utf8_lossy(v).to_string(),
+                                Value::Array(v) => "only flat arrays supported".into(),
+                                Value::Map(v) => "maps_not_supported".into(),
+                                Value::B32(v) => bs58::encode(&v).into_string(),
+                                Value::B64(v) => bs58::encode(&v).into_string(),
+                                other => serde_json::to_string_pretty(&other).unwrap(),
+                            };
+                            return value;
+                        })
+                        .collect::<Vec<String>>();
+
+                    expression =
+                        expression.replace(&format!("${{{}}}", index), &format!("{:#?}", n));
                 }
                 Value::Decimal(n) => {
                     expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
