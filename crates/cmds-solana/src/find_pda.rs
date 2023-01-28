@@ -1,9 +1,5 @@
-use std::str::FromStr;
-
 use crate::prelude::*;
-use bip39::{Language, Mnemonic, MnemonicType, Seed};
-use solana_sdk::signature::{keypair_from_seed, Keypair};
-use solana_sdk::signer::Signer;
+
 
 #[derive(Debug, Clone)]
 pub struct FindPDA;
@@ -89,32 +85,32 @@ impl CommandTrait for FindPDA {
     async fn run(&self, _: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let Input { program_id } = value::from_map(inputs.clone())?;
 
-        let seed_1: Option<Value> = inputs.remove(SEED_1).or(None);
+        let seed_1: Option<Value> = inputs.remove(SEED_1);
         let seed_1 = match seed_1 {
             Some(Value::B32(v)) => v.to_vec(),
             Some(Value::String(v)) => v.as_bytes().to_vec(),
             _ => vec![],
         };
 
-        let seed_2: Option<Value> = inputs.remove(SEED_2).or(None);
+        let seed_2: Option<Value> = inputs.remove(SEED_2);
         let seed_2 = match seed_2 {
             Some(Value::B32(v)) => v.to_vec(),
             Some(Value::String(v)) => v.as_bytes().to_vec(),
             _ => vec![],
         };
-        let seed_3: Option<Value> = inputs.remove(SEED_3).or(None);
+        let seed_3: Option<Value> = inputs.remove(SEED_3);
         let seed_3 = match seed_3 {
             Some(Value::B32(v)) => v.to_vec(),
             Some(Value::String(v)) => v.as_bytes().to_vec(),
             _ => vec![],
         };
-        let seed_4: Option<Value> = inputs.remove(SEED_4).or(None);
+        let seed_4: Option<Value> = inputs.remove(SEED_4);
         let seed_4 = match seed_4 {
             Some(Value::B32(v)) => v.to_vec(),
             Some(Value::String(v)) => v.as_bytes().to_vec(),
             _ => vec![],
         };
-        let seed_5: Option<Value> = inputs.remove(SEED_5).or(None);
+        let seed_5: Option<Value> = inputs.remove(SEED_5);
         let seed_5 = match seed_5 {
             Some(Value::B32(v)) => v.to_vec(),
             Some(Value::String(v)) => v.as_bytes().to_vec(),
@@ -123,9 +119,10 @@ impl CommandTrait for FindPDA {
 
         let seeds = vec![seed_1, seed_2, seed_3, seed_4, seed_5];
 
+
         let seeds = seeds
             .into_iter()
-            .filter(|s| s.is_empty())
+            .filter(|s| !s.is_empty())
             .collect::<Vec<Vec<u8>>>();
 
         let seeds = seeds.iter().map(|s| &s[..]).collect::<Vec<&[u8]>>();
@@ -133,21 +130,6 @@ impl CommandTrait for FindPDA {
         let seeds = &seeds[..];
 
         let pda = Pubkey::find_program_address(seeds, &program_id).0;
-
-        let test = Pubkey::find_program_address(
-            &[
-                b"thread",
-                Pubkey::from_str("DpfvhHU7z1CK8eP5xbEz8c4WBNHUfqUVtAE7opP2kJBc")
-                    .unwrap()
-                    .as_ref(),
-                b"payment",
-            ],
-            &Pubkey::from_str("5e5QWXuRXhfzBZ2nsaqvMrUrWhy6zwxxBinoEGoNKQRo").unwrap(),
-        )
-        .0;
-        dbg!(test);
-
-        dbg!(&pda);
 
         Ok(value::to_map(&Output { pda })?)
     }
