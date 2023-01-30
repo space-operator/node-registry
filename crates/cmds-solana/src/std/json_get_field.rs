@@ -1,4 +1,5 @@
 use serde_json::Value as JsonValue;
+use value::from_value;
 use std::collections::BTreeMap;
 use thiserror::Error as ThisError;
 
@@ -78,7 +79,7 @@ impl CommandTrait for JsonGetField {
             Value::Map(map) => {
                 let value = map.get(&field).unwrap();
 
-                let result_json: JsonValue = serde_json::to_value(&value).ok().unwrap_or_default();
+                let result_json: JsonValue = from_value(value.to_owned())?;
                 let result_string = result_json.to_string();
 
                 Ok(value::to_map(&Output {
