@@ -6,6 +6,12 @@ pub enum SerializeSeq {
     Array(Vec<Value>),
 }
 
+impl Default for SerializeSeq {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SerializeSeq {
     pub fn new() -> Self {
         SerializeSeq::Bytes(Vec::new())

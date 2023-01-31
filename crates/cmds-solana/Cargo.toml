@@ -6,13 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-solana-sdk = "1.14"
-solana-client = "1.14"
-solana-program = "1.14"
+solana-sdk = "1.14.13"
+solana-client = "1.14.13"
+solana-program = "1.14.13"
 spl-token = { version = "3.2", features = ["no-entrypoint"] }
 spl-memo = { version = "3.0", features = ["no-entrypoint"] }
 mpl-token-auth-rules = "=0.2.3"
-spl-associated-token-account = { version = "=1.1.1", features = [
+spl-associated-token-account = { version = "=1.1.2", features = [
     "no-entrypoint",
 ] }
 mpl-token-metadata = "=1.7.0-alpha.2"
@@ -46,8 +46,14 @@ rhai = "1.10.1"
 indexmap = { version = "1.9.1", features = ["serde-1"] }
 bs58 = "0.4"
 anchor-lang="0.26.0"
+anchor-spl="0.26.0"
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
+fasteval = "0.2.4"
+clockwork-utils = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
+clockwork-client = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
+clockwork-thread-program = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
+payments = {git = "https://github.com/enzotar/examples.git", rev="704d40a85a19ad88aaa283f1e5a41b32af61ef97"}
 
 [dependencies.metaboss_utils]
 git = "https://github.com/space-operator/metaboss_utils.git"
@@ -57,6 +63,7 @@ rev = "e2768c1e7b4fef4eb5dec99913c5200e8856be96"
 git = "https://github.com/space-operator/space-wrapper"
 rev = "fc4dc06f536384906ed6b21bf05c1eb67c60e738"
 features = ["cpi"]
+
 
 [dev-dependencies]
 rust_decimal_macros = "1.26"

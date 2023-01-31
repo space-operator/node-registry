@@ -1,0 +1,64 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "thread_delete",
+        "version": "0.1",
+        "display_name": "Thread Delete",
+        "description": "",
+        "width": 200,
+        "height": 200,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": null,
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "thread_authority",
+            "type_bounds": [
+                "string","keypair"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "payer",
+            "type_bounds": [
+                "string","keypair"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "thread",
+            "type_bounds": [
+                "string","keypair","pubkey"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "close_to",
+            "type_bounds": [
+                "string","pubkey","keypair"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

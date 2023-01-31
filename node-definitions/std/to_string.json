@@ -1,0 +1,38 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "to_string",
+        "version": "0.1",
+        "display_name": "To String",
+        "description": "Convert to string",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "targets": [
+        {
+            "name": "stringify",
+            "type_bounds": [
+                "free"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "sources": [
+        {
+            "name": "result",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {
+    
+      },
+    "targets_form.ui_schema": {
+     
+      }
+}

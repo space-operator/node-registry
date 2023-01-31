@@ -30,7 +30,7 @@ fn adapter_wallet(pubkey: Pubkey) -> Output {
 }
 
 impl FormData {
-    fn to_output(self) -> Result<Output, WalletError> {
+    fn into_output(self) -> Result<Output, WalletError> {
         match self {
             FormData::Adapter { wallet_data } => {
                 let pubkey = wallet_data
@@ -61,7 +61,7 @@ impl Wallet {
     fn new(nd: &NodeData) -> Self {
         let form = serde_json::from_value::<FormData>(nd.targets_form.form_data.clone())
             .ok()
-            .map(FormData::to_output);
+            .map(FormData::into_output);
         Self { form }
     }
 }
