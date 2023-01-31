@@ -93,10 +93,8 @@ impl CommandTrait for MathOperation {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let Input {
-            operator,
-        } = value::from_map(inputs.clone())?;
+    async fn run(&self, _ctx: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
+        let Input { operator } = value::from_map(inputs.clone())?;
 
         let number_1 = inputs.remove(NUMBER_1).unwrap_or(value::Value::U64(0));
         let number_1 = match number_1 {
@@ -148,7 +146,7 @@ impl CommandTrait for MathOperation {
         // Calculation
         let result_f64 = match fasteval::ez_eval(&expression, &mut map) {
             Ok(value) => value,
-            Err(error) => 0.0,
+            Err(_error) => 0.0,
         };
 
         // Get other types if matching
@@ -173,7 +171,9 @@ impl CommandTrait for MathOperation {
     }
 }
 
-inventory::submit!(CommandDescription::new(MATH_OPERATION, |_| Box::new(MathOperation {})));
+inventory::submit!(CommandDescription::new(MATH_OPERATION, |_| Box::new(
+    MathOperation {}
+)));
 
 // #[cfg(test)]
 // mod tests {

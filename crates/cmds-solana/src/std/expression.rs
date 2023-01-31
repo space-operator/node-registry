@@ -117,8 +117,8 @@ impl CommandTrait for ScriptCommand {
                                 Value::I128(v) => v.to_string(),
                                 Value::F64(v) => v.to_string(),
                                 Value::Bytes(v) => String::from_utf8_lossy(v).to_string(),
-                                Value::Array(v) => "only flat arrays supported".into(),
-                                Value::Map(v) => "maps_not_supported".into(),
+                                Value::Array(_v) => "only flat arrays supported".into(),
+                                Value::Map(_v) => "maps_not_supported".into(),
                                 Value::B32(v) => bs58::encode(&v).into_string(),
                                 Value::B64(v) => bs58::encode(&v).into_string(),
                                 other => serde_json::to_string_pretty(&other).unwrap(),
@@ -214,7 +214,6 @@ inventory::submit!(CommandDescription::new(SCRIPT_CMD, |_| {
 
 #[cfg(test)]
 mod test {
-    use std::sync::Arc;
 
     use flow_lib::{command::CommandTrait, Context, ValueSet};
     use indexmap::indexmap;

@@ -111,12 +111,12 @@ impl CommandTrait for DisbursePaymentIx {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, _ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let Input {
             payer,
             authority_token_account,
             mint,
-            payment,
+            payment: _,
             thread,
             recipient,
             recipient_ata,
@@ -158,7 +158,6 @@ inventory::submit!(CommandDescription::new(DISBURSE_PAYMENT_IX, |_| Box::new(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[tokio::test]
     async fn test_valid() {}

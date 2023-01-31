@@ -1,6 +1,5 @@
 use crate::prelude::*;
 
-
 #[derive(Debug, Clone)]
 pub struct FindPDA;
 
@@ -118,7 +117,6 @@ impl CommandTrait for FindPDA {
         };
 
         let seeds = vec![seed_1, seed_2, seed_3, seed_4, seed_5];
-
 
         let seeds = seeds
             .into_iter()

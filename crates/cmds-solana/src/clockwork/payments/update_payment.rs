@@ -1,24 +1,10 @@
-use std::str::FromStr;
-
 use crate::prelude::*;
-use solana_program::{
-    instruction::{AccountMeta, Instruction},
-    system_program,
-};
+use solana_program::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
 
-use anchor_lang::{solana_program::sysvar, InstructionData};
-use anchor_spl::{associated_token, token};
+use anchor_lang::InstructionData;
 
-use clockwork_client::thread::{
-    instruction::thread_create,
-    state::{Thread, Trigger},
-    ID as thread_program_ID,
-};
-use clockwork_thread_program::state::InstructionData as ClockworkInstructionData;
-use clockwork_utils::{explorer::Explorer, PAYER_PUBKEY};
 use payments::state::Payment as ClockworkPayment;
-use spl_associated_token_account::get_associated_token_address;
 
 #[derive(Debug)]
 pub struct UpdatePayment;

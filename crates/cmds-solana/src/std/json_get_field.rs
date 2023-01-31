@@ -1,6 +1,5 @@
 use serde_json::Value as JsonValue;
-use std::collections::BTreeMap;
-use thiserror::Error as ThisError;
+
 use value::from_value;
 
 use crate::prelude::*;
@@ -68,7 +67,7 @@ impl CommandTrait for JsonGetField {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, _ctx: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let Input { field } = value::from_map(inputs.clone())?;
 
         let json = inputs

@@ -1,8 +1,8 @@
 use anyhow::bail;
 use log::error;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
-use value::from_value;
 use std::str::FromStr;
+use value::from_value;
 
 use crate::prelude::*;
 
@@ -203,7 +203,7 @@ impl CommandTrait for RequestHttp {
         }
 
         if let Some(body) = inputs.body {
-            let body:serde_json::Value = from_value(body)?;
+            let body: serde_json::Value = from_value(body)?;
             req = req.json(&body);
         }
 
