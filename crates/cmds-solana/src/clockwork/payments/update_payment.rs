@@ -12,7 +12,7 @@ pub struct UpdatePayment;
 // update disbursement amount
 fn update_payment(payment_pubkey: Pubkey, payer: Pubkey, amount: u64) -> Instruction {
     // create instruction
-    let update_payment_ix = Instruction {
+    Instruction {
         program_id: payments::ID,
         accounts: vec![
             AccountMeta::new(payer, true),
@@ -22,9 +22,7 @@ fn update_payment(payment_pubkey: Pubkey, payer: Pubkey, amount: u64) -> Instruc
             amount: Some(amount),
         }
         .data(),
-    };
-
-    update_payment_ix
+    }
 }
 
 impl UpdatePayment {
@@ -42,7 +40,6 @@ impl UpdatePayment {
             .await?;
 
         let instructions = vec![update_payment(payment, payer, amount)];
-        dbg!(&instructions);
 
         Ok((minimum_balance_for_rent_exemption, instructions))
     }

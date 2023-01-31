@@ -123,7 +123,7 @@ impl CommandTrait for ScriptCommand {
                                 Value::B64(v) => bs58::encode(&v).into_string(),
                                 other => serde_json::to_string_pretty(&other).unwrap(),
                             };
-                            return value;
+                            value
                         })
                         .collect::<Vec<String>>();
 

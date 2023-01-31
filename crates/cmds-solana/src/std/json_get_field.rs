@@ -78,7 +78,7 @@ impl CommandTrait for JsonGetField {
             Value::Map(map) => {
                 let value = map
                     .get(&field)
-                    .ok_or_else(|| crate::Error::ValueNotFound(field.into()))?;
+                    .ok_or_else(|| crate::Error::ValueNotFound(field))?;
 
                 let result_json: JsonValue = from_value(value.to_owned())?;
                 let result_string = result_json.to_string();

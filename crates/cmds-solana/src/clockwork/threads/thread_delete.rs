@@ -124,10 +124,8 @@ impl CommandTrait for ThreadDelete {
         // Get Inputs or pass thread_authority as default
         let payer_input: Keypair = payer.unwrap_or(thread_authority.clone_keypair());
 
-        let thread_input: Pubkey = thread.unwrap_or_else(|| {
-            let thread = Thread::pubkey(thread_authority.pubkey(), "payment".into());
-            thread
-        });
+        let thread_input: Pubkey =
+            thread.unwrap_or_else(|| Thread::pubkey(thread_authority.pubkey(), "payment".into()));
 
         let close_to_input: Pubkey = close_to.unwrap_or(thread_authority.pubkey());
 

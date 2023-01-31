@@ -1,17 +1,15 @@
 use crate::prelude::*;
+use anchor_lang::{solana_program::sysvar, InstructionData};
+use anchor_spl::{associated_token, token};
 use solana_program::{
     instruction::{AccountMeta, Instruction},
     system_program,
 };
 use solana_sdk::pubkey::Pubkey;
-
-use anchor_lang::{solana_program::sysvar, InstructionData};
-use anchor_spl::{associated_token, token};
-
+// use clockwork_client::thread::ID as thread_program_ID;
 use clockwork_client::thread::{
     instruction::thread_create,
     state::{Thread, Trigger},
-    ID as thread_program_ID,
 };
 use clockwork_thread_program::state::InstructionData as ClockworkInstructionData;
 use clockwork_utils::{explorer::Explorer, PAYER_PUBKEY};
@@ -29,8 +27,7 @@ fn create_payment(
     recipient: Pubkey,
     amount: u64,
 ) -> Instruction {
-    // create instruction
-    let create_payment_instruction = Instruction {
+    Instruction {
         program_id: payments::ID,
         accounts: vec![
             AccountMeta::new_readonly(associated_token::ID, false),
@@ -44,9 +41,7 @@ fn create_payment(
             AccountMeta::new_readonly(token::ID, false),
         ],
         data: payments::instruction::CreatePayment { amount }.data(),
-    };
-
-    create_payment_instruction
+    }
 }
 
 fn distribute_payment(
@@ -121,8 +116,6 @@ impl Payment {
             recipient_ata_pubkey,
         );
 
-        dbg!(&distribute_payment_ix);
-
         let instructions = vec![
             // thread_delete(payer, thread),
             create_payment(
@@ -142,7 +135,6 @@ impl Payment {
                 trigger,
             ),
         ];
-        dbg!(&instructions);
 
         Ok((minimum_balance_for_rent_exemption, instructions))
     }
@@ -349,10 +341,12 @@ impl CommandTrait for Payment {
         )
         .await?;
 
+        /*
         println!(
             "thread: 🔗 {}",
             explorer().thread_url(thread, thread_program_ID)
         );
+        */
         try_sign_wallet(&ctx, &mut transaction, &[&payer], recent_blockhash).await?;
 
         let signature = submit_transaction(&ctx.solana_client, transaction).await?;
@@ -365,7 +359,7 @@ inventory::submit!(CommandDescription::new(CREATE_PAYMENT, |_| {
     Box::new(Payment)
 }));
 
-fn explorer() -> Explorer {
+pub fn explorer() -> Explorer {
     #[cfg(feature = "localnet")]
     return Explorer::custom("http://localhost:8899".to_string());
     #[cfg(not(feature = "localnet"))]

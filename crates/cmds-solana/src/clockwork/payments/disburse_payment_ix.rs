@@ -120,8 +120,7 @@ impl CommandTrait for DisbursePaymentIx {
             thread,
             recipient,
             recipient_ata,
-        } = value::from_map::<Input>(inputs.clone())?;
-        dbg!(&inputs);
+        } = value::from_map::<Input>(inputs)?;
 
         let payment = ClockworkPayment::pubkey(payer, mint, recipient);
 
@@ -143,10 +142,10 @@ impl CommandTrait for DisbursePaymentIx {
         let data = anchor_sighash("disburse_payment").to_vec();
 
         let instruction = Instruction::new_with_bytes(program_id, &data, accounts);
-        dbg!(&instruction);
 
-        let instruction = to_value(&instruction).unwrap();
-        dbg!(&instruction);
+        // TODO: don't call to_value?
+        // TODO: submit instruction
+        let instruction = to_value(instruction).unwrap();
 
         Ok(value::to_map(&Output { instruction })?)
     }
