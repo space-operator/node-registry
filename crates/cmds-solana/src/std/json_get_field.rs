@@ -133,16 +133,8 @@ mod tests {
             FIELD => "amount",
         };
 
-        // let inputs = value::map! {
-        //     JSON_OR_STRING => "{
-        //         \"amount\": 100
-        //     }",
-        //     FIELD => "amount",
-        // };
-
         let output = JsonGetField.run(Context::default(), inputs).await.unwrap();
-        dbg!(&output);
         let result = value::from_map::<Output>(output).unwrap().result_json;
-        panic!("{}", result);
+        assert_eq!(result, 100);
     }
 }
