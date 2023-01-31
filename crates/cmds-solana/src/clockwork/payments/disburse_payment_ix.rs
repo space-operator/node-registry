@@ -38,13 +38,13 @@ pub struct Output {
 const DISBURSE_PAYMENT_IX: &str = "disburse_payment_ix";
 
 // Inputs
-const PAYER: &str = "pubkey";
-const AUTHORITY_TOKEN_ACCOUNT: &str = "pubkey";
-const MINT: &str = "pubkey";
-const PAYMENT: &str = "pubkey";
-const THREAD: &str = "pubkey";
-const RECIPIENT: &str = "pubkey";
-const RECIPIENT_ATA: &str = "pubkey";
+const PAYER: &str = "payer";
+const AUTHORITY_TOKEN_ACCOUNT: &str = "authority_token_account";
+const MINT: &str = "mint";
+const PAYMENT: &str = "payment";
+const THREAD: &str = "thread";
+const RECIPIENT: &str = "recipient";
+const RECIPIENT_ATA: &str = "recipient_ata";
 
 // Outputs
 const INSTRUCTION: &str = "instruction";
@@ -121,7 +121,6 @@ impl CommandTrait for DisbursePaymentIx {
             recipient,
             recipient_ata,
         } = value::from_map::<Input>(inputs.clone())?;
-        dbg!(&inputs);
 
         let payment = ClockworkPayment::pubkey(payer, mint, recipient);
 
@@ -143,10 +142,8 @@ impl CommandTrait for DisbursePaymentIx {
         let data = anchor_sighash("disburse_payment").to_vec();
 
         let instruction = Instruction::new_with_bytes(program_id, &data, accounts);
-        dbg!(&instruction);
 
         let instruction = to_value(&instruction).unwrap();
-        dbg!(&instruction);
 
         Ok(value::to_map(&Output { instruction })?)
     }
