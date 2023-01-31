@@ -3,7 +3,7 @@
     "data": {
         "node_id": "json_get_field",
         "version": "0.1",
-        "display_name": "JSON",
+        "display_name": "JSON Get Field",
         "description": "Get a field from a JSON or JSON string",
         "width": 200,
         "height": 180,

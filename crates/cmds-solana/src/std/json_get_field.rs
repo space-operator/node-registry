@@ -1,7 +1,7 @@
 use serde_json::Value as JsonValue;
-use value::from_value;
 use std::collections::BTreeMap;
 use thiserror::Error as ThisError;
+use value::from_value;
 
 use crate::prelude::*;
 
@@ -77,7 +77,9 @@ impl CommandTrait for JsonGetField {
 
         match json {
             Value::Map(map) => {
-                let value = map.get(&field).unwrap();
+                let value = map
+                    .get(&field)
+                    .ok_or_else(|| crate::Error::ValueNotFound(field.into()))?;
 
                 let result_json: JsonValue = from_value(value.to_owned())?;
                 let result_string = result_json.to_string();
@@ -112,7 +114,6 @@ impl CommandTrait for JsonGetField {
                 })?)
             }
         }
-     
     }
 }
 
