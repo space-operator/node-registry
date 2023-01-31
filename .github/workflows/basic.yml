@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: 1.65.0
+          toolchain: 1.67.0
           profile: default
           override: true
       - uses: actions/checkout@v3
@@ -21,14 +21,20 @@ jobs:
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --tests
+          args:
+            --tests --
+            -D clippy::dbg_macro
+            -D clippy::print_stdout
+            -D clippy::print_stderr
+            -A clippy::uninlined_format_args
+            -A clippy::too_many_arguments
   unit-test:
     name: Unit test
     runs-on: ubuntu-latest
     steps:
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: 1.65.0
+          toolchain: 1.67.0
           profile: default
           override: true
       - uses: actions/checkout@v3

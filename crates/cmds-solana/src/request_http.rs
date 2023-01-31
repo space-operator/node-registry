@@ -1,8 +1,8 @@
 use anyhow::bail;
 use log::error;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
-use value::from_value;
 use std::str::FromStr;
+use value::from_value;
 
 use crate::prelude::*;
 
@@ -181,7 +181,7 @@ impl CommandTrait for RequestHttp {
                     let header_name = HeaderName::from_str(header_name).map_err(|_| {
                         anyhow::anyhow!("InvalidHttpHeaderNameInput: {}", header_name.clone())
                     })?;
-                    let header_value = HeaderValue::from_str(&header_value).map_err(|_| {
+                    let header_value = HeaderValue::from_str(header_value).map_err(|_| {
                         anyhow::anyhow!("InvalidHttpHeaderValueInput: {}", header_value)
                     })?;
                     Ok::<(HeaderName, HeaderValue), CommandError>((header_name, header_value))
@@ -203,7 +203,7 @@ impl CommandTrait for RequestHttp {
         }
 
         if let Some(body) = inputs.body {
-            let body:serde_json::Value = from_value(body)?;
+            let body: serde_json::Value = from_value(body)?;
             req = req.json(&body);
         }
 
@@ -230,19 +230,17 @@ impl CommandTrait for RequestHttp {
 
         let headers = resp.headers();
 
-        if let Some(_) = &inputs.headers {
-            for (header_name, _field_name) in headers.iter() {
-                let header_val = headers.get(header_name).ok_or_else(|| {
-                    anyhow::anyhow!("HttpHeaderNotFound: {}", header_name.clone())
-                })?;
-                let header_val = header_val
-                    .to_str()
-                    .map_err(|_| {
-                        anyhow::anyhow!("InvalidHttpHeaderValueOutput: {}", header_name.clone())
-                    })?
-                    .into();
-                output.headers.insert(header_name.to_string(), header_val);
-            }
+        for (header_name, _field_name) in headers.iter() {
+            let header_val = headers
+                .get(header_name)
+                .ok_or_else(|| anyhow::anyhow!("HttpHeaderNotFound: {}", header_name.clone()))?;
+            let header_val = header_val
+                .to_str()
+                .map_err(|_| {
+                    anyhow::anyhow!("InvalidHttpHeaderValueOutput: {}", header_name.clone())
+                })?
+                .into();
+            output.headers.insert(header_name.to_string(), header_val);
         }
 
         let body: serde_json::Value = resp

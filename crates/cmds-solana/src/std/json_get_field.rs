@@ -1,6 +1,5 @@
 use serde_json::Value as JsonValue;
-use std::collections::BTreeMap;
-use thiserror::Error as ThisError;
+
 use value::from_value;
 
 use crate::prelude::*;
@@ -68,7 +67,7 @@ impl CommandTrait for JsonGetField {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, _ctx: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let Input { field } = value::from_map(inputs.clone())?;
 
         let json = inputs
@@ -79,7 +78,7 @@ impl CommandTrait for JsonGetField {
             Value::Map(map) => {
                 let value = map
                     .get(&field)
-                    .ok_or_else(|| crate::Error::ValueNotFound(field.into()))?;
+                    .ok_or_else(|| crate::Error::ValueNotFound(field))?;
 
                 let result_json: JsonValue = from_value(value.to_owned())?;
                 let result_string = result_json.to_string();
@@ -134,16 +133,8 @@ mod tests {
             FIELD => "amount",
         };
 
-        // let inputs = value::map! {
-        //     JSON_OR_STRING => "{
-        //         \"amount\": 100
-        //     }",
-        //     FIELD => "amount",
-        // };
-
         let output = JsonGetField.run(Context::default(), inputs).await.unwrap();
-        dbg!(&output);
         let result = value::from_map::<Output>(output).unwrap().result_json;
-        panic!("{}", result);
+        assert_eq!(result, 100);
     }
 }

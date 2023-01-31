@@ -119,15 +119,15 @@ impl From<serde_json::Value> for Value {
                     }
                 } else {
                     let s = n.to_string();
-                    if let Some(u) = s.parse::<u128>().ok() {
+                    if let Ok(u) = s.parse::<u128>() {
                         Value::U128(u)
-                    } else if let Some(i) = s.parse::<i128>().ok() {
+                    } else if let Ok(i) = s.parse::<i128>() {
                         Value::I128(i)
-                    } else if let Some(d) = s.parse::<Decimal>().ok() {
+                    } else if let Ok(d) = s.parse::<Decimal>() {
                         Value::Decimal(d)
-                    } else if let Some(d) = Decimal::from_scientific(&s).ok() {
+                    } else if let Ok(d) = Decimal::from_scientific(&s) {
                         Value::Decimal(d)
-                    } else if let Some(f) = s.parse::<f64>().ok() {
+                    } else if let Ok(f) = s.parse::<f64>() {
                         Value::F64(f)
                     } else {
                         // unlikely to happen

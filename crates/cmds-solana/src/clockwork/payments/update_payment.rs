@@ -1,24 +1,10 @@
-use std::str::FromStr;
-
 use crate::prelude::*;
-use solana_program::{
-    instruction::{AccountMeta, Instruction},
-    system_program,
-};
+use solana_program::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
 
-use anchor_lang::{solana_program::sysvar, InstructionData};
-use anchor_spl::{associated_token, token};
+use anchor_lang::InstructionData;
 
-use clockwork_client::thread::{
-    instruction::thread_create,
-    state::{Thread, Trigger},
-    ID as thread_program_ID,
-};
-use clockwork_thread_program::state::InstructionData as ClockworkInstructionData;
-use clockwork_utils::{explorer::Explorer, PAYER_PUBKEY};
 use payments::state::Payment as ClockworkPayment;
-use spl_associated_token_account::get_associated_token_address;
 
 #[derive(Debug)]
 pub struct UpdatePayment;
@@ -26,7 +12,7 @@ pub struct UpdatePayment;
 // update disbursement amount
 fn update_payment(payment_pubkey: Pubkey, payer: Pubkey, amount: u64) -> Instruction {
     // create instruction
-    let update_payment_ix = Instruction {
+    Instruction {
         program_id: payments::ID,
         accounts: vec![
             AccountMeta::new(payer, true),
@@ -36,9 +22,7 @@ fn update_payment(payment_pubkey: Pubkey, payer: Pubkey, amount: u64) -> Instruc
             amount: Some(amount),
         }
         .data(),
-    };
-
-    update_payment_ix
+    }
 }
 
 impl UpdatePayment {
@@ -56,7 +40,6 @@ impl UpdatePayment {
             .await?;
 
         let instructions = vec![update_payment(payment, payer, amount)];
-        dbg!(&instructions);
 
         Ok((minimum_balance_for_rent_exemption, instructions))
     }

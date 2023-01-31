@@ -56,7 +56,7 @@ impl CommandTrait for ToVec {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, _ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let Input { first, second } = value::from_map::<Input>(inputs)?;
 
         let result = vec![first, second];
@@ -69,7 +69,6 @@ inventory::submit!(CommandDescription::new(TO_VEC, |_| Box::new(ToVec {})));
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[tokio::test]
     async fn test_valid() {}

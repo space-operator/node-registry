@@ -111,16 +111,16 @@ impl CommandTrait for DisbursePaymentIx {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, _ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let Input {
             payer,
             authority_token_account,
             mint,
-            payment,
+            payment: _,
             thread,
             recipient,
             recipient_ata,
-        } = value::from_map::<Input>(inputs.clone())?;
+        } = value::from_map::<Input>(inputs)?;
 
         let payment = ClockworkPayment::pubkey(payer, mint, recipient);
 
@@ -143,7 +143,9 @@ impl CommandTrait for DisbursePaymentIx {
 
         let instruction = Instruction::new_with_bytes(program_id, &data, accounts);
 
-        let instruction = to_value(&instruction).unwrap();
+        // TODO: don't call to_value?
+        // TODO: submit instruction
+        let instruction = to_value(instruction).unwrap();
 
         Ok(value::to_map(&Output { instruction })?)
     }
@@ -155,7 +157,6 @@ inventory::submit!(CommandDescription::new(DISBURSE_PAYMENT_IX, |_| Box::new(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[tokio::test]
     async fn test_valid() {}

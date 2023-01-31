@@ -140,7 +140,7 @@ impl CreateMetadataAccount {
         metadata_pubkey: Pubkey,
         mint: Pubkey,
         mint_authority: Pubkey,
-        payer: Pubkey,
+        _payer: Pubkey,
         proxy_authority: Pubkey,
         authority: Pubkey,
         name: String,
@@ -148,10 +148,10 @@ impl CreateMetadataAccount {
         uri: String,
         creators: Vec<Creator>,
         seller_fee_basis_points: u16,
-        is_mutable: bool,
+        _is_mutable: bool,
         collection: Option<Pubkey>,
-        uses: Uses,
-        collection_details: Option<CollectionDetails>,
+        _uses: Uses,
+        _collection_details: Option<CollectionDetails>,
     ) -> crate::Result<(u64, Vec<Instruction>)> {
         let minimum_balance_for_rent_exemption = rpc_client
             .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
@@ -346,7 +346,7 @@ impl CommandTrait for CreateMetadataAccount {
     async fn run(&self, ctx: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
         match value::from_map(inputs.clone())? {
             Input::Proxy {
-                proxy_as_update_authority,
+                proxy_as_update_authority: _,
             } => {
                 let InputStruct {
                     is_mutable,
@@ -373,7 +373,7 @@ impl CommandTrait for CreateMetadataAccount {
                 let collection = match inputs.remove("collection_mint_account") {
                     Some(Value::B32(collection)) => Some(Collection {
                         verified: false,
-                        key:Pubkey::new_from_array(collection),
+                        key: Pubkey::new_from_array(collection),
                     }),
                     _ => None,
                 };
@@ -384,7 +384,6 @@ impl CommandTrait for CreateMetadataAccount {
                 let (metadata_account, _) =
                     mpl_token_metadata::pda::find_metadata_account(&mint_account);
 
-             
                 let creators: Vec<Creator> = creators.into_iter().map(Creator::from).collect();
 
                 let proxy_authority = find_proxy_authority_address(&fee_payer.pubkey());
@@ -447,7 +446,7 @@ impl CommandTrait for CreateMetadataAccount {
                 let collection = match inputs.remove("collection_mint_account") {
                     Some(Value::B32(collection)) => Some(Collection {
                         verified: false,
-                        key:Pubkey::new_from_array(collection),
+                        key: Pubkey::new_from_array(collection),
                     }),
                     _ => None,
                 };
@@ -458,7 +457,6 @@ impl CommandTrait for CreateMetadataAccount {
                 let (metadata_account, _) =
                     mpl_token_metadata::pda::find_metadata_account(&mint_account);
 
-              
                 let creators: Vec<Creator> = creators.into_iter().map(Creator::from).collect();
                 let (minimum_balance_for_rent_exemption, instructions) = self
                     .command_create_metadata_accounts(
