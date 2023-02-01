@@ -246,7 +246,7 @@ impl CommandTrait for CreateMasterEdition {
     async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         match value::from_map(inputs.clone())? {
             Input::Proxy {
-                proxy_as_update_authority,
+                proxy_as_update_authority: _,
             } => {
                 let InputStruct {
                     mint_account,

@@ -1,13 +1,4 @@
-use crate::{prelude::*, Error};
-use async_trait::async_trait;
-use flow_lib::{
-    command::{CommandError, CommandTrait},
-    Name,
-};
-use indexmap::indexmap;
-use serde_json::Value as JsonValue;
-use value::{Value, ValueType};
-
+use crate::prelude::*;
 #[derive(Debug)]
 pub struct ScriptCommand;
 
@@ -23,7 +14,7 @@ impl ScriptCommand {
     }
 }
 
-pub const SCRIPT_CMD: &str = "rhai_script";
+pub const SCRIPT_CMD: &str = "expression";
 
 // Inputs
 const SCRIPT: &str = "script";
@@ -32,6 +23,10 @@ const VALUES: &str = "values";
 // Outputs
 const OUTPUT: &str = "output";
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Output {
+    pub output: Value,
+}
 #[async_trait]
 impl CommandTrait for ScriptCommand {
     fn name(&self) -> Name {
@@ -48,7 +43,7 @@ impl CommandTrait for ScriptCommand {
             },
             CmdInput {
                 name: VALUES.into(),
-                type_bounds: [ValueType::Free].to_vec(),
+                type_bounds: [ValueType::Json].to_vec(),
                 required: true,
                 passthrough: false,
             },
@@ -71,7 +66,10 @@ impl CommandTrait for ScriptCommand {
         {
             expression
         } else {
-            panic!("Wrong expression value!");
+            return Err(crate::Error::RhaiExecutionError(
+                "Cannot execute this expression".to_string(),
+            )
+            .into());
         };
         let values = match inputs
             .remove(VALUES)
@@ -79,18 +77,22 @@ impl CommandTrait for ScriptCommand {
         {
             Value::Array(values) => values,
             _ => {
-                return Err(Error::RhaiExecutionError(
+                return Err(crate::Error::RhaiExecutionError(
                     "Values passed aren't JSON array".to_string(),
-                ))
+                )
+                .into())
             }
         };
+
         let slots = Self::count_unique_slots(&expression);
 
         if values.len() != slots {
-            return Err(Error::RhaiExecutionError(
-                "Number of values and expression slots don't match".to_string(),
-            ));
+            return Err(crate::Error::RhaiExecutionError(
+                "Input values count not matching Script count".to_string(),
+            )
+            .into());
         }
+
         for (index, val) in values.iter().enumerate() {
             match val {
                 Value::String(s) => {
@@ -98,35 +100,59 @@ impl CommandTrait for ScriptCommand {
                         .as_str()
                         .replace(&format!("${{{}}}", index), &format!("\"{}\"", s));
                 }
-                Value::U32(n) => {
+                Value::Bool(n) => {
                     expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
                 }
-                Value::I32(n) => {
-                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
+                Value::Array(n) => {
+                    let n = n
+                        .iter()
+                        .map(|v| {
+                            let value = match v {
+                                Value::Null => "null".into(),
+                                Value::String(v) => v.to_string(),
+                                Value::Decimal(v) => v.to_string(),
+                                Value::U64(v) => v.to_string(),
+                                Value::I64(v) => v.to_string(),
+                                Value::U128(v) => v.to_string(),
+                                Value::I128(v) => v.to_string(),
+                                Value::F64(v) => v.to_string(),
+                                Value::Bytes(v) => String::from_utf8_lossy(v).to_string(),
+                                Value::Array(_v) => "only flat arrays supported".into(),
+                                Value::Map(_v) => "maps_not_supported".into(),
+                                Value::B32(v) => bs58::encode(&v).into_string(),
+                                Value::B64(v) => bs58::encode(&v).into_string(),
+                                other => serde_json::to_string_pretty(&other).unwrap(),
+                            };
+                            value
+                        })
+                        .collect::<Vec<String>>();
+
+                    expression =
+                        expression.replace(&format!("${{{}}}", index), &format!("{:#?}", n));
                 }
-                Value::I8(n) => {
-                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
-                }
-                Value::I16(n) => {
-                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
-                }
-                Value::U8(n) => {
-                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
-                }
-                Value::U16(n) => {
-                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
-                }
-                Value::U128(n) => {
-                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
-                }
-                Value::F32(n) => {
+                Value::Decimal(n) => {
                     expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
                 }
                 Value::F64(n) => {
                     expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
                 }
+                Value::I128(n) => {
+                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
+                }
+                Value::I64(n) => {
+                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
+                }
+                Value::U128(n) => {
+                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
+                }
+                Value::U64(n) => {
+                    expression = expression.replace(&format!("${{{}}}", index), &format!("{}", n));
+                }
                 _ => {
-                    panic!("Currently not supported!");
+                    return Err(crate::Error::ValueNotFound(
+                        "Value currently not supported!".into(),
+                    )
+                    .into());
                 }
             }
         }
@@ -135,49 +161,50 @@ impl CommandTrait for ScriptCommand {
 
         let exp = engine
             .eval::<rhai::Dynamic>(&expression)
-            .map_err(|e| Error::RhaiExecutionError(e.to_string()))?;
+            .map_err(|e| crate::Error::RhaiExecutionError(e.to_string()))?;
 
-        let exp = match exp.type_name() {
+        let output = match exp.type_name() {
             "i64" => {
                 let v: Option<i64> = exp.try_cast();
                 if let Some(v) = v {
-                    JsonValue::from(v)
+                    Value::from(v)
                 } else {
-                    JsonValue::Null
+                    Value::Null
                 }
             }
             "f64" => {
                 let v: Option<f64> = exp.try_cast();
                 if let Some(v) = v {
-                    JsonValue::from(v)
+                    Value::from(v)
                 } else {
-                    JsonValue::Null
+                    Value::Null
                 }
             }
             "string" => {
                 let v: Option<String> = exp.try_cast();
                 if let Some(v) = v {
-                    JsonValue::from(v)
+                    Value::from(v)
                 } else {
-                    JsonValue::Null
+                    Value::Null
                 }
             }
             "bool" => {
                 let v: Option<bool> = exp.try_cast();
                 if let Some(v) = v {
-                    JsonValue::from(v)
+                    Value::from(v)
                 } else {
-                    JsonValue::Null
+                    Value::Null
                 }
             }
             _ => {
-                panic!("Currently not supported");
+                return Err(crate::Error::RhaiExecutionError(
+                    "Currently not supported".to_string(),
+                )
+                .into());
             }
         };
 
-        Ok(indexmap! {
-           OUTPUT.into() => Value::from_json_value(exp),
-        })
+        Ok(value::to_map(&Output { output })?)
     }
 }
 
@@ -187,7 +214,6 @@ inventory::submit!(CommandDescription::new(SCRIPT_CMD, |_| {
 
 #[cfg(test)]
 mod test {
-    use std::sync::Arc;
 
     use flow_lib::{command::CommandTrait, Context, ValueSet};
     use indexmap::indexmap;
@@ -205,7 +231,7 @@ mod test {
         // Compare integers
         let inputs: ValueSet = indexmap! {
             SCRIPT.into() => Value::String("${0} + ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![Value::U32(1), Value::U32(2)]),
+            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2)]),
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
@@ -229,7 +255,7 @@ mod test {
         // Compare integers
         let inputs: ValueSet = indexmap! {
             SCRIPT.into() => Value::String(expression.to_string()),
-            VALUES.into() => Value::Array(vec![Value::U32(1), Value::U32(2), Value::U32(3), Value::U32(5)]),
+            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2), Value::U64(3), Value::U64(5)]),
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
@@ -250,7 +276,7 @@ mod test {
         // Compare integers
         let inputs: ValueSet = indexmap! {
             SCRIPT.into() => Value::String("${0} * ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![Value::U32(1), Value::U32(2)]),
+            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2)]),
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
@@ -259,8 +285,9 @@ mod test {
         // Compare mixed types
         let inputs: ValueSet = indexmap! {
             SCRIPT.into() => Value::String("${0} - ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![Value::String("1".to_string()), Value::U32(2)]),
+            VALUES.into() => Value::Array(vec![Value::String("1".to_string()), Value::U64(2)]),
         };
+        dbg!(&inputs);
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
         assert!(outputs.is_err());
@@ -283,7 +310,7 @@ mod test {
         // More values than expression slots
         let inputs: ValueSet = indexmap! {
             SCRIPT.into() => Value::String("${0} > ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![Value::U32(1), Value::U32(2), Value::U32(3)]),
+            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2), Value::U64(3)]),
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
@@ -292,7 +319,7 @@ mod test {
         // More expression slots than values
         let inputs: ValueSet = indexmap! {
             SCRIPT.into() => Value::String(r#"${0} > ${1} && ${1} > ${2}"#.to_string()),
-            VALUES.into() => Value::Array(vec![Value::U32(1), Value::U32(2)]),
+            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2)]),
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
@@ -301,7 +328,7 @@ mod test {
         // No slots
         let inputs: ValueSet = indexmap! {
             SCRIPT.into() => Value::String("1 > 2".to_string()),
-            VALUES.into() => Value::Array(vec![Value::U32(1), Value::U32(2)]),
+            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2)]),
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;

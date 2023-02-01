@@ -1,0 +1,121 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "create_payment",
+        "version": "0.1",
+        "display_name": "Create Payment",
+        "description": "",
+        "width": 200,
+        "height": 425,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "thread",
+            "type": "pubkey",
+            "defaultValue": null,
+            "tooltip": ""
+        },
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": null,
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "is_immediate",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "schedule",
+            "type_bounds": [
+                "string"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "is_skippable",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "monitor_account",
+            "type_bounds": [
+                "string","pubkey", "keypair"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "payer",
+            "type_bounds": [
+                "string","keypair"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "recipient",
+            "type_bounds": [
+                "string","keypair", "pubkey"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "token_mint",
+            "type_bounds": [
+                "string","pubkey","keypair"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        
+        {
+            "name": "token_account",
+            "type_bounds": [
+                "string","pubkey","keypair"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "amount",
+            "type_bounds": [
+                "u64"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

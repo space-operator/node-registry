@@ -167,7 +167,6 @@ impl VerifyCollection {
         collection_master_edition_account: Pubkey,
         collection_authority_record: Option<Pubkey>,
     ) -> crate::Result<(u64, Vec<Instruction>)> {
-
         // FIXME calculcation min balance
         let minimum_balance_for_rent_exemption = rpc_client
             .get_minimum_balance_for_rent_exemption(

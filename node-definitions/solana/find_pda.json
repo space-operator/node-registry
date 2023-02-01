@@ -1,0 +1,72 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "find_pda",
+    "version": "0.1",
+    "display_name": "Find PDA",
+    "description": "Find the PDA address for a given program ID and seeds",
+    "width": 200,
+    "height": 110,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "pda",
+      "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "program_id",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "seed_1",
+      "type_bounds": ["string", "pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "seed_2",
+      "type_bounds": ["string", "pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "seed_3",
+      "type_bounds": ["string", "pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "seed_4",
+      "type_bounds": ["string", "pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "seed_5",
+      "type_bounds": ["string", "pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}
