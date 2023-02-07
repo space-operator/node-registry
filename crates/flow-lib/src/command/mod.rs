@@ -2,7 +2,7 @@ use crate::{
     config::{client::NodeData, CmdInputDescription, CmdOutputDescription, Name, ValueSet},
     context::Context,
 };
-use std::borrow::Cow;
+use std::{borrow::Cow, num::NonZeroU32};
 use value::Value;
 
 pub type CommandError = anyhow::Error;
@@ -40,11 +40,13 @@ pub trait CommandTrait: Send + Sync + 'static {
         res
     }
 
-    async fn steps(&self) -> u32 {
-        0
+    fn steps(&self) -> NonZeroU32 {
+        NonZeroU32::new(1).unwrap()
     }
 
     async fn run1(&self, ctx: Context, params: ValueSet) -> Result<(), CommandError> {
+        let values = self.run(ctx.clone(), params).await?;
+        ctx.send_output(values, Vec::new()).await?;
         Ok(())
     }
 }

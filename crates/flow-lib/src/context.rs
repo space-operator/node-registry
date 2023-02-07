@@ -1,4 +1,4 @@
-use crate::{ContextConfig, ValueSet};
+use crate::{ContextConfig, Name, NodeId, ValueSet};
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
 use solana_sdk::{instruction::Instruction, pubkey::Pubkey, signature::Signature};
@@ -43,7 +43,44 @@ pub mod signer {
             .boxed()
             .service_fn(|_| std::future::ready(Err(anyhow::anyhow!("not implemented"))));
 
-        // throw away the worker
+        // Buffer::new requires tokio runtime
+        let (s, _) = Buffer::pair(s, 32);
+        MapErr::new(s, map_err)
+    }
+}
+
+pub mod output_svc {
+    use crate::ValueSet;
+    use solana_sdk::{instruction::Instruction, signature::Signature};
+    use tower::{
+        buffer::Buffer,
+        util::{BoxService, MapErr},
+    };
+
+    pub struct OutputRequest {
+        pub values: ValueSet,
+        pub instructions: Vec<Instruction>,
+    }
+
+    pub struct OutputResponse {
+        pub signature: Option<Signature>,
+    }
+
+    pub type Svc = MapErr<
+        Buffer<BoxService<OutputRequest, OutputResponse, anyhow::Error>, OutputRequest>,
+        fn(tower::BoxError) -> anyhow::Error,
+    >;
+
+    fn map_err(e: tower::BoxError) -> anyhow::Error {
+        anyhow::anyhow!(e)
+    }
+
+    pub fn unimplemented_svc() -> Svc {
+        let s = tower::ServiceBuilder::new()
+            .boxed()
+            .service_fn(|_| std::future::ready(Err(anyhow::anyhow!("not implemented"))));
+
+        // Buffer::new requires tokio runtime
         let (s, _) = Buffer::pair(s, 32);
         MapErr::new(s, map_err)
     }
@@ -57,6 +94,7 @@ pub struct Context {
     pub user: User,
     pub signer: signer::Svc,
     pub extensions: Arc<Extensions>,
+    pub node: Option<NodeContext>,
 }
 
 impl Default for Context {
@@ -89,10 +127,18 @@ impl Default for User {
     /// For testing
     fn default() -> Self {
         User {
-            id: uuid::uuid!("00000000-0000-0000-0000-000000000000"),
+            id: uuid::Uuid::nil(),
             pubkey: Pubkey::new_from_array([0u8; 32]),
         }
     }
+}
+
+#[derive(Clone)]
+pub struct NodeContext {
+    pub node_id: NodeId,
+    pub times: i32,
+    pub command_name: Name,
+    pub output: output_svc::Svc,
 }
 
 impl Context {
@@ -112,6 +158,7 @@ impl Context {
             user,
             extensions: Arc::new(extensions),
             signer: sig_svc,
+            node: None,
         }
     }
 
@@ -119,7 +166,7 @@ impl Context {
         &self,
         output: ValueSet,
         instructions: Vec<Instruction>,
-    ) -> Result<Signature, anyhow::Error> {
+    ) -> Result<Option<Signature>, anyhow::Error> {
         Err(anyhow::anyhow!("unimplemented"))
     }
 
