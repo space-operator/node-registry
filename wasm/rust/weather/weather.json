@@ -1,44 +1,40 @@
 {
-    "type": "WASM",
-    "data": {
-        "node_id": "weather",
-        "version": "0.2",
-        "display_name": "Weather",
-        "description": "Retrieves current weather data from https://api.openweathermap.org/data/2.5/weather",
-        "width": 200,
-        "height": 180,
-        "backgroundColor": "#ffd9b3"
+  "type": "WASM",
+  "data": {
+    "node_id": "weather",
+    "version": "0.2",
+    "display_name": "Weather",
+    "description": "Retrieves current weather data from https://api.openweathermap.org/data/2.5/weather",
+    "width": 200,
+    "height": 180,
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "latitude",
+      "type_bounds": ["f64"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
     },
-    "targets": [
-        {
-            "name": "latitude",
-            "type_bounds": [
-                "f32"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "longitude",
-            "type_bounds": [
-                "f32"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "sources": [
-        {
-            "name": "json",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "longitude",
+      "type_bounds": ["f64"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "json",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }
