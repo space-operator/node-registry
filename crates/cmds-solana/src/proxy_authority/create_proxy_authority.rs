@@ -1,5 +1,4 @@
-use std::str::FromStr;
-
+use super::utils::find_proxy_authority_address;
 use crate::prelude::*;
 use anchor_lang::InstructionData;
 use solana_program::{
@@ -9,8 +8,6 @@ use solana_program::{
 use solana_sdk::pubkey::Pubkey;
 use space_wrapper::instruction::CreateProxyAuthority as Proxy;
 
-use super::utils::find_proxy_authority_address;
-
 fn create_create_proxy_instruction(proxy_authority: &Pubkey, authority: &Pubkey) -> Instruction {
     let accounts = vec![
         AccountMeta::new(*proxy_authority, false),
@@ -19,7 +16,7 @@ fn create_create_proxy_instruction(proxy_authority: &Pubkey, authority: &Pubkey)
     ];
 
     Instruction {
-        program_id: Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
+        program_id: space_wrapper::ID,
         accounts,
         data: Proxy.data(),
     }

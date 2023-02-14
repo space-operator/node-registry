@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::{prelude::*, proxy_authority::utils::find_proxy_authority_address};
 use anchor_lang::Discriminator;
 use borsh::BorshSerialize;
@@ -7,7 +5,6 @@ use solana_program::{
     instruction::{AccountMeta, Instruction},
     system_program,
 };
-
 use space_wrapper::instruction::ProxyCreateMasterEditionV3 as Proxy;
 
 #[derive(Debug, Clone)]
@@ -47,7 +44,7 @@ pub fn create_proxy_create_master_edition_instruction(
     data.insert(0, instruction_data);
 
     Instruction {
-        program_id: Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
+        program_id: space_wrapper::ID,
         accounts,
         data: data.into_iter().flatten().collect(),
     }
