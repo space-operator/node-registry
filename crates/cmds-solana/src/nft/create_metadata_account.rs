@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use super::{NftCreator, NftMetadata, NftUses};
 use crate::{prelude::*, proxy_authority::utils::find_proxy_authority_address};
 use anchor_lang::Discriminator;
@@ -9,7 +7,7 @@ use solana_program::{
     instruction::{AccountMeta, Instruction},
     system_program,
 };
-use solana_sdk::pubkey::Pubkey;
+use solana_sdk::{pubkey, pubkey::Pubkey};
 use space_wrapper::instruction::ProxyCreateMetadataV3 as Proxy;
 
 #[derive(Debug)]
@@ -76,7 +74,7 @@ pub fn create_proxy_create_metadata_instruction(
     data.insert(0, instruction_data);
 
     Instruction {
-        program_id: Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
+        program_id: space_wrapper::ID,
         accounts,
         data: data.into_iter().flatten().collect(),
     }
