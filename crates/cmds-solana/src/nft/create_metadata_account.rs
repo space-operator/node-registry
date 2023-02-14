@@ -7,7 +7,7 @@ use solana_program::{
     instruction::{AccountMeta, Instruction},
     system_program,
 };
-use solana_sdk::{pubkey, pubkey::Pubkey};
+use solana_sdk::pubkey::Pubkey;
 use space_wrapper::instruction::ProxyCreateMetadataV3 as Proxy;
 
 #[derive(Debug)]
