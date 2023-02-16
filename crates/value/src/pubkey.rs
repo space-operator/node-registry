@@ -44,9 +44,9 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
         E: serde::de::Error,
     {
         match v.len() {
-            32 => Ok(Pubkey::new(v)),
+            32 => Ok(Pubkey::new_from_array(v.try_into().unwrap())),
             // see ed25519-dalek's Keypair
-            64 => Ok(Pubkey::new(&v[32..])),
+            64 => Ok(Pubkey::new_from_array(v[32..].try_into().unwrap())),
             l => Err(serde::de::Error::invalid_length(l, &"32 or 64")),
         }
     }
