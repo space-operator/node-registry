@@ -145,7 +145,7 @@ pub struct InputStruct {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     pub signature: Option<Signature>,
     #[serde(with = "value::pubkey")]
     pub metadata_account: Pubkey,
