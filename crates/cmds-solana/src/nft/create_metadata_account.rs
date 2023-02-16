@@ -12,13 +12,6 @@ use space_wrapper::instruction::ProxyCreateMetadataV3;
 #[derive(Debug, Clone)]
 pub struct CreateMetadataAccount;
 
-pub fn create_proxy_create_metadata_instruction(
-    inputs: &Input,
-    proxy_authority: &Pubkey,
-    metadata_pubkey: &Pubkey,
-) -> Instruction {
-}
-
 impl CreateMetadataAccount {
     #[allow(clippy::too_many_arguments)]
     async fn create_metadata_accounts(
