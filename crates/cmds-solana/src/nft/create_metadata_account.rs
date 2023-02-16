@@ -274,7 +274,6 @@ impl CommandTrait for CreateMetadataAccount {
     }
 
     async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        dbg!(&inputs);
         let inputs: Input = value::from_map(inputs)?;
 
         let (metadata_account, _) =
