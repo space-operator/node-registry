@@ -132,7 +132,7 @@ pub struct Input {
     pub metadata: NftMetadata,
     pub metadata_uri: String,
     pub uses: NftUses,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     pub collection_mint_account: Option<Pubkey>,
     pub creators: Vec<NftCreator>,
     pub collection_details: Option<u64>,
@@ -274,6 +274,7 @@ impl CommandTrait for CreateMetadataAccount {
     }
 
     async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+        dbg!(&inputs);
         let inputs: Input = value::from_map(inputs)?;
 
         let (metadata_account, _) =
@@ -342,3 +343,76 @@ impl CommandTrait for CreateMetadataAccount {
 inventory::submit!(CommandDescription::new(CREATE_METADATA_ACCOUNT, |_| {
     Box::new(CreateMetadataAccount)
 }));
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_inputs() {
+        let metadata: Value = serde_json::from_str::<serde_json::Value>(
+            r#"
+{
+    "name": "SO #11111",
+    "symbol": "SPOP",
+    "description": "Space Operator is a dynamic PFP collection",
+    "seller_fee_basis_points": 250,
+    "image": "https://arweave.net/vb1tD7tfAyrhZceA1MOYvvyqzZWgzHGDVZF37yDNH1Q",
+    "attributes": [
+        {
+            "trait_type": "Season",
+            "value": "Fall"
+        },
+        {
+            "trait_type": "Light Color",
+            "value": "Orange"
+        }
+    ],
+    "properties": {
+        "files": [
+            {
+                "uri": "https://arweave.net/vb1tD7tfAyrhZceA1MOYvvyqzZWgzHGDVZF37yDNH1Q",
+                "type": "image/jpeg"
+            }
+        ],
+        "category": null
+    }
+}"#,
+        )
+        .unwrap()
+        .into();
+        let uses: Value = serde_json::from_str::<serde_json::Value>(
+            r#"
+{
+"use_method": "Burn",
+"remaining": 500,
+"total": 500
+}
+"#,
+        )
+        .unwrap()
+        .into();
+        let creators: Value = serde_json::from_str::<serde_json::Value>(
+            r#"
+[{
+"address": "DpfvhHU7z1CK8eP5xbEz8c4WBNHUfqUVtAE7opP2kJBc",
+"share": 100
+}]"#,
+        )
+        .unwrap()
+        .into();
+        let inputs = value::map! {
+            PROXY_AS_UPDATE_AUTHORITY => "3G3ixjPdvg7NhazP932tCk88jgLJLzaDBe84mPa43Zyp",
+            IS_MUTABLE => true,
+            MINT_ACCOUNT => "C3EbZLYQ7Axv4PS9o4s4bSruFaiAVcynHZYds18VyWdZ",
+            MINT_AUTHORITY => "C3EbZLYQ7Axv4PS9o4s4bSruFaiAVcynHZYds18VyWdZ",
+            FEE_PAYER => "5s8bKTTgKLh2TudJBQwU6sx9DfFEtHcBP85aYZquEsqHrvipcWWCXxuyz4fsGsxTZ8NGMqMHFowUoQcoqcJSwLrP",
+            METADATA => metadata,
+            METADATA_URI => "https://arweave.net/3FxpIIbpySnfTTXIrpojhF2KHHjevI8Mrt3pACmEbSY",
+            USES => uses,
+            CREATORS => creators,
+        };
+        let inputs: Input = value::from_map(inputs).unwrap();
+        dbg!(inputs);
+    }
+}
