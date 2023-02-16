@@ -18,7 +18,7 @@ pub struct Input {
     pub keypair: Keypair,
     #[serde(with = "value::pubkey")]
     pub mint_address: Pubkey,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     pub candy_machine_id: Option<Pubkey>,
     pub mint_list: Option<Vec<String>>,
 }
