@@ -7,7 +7,7 @@ use solana_program::{
     system_program,
 };
 use solana_sdk::pubkey::Pubkey;
-use space_wrapper::instruction::ProxyCreateMetadataV3 as Proxy;
+use space_wrapper::instruction::ProxyCreateMetadataV3;
 
 #[derive(Debug, Clone)]
 pub struct CreateMetadataAccount;
@@ -17,37 +17,6 @@ pub fn create_proxy_create_metadata_instruction(
     proxy_authority: &Pubkey,
     metadata_pubkey: &Pubkey,
 ) -> Instruction {
-    Instruction {
-        program_id: space_wrapper::ID,
-        accounts: [
-            AccountMeta::new_readonly(*proxy_authority, false),
-            AccountMeta::new(*metadata_pubkey, false),
-            AccountMeta::new_readonly(inputs.mint_account, false),
-            AccountMeta::new(inputs.mint_authority, true),
-            AccountMeta::new(inputs.fee_payer.pubkey(), true),
-            AccountMeta::new_readonly(mpl_token_metadata::ID, false),
-            AccountMeta::new_readonly(system_program::ID, false),
-        ]
-        .to_vec(),
-        data: Proxy {
-            name: inputs.metadata.name.clone(),
-            symbol: inputs.metadata.symbol.clone(),
-            uri: inputs.metadata_uri.clone(),
-            creators: inputs
-                .creators
-                .iter()
-                .cloned()
-                .map(|c| space_wrapper::state::creator::Creator {
-                    key: c.address,
-                    verified: c.verified.unwrap_or(false),
-                    share: c.share,
-                })
-                .collect(),
-            seller_fee_basis_points: inputs.metadata.seller_fee_basis_points,
-            collection: inputs.collection_mint_account,
-        }
-        .data(),
-    }
 }
 
 impl CreateMetadataAccount {
@@ -107,8 +76,37 @@ impl CreateMetadataAccount {
             >())
             .await?;
 
-        let instruction =
-            create_proxy_create_metadata_instruction(inputs, &proxy_authority, &metadata_pubkey);
+        let instruction = Instruction {
+            program_id: space_wrapper::ID,
+            accounts: [
+                AccountMeta::new_readonly(proxy_authority, false),
+                AccountMeta::new(metadata_pubkey, false),
+                AccountMeta::new_readonly(inputs.mint_account, false),
+                AccountMeta::new(inputs.mint_authority, true),
+                AccountMeta::new(inputs.fee_payer.pubkey(), true),
+                AccountMeta::new_readonly(mpl_token_metadata::ID, false),
+                AccountMeta::new_readonly(system_program::ID, false),
+            ]
+            .to_vec(),
+            data: ProxyCreateMetadataV3 {
+                name: inputs.metadata.name.clone(),
+                symbol: inputs.metadata.symbol.clone(),
+                uri: inputs.metadata_uri.clone(),
+                creators: inputs
+                    .creators
+                    .iter()
+                    .cloned()
+                    .map(|c| space_wrapper::state::creator::Creator {
+                        key: c.address,
+                        verified: c.verified.unwrap_or(false),
+                        share: c.share,
+                    })
+                    .collect(),
+                seller_fee_basis_points: inputs.metadata.seller_fee_basis_points,
+                collection: inputs.collection_mint_account,
+            }
+            .data(),
+        };
 
         Ok((minimum_balance_for_rent_exemption, [instruction].to_vec()))
     }
