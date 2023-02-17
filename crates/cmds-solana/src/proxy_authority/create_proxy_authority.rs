@@ -9,11 +9,12 @@ use solana_sdk::pubkey::Pubkey;
 use space_wrapper::instruction::CreateProxyAuthority as Proxy;
 
 fn create_create_proxy_instruction(proxy_authority: &Pubkey, authority: &Pubkey) -> Instruction {
-    let accounts = vec![
+    let accounts = [
         AccountMeta::new(*proxy_authority, false),
         AccountMeta::new(*authority, true),
         AccountMeta::new(system_program::ID, false),
-    ];
+    ]
+    .to_vec();
 
     Instruction {
         program_id: space_wrapper::ID,
@@ -37,12 +38,10 @@ impl CreateProxyAuthority {
             .await?;
 
         let proxy_authority = find_proxy_authority_address(&payer);
-        let create_proxy_authority_instruction =
-            create_create_proxy_instruction(&proxy_authority, &payer);
 
-        let instructions = vec![create_proxy_authority_instruction];
+        let instruction = create_create_proxy_instruction(&proxy_authority, &payer);
 
-        Ok((min_rent, instructions))
+        Ok((min_rent, [instruction].to_vec()))
     }
 }
 
