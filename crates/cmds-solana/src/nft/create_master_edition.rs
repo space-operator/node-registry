@@ -283,7 +283,7 @@ impl CommandTrait for CreateMasterEdition {
                     (
                         minimum_balance_for_rent_exemption,
                         instructions,
-                        [&update_authority, &inputs.fee_payer].to_vec(),
+                        [update_authority, &inputs.fee_payer].to_vec(),
                     )
                 }
             };
