@@ -53,7 +53,7 @@ pub struct Input {
     decimals: u8,
     #[serde(with = "value::keypair")]
     mint_authority: Keypair,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     freeze_authority: Option<Pubkey>,
     #[serde(with = "value::keypair")]
     mint_account: Keypair,
@@ -65,7 +65,7 @@ pub struct Input {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
 }
 

@@ -1,14 +1,10 @@
-use std::str::FromStr;
-
 use crate::{prelude::*, proxy_authority::utils::find_proxy_authority_address};
-use anchor_lang::Discriminator;
-use borsh::BorshSerialize;
+use anchor_lang::InstructionData;
 use solana_program::{
     instruction::{AccountMeta, Instruction},
     system_program,
 };
-
-use space_wrapper::instruction::ProxyCreateMasterEditionV3 as Proxy;
+use space_wrapper::instruction::ProxyCreateMasterEditionV3;
 
 #[derive(Debug, Clone)]
 pub struct CreateMasterEdition;
@@ -24,32 +20,24 @@ pub fn create_proxy_create_master_edition_instruction(
     token_program: &Pubkey,
     max_supply: u64,
 ) -> Instruction {
-    let accounts = vec![
-        AccountMeta::new_readonly(*authority, true),
-        AccountMeta::new(*proxy_authority, false),
-        AccountMeta::new(*edition, false),
-        AccountMeta::new(*mint, false),
-        AccountMeta::new_readonly(*mint_authority, true),
-        AccountMeta::new(*metadata, false),
-        AccountMeta::new_readonly(*token_metadata_program, false),
-        AccountMeta::new_readonly(*token_program, false),
-        AccountMeta::new_readonly(system_program::id(), false),
-    ];
-
-    let mut data = vec![max_supply.to_le_bytes().to_vec()];
-
-    let proxy = Proxy {
-        max_supply: Some(max_supply),
-    };
-
-    let mut instruction_data: Vec<u8> = Proxy::discriminator().try_to_vec().unwrap();
-    instruction_data.append(BorshSerialize::try_to_vec(&proxy).unwrap().as_mut());
-    data.insert(0, instruction_data);
-
     Instruction {
-        program_id: Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
-        accounts,
-        data: data.into_iter().flatten().collect(),
+        program_id: space_wrapper::ID,
+        accounts: [
+            AccountMeta::new_readonly(*authority, true),
+            AccountMeta::new(*proxy_authority, false),
+            AccountMeta::new(*edition, false),
+            AccountMeta::new(*mint, false),
+            AccountMeta::new_readonly(*mint_authority, true),
+            AccountMeta::new(*metadata, false),
+            AccountMeta::new_readonly(*token_metadata_program, false),
+            AccountMeta::new_readonly(*token_program, false),
+            AccountMeta::new_readonly(system_program::id(), false),
+        ]
+        .to_vec(),
+        data: ProxyCreateMasterEditionV3 {
+            max_supply: Some(max_supply),
+        }
+        .data(),
     }
 }
 
@@ -72,7 +60,7 @@ impl CreateMasterEdition {
             >())
             .await?;
 
-        let instructions = vec![mpl_token_metadata::instruction::create_master_edition_v3(
+        let instruction = mpl_token_metadata::instruction::create_master_edition_v3(
             mpl_token_metadata::id(),
             master_edition_pubkey,
             mint,
@@ -81,9 +69,9 @@ impl CreateMasterEdition {
             metadata_pubkey,
             payer,
             Some(max_supply),
-        )];
+        );
 
-        Ok((minimum_balance_for_rent_exemption, instructions))
+        Ok((minimum_balance_for_rent_exemption, [instruction].to_vec()))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -104,7 +92,7 @@ impl CreateMasterEdition {
             >())
             .await?;
 
-        let instructions = vec![create_proxy_create_master_edition_instruction(
+        let instruction = create_proxy_create_master_edition_instruction(
             &payer,
             &proxy_authority,
             &master_edition_pubkey,
@@ -114,27 +102,16 @@ impl CreateMasterEdition {
             &mpl_token_metadata::id(),
             &spl_token::id(),
             max_supply,
-        )];
+        );
 
-        Ok((minimum_balance_for_rent_exemption, instructions))
+        Ok((minimum_balance_for_rent_exemption, [instruction].to_vec()))
     }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(untagged)]
-pub enum Input {
-    NoProxy {
-        #[serde(with = "value::keypair")]
-        update_authority: Keypair,
-    },
-    Proxy {
-        #[serde(with = "value::pubkey")]
-        proxy_as_update_authority: Pubkey,
-    },
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct InputStruct {
+pub struct Input {
+    #[serde(flatten)]
+    update_authority: UpdateAuthority,
     #[serde(with = "value::pubkey")]
     pub mint_account: Pubkey,
     #[serde(with = "value::pubkey")]
@@ -147,8 +124,21 @@ pub struct InputStruct {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum UpdateAuthority {
+    NoProxy {
+        #[serde(with = "value::keypair")]
+        update_authority: Keypair,
+    },
+    Proxy {
+        #[serde(with = "value::pubkey")]
+        proxy_as_update_authority: Pubkey,
+    },
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     pub signature: Option<Signature>,
     #[serde(with = "value::pubkey")]
     pub metadata_account: Pubkey,
@@ -244,116 +234,81 @@ impl CommandTrait for CreateMasterEdition {
     }
 
     async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        match value::from_map(inputs.clone())? {
-            Input::Proxy {
-                proxy_as_update_authority: _,
-            } => {
-                let InputStruct {
-                    mint_account,
-                    mint_authority,
-                    fee_payer,
-                    max_supply,
-                    submit,
-                } = value::from_map(inputs)?;
+        let inputs: Input = value::from_map(inputs)?;
 
-                let (metadata_account, _) =
-                    mpl_token_metadata::pda::find_metadata_account(&mint_account);
+        let (metadata_account, _) =
+            mpl_token_metadata::pda::find_metadata_account(&inputs.mint_account);
 
-                let (master_edition_account, _) =
-                    mpl_token_metadata::pda::find_master_edition_account(&mint_account);
+        let (master_edition_account, _) =
+            mpl_token_metadata::pda::find_master_edition_account(&inputs.mint_account);
 
-                let proxy_authority = find_proxy_authority_address(&fee_payer.pubkey());
-                let (minimum_balance_for_rent_exemption, instructions) = self
-                    .command_proxy_create_metadata_accounts(
-                        &ctx.solana_client,
-                        metadata_account,
-                        master_edition_account,
-                        mint_account,
-                        mint_authority,
-                        fee_payer.pubkey(),
-                        proxy_authority,
-                        max_supply,
+        let (minimum_balance_for_rent_exemption, instructions, signers) =
+            match &inputs.update_authority {
+                UpdateAuthority::Proxy { .. } => {
+                    let proxy_authority = find_proxy_authority_address(&inputs.fee_payer.pubkey());
+
+                    let (minimum_balance_for_rent_exemption, instructions) = self
+                        .command_proxy_create_metadata_accounts(
+                            &ctx.solana_client,
+                            metadata_account,
+                            master_edition_account,
+                            inputs.mint_account,
+                            inputs.mint_authority,
+                            inputs.fee_payer.pubkey(),
+                            proxy_authority,
+                            inputs.max_supply,
+                        )
+                        .await?;
+
+                    (
+                        minimum_balance_for_rent_exemption,
+                        instructions,
+                        [&inputs.fee_payer].to_vec(),
                     )
-                    .await?;
+                }
+                UpdateAuthority::NoProxy { update_authority } => {
+                    let (minimum_balance_for_rent_exemption, instructions) = self
+                        .command_create_master_edition(
+                            &ctx.solana_client,
+                            metadata_account,
+                            master_edition_account,
+                            inputs.mint_account,
+                            inputs.mint_authority,
+                            inputs.fee_payer.pubkey(),
+                            update_authority.pubkey(),
+                            inputs.max_supply,
+                        )
+                        .await?;
 
-                let (mut transaction, recent_blockhash) = execute(
-                    &ctx.solana_client,
-                    &fee_payer.pubkey(),
-                    &instructions,
-                    minimum_balance_for_rent_exemption,
-                )
-                .await?;
-
-                try_sign_wallet(&ctx, &mut transaction, &[&fee_payer], recent_blockhash).await?;
-
-                let signature = if submit {
-                    Some(submit_transaction(&ctx.solana_client, transaction).await?)
-                } else {
-                    None
-                };
-
-                Ok(value::to_map(&Output {
-                    metadata_account,
-                    master_edition_account,
-                    signature,
-                })?)
-            }
-            Input::NoProxy { update_authority } => {
-                let InputStruct {
-                    mint_account,
-                    mint_authority,
-                    fee_payer,
-                    max_supply,
-                    submit,
-                } = value::from_map(inputs)?;
-                let (metadata_account, _) =
-                    mpl_token_metadata::pda::find_metadata_account(&mint_account);
-
-                let (master_edition_account, _) =
-                    mpl_token_metadata::pda::find_master_edition_account(&mint_account);
-
-                let (minimum_balance_for_rent_exemption, instructions) = self
-                    .command_create_master_edition(
-                        &ctx.solana_client,
-                        metadata_account,
-                        master_edition_account,
-                        mint_account,
-                        mint_authority,
-                        fee_payer.pubkey(),
-                        update_authority.pubkey(),
-                        max_supply,
+                    (
+                        minimum_balance_for_rent_exemption,
+                        instructions,
+                        [update_authority, &inputs.fee_payer].to_vec(),
                     )
-                    .await?;
+                }
+            };
 
-                let (mut transaction, recent_blockhash) = execute(
-                    &ctx.solana_client,
-                    &fee_payer.pubkey(),
-                    &instructions,
-                    minimum_balance_for_rent_exemption,
-                )
-                .await?;
+        let (mut transaction, recent_blockhash) = execute(
+            &ctx.solana_client,
+            &inputs.fee_payer.pubkey(),
+            &instructions,
+            minimum_balance_for_rent_exemption,
+        )
+        .await?;
 
-                try_sign_wallet(
-                    &ctx,
-                    &mut transaction,
-                    &[&update_authority, &fee_payer],
-                    recent_blockhash,
-                )
-                .await?;
+        try_sign_wallet(&ctx, &mut transaction, &signers, recent_blockhash).await?;
 
-                let signature = if submit {
-                    Some(submit_transaction(&ctx.solana_client, transaction).await?)
-                } else {
-                    None
-                };
+        let signature = if inputs.submit {
+            Some(submit_transaction(&ctx.solana_client, transaction).await?)
+        } else {
+            None
+        };
 
-                Ok(value::to_map(&Output {
-                    metadata_account,
-                    master_edition_account,
-                    signature,
-                })?)
-            }
-        }
+        Ok(value::to_map(&Output {
+            metadata_account,
+            master_edition_account,
+            signature,
+        })?)
     }
 }
 

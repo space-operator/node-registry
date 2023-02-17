@@ -1,5 +1,4 @@
-use std::str::FromStr;
-
+use super::utils::find_proxy_authority_address;
 use crate::prelude::*;
 use anchor_lang::InstructionData;
 use solana_program::{
@@ -9,17 +8,16 @@ use solana_program::{
 use solana_sdk::pubkey::Pubkey;
 use space_wrapper::instruction::CreateProxyAuthority as Proxy;
 
-use super::utils::find_proxy_authority_address;
-
 fn create_create_proxy_instruction(proxy_authority: &Pubkey, authority: &Pubkey) -> Instruction {
-    let accounts = vec![
+    let accounts = [
         AccountMeta::new(*proxy_authority, false),
         AccountMeta::new(*authority, true),
         AccountMeta::new(system_program::ID, false),
-    ];
+    ]
+    .to_vec();
 
     Instruction {
-        program_id: Pubkey::from_str("295QjveZJsZ198fYk9FTKaJLsgAWNdXKHsM6Qkb3dsVn").unwrap(),
+        program_id: space_wrapper::ID,
         accounts,
         data: Proxy.data(),
     }
@@ -40,12 +38,10 @@ impl CreateProxyAuthority {
             .await?;
 
         let proxy_authority = find_proxy_authority_address(&payer);
-        let create_proxy_authority_instruction =
-            create_create_proxy_instruction(&proxy_authority, &payer);
 
-        let instructions = vec![create_proxy_authority_instruction];
+        let instruction = create_create_proxy_instruction(&proxy_authority, &payer);
 
-        Ok((min_rent, instructions))
+        Ok((min_rent, [instruction].to_vec()))
     }
 }
 
@@ -60,7 +56,7 @@ pub struct Input {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
     #[serde(with = "value::pubkey")]
     proxy_authority: Pubkey,

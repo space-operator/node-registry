@@ -45,11 +45,11 @@ impl ThreadCreate {
 pub struct Input {
     #[serde(with = "value::keypair")]
     pub thread_authority: Keypair,
-    #[serde(with = "value::keypair::opt")]
+    #[serde(default, with = "value::keypair::opt")]
     pub payer: Option<Keypair>,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     pub thread: Option<Pubkey>,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     pub close_to: Option<Pubkey>,
 }
 
