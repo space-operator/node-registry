@@ -38,16 +38,17 @@ ed25519-dalek = "1"
 futures = "0.3"
 thiserror = "1"
 anyhow = "1"
-log = "0.4"
 serde_with = "2.1"
 rhai = "1.10.1"
 indexmap = { version = "1.9.1", features = ["serde-1"] }
 bs58 = "0.4"
-anchor-lang="0.26.0"
-anchor-spl="0.26.0"
+anchor-lang ="0.26.0"
+anchor-spl ="0.26.0"
+fasteval = "0.2.4"
+tracing = "0.1"
+
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
-fasteval = "0.2.4"
 
 [dependencies.clockwork-utils]
 git = "https://github.com/space-operator/clockwork.git"

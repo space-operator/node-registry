@@ -1,5 +1,4 @@
 use anyhow::bail;
-use log::error;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use std::str::FromStr;
 use value::from_value;
@@ -36,7 +35,7 @@ impl From<&str> for Method {
             "put" => Method::PUT,
             "trace" => Method::TRACE,
             _ => {
-                error!("Unsupported method: {}; Using normal Get", method);
+                tracing::error!("unsupported method: {}, using GET", method);
                 Method::GET
             }
         }
