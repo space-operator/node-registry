@@ -39,6 +39,40 @@ pub trait CommandTrait: Send + Sync + 'static {
         }
         res
     }
+
+    fn instruction_info(&self) -> Option<InstructionInfo> {
+        None
+    }
+}
+
+pub struct InstructionInfo {
+    pub before: Vec<Name>,
+    pub signature: Name,
+    pub after: Vec<Name>,
+}
+
+impl InstructionInfo {
+    /// before: All passthroughs and outputs, except for `signature`.
+    /// after: empty.
+    pub fn simple<C: CommandTrait>(cmd: &C, signature: &str) -> Self {
+        let before = cmd
+            .inputs()
+            .into_iter()
+            .filter(|i| i.passthrough)
+            .map(|i| i.name)
+            .chain(
+                cmd.outputs()
+                    .into_iter()
+                    .filter(|o| o.name != signature)
+                    .map(|o| o.name),
+            )
+            .collect();
+        Self {
+            before,
+            after: Vec::new(),
+            signature: signature.into(),
+        }
+    }
 }
 
 #[derive(Clone)]
