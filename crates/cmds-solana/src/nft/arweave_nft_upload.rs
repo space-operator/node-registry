@@ -252,7 +252,6 @@ impl Uploader {
             Ok(resp.balance)
         } else {
             let text = resp.text().await?;
-            log::error!("get_current_balance error: {}", text);
             Err(crate::Error::BundlrApiInvalidResponse(text))
         }
     }
