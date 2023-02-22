@@ -45,6 +45,7 @@ pub trait CommandTrait: Send + Sync + 'static {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct InstructionInfo {
     pub before: Vec<Name>,
     pub signature: Name,
