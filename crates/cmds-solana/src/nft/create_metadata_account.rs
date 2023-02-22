@@ -171,6 +171,10 @@ const METADATA_ACCOUNT: &str = "metadata_account";
 
 #[async_trait]
 impl CommandTrait for CreateMetadataAccount {
+    fn instruction_info(&self) -> Option<InstructionInfo> {
+        Some(InstructionInfo::simple(self, SIGNATURE))
+    }
+
     fn name(&self) -> Name {
         CREATE_METADATA_ACCOUNT.into()
     }

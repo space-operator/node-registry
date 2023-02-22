@@ -164,6 +164,10 @@ const MASTER_EDITION_ACCOUNT: &str = "master_edition_account";
 
 #[async_trait]
 impl CommandTrait for CreateMasterEdition {
+    fn instruction_info(&self) -> Option<InstructionInfo> {
+        Some(InstructionInfo::simple(self, SIGNATURE))
+    }
+
     fn name(&self) -> Name {
         CREATE_MASTER_EDITION.into()
     }

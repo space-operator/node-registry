@@ -42,6 +42,10 @@ const SIGNATURE: &str = "signature";
 
 #[async_trait]
 impl CommandTrait for AssociatedTokenAccount {
+    fn instruction_info(&self) -> Option<InstructionInfo> {
+        Some(InstructionInfo::simple(self, SIGNATURE))
+    }
+
     fn name(&self) -> Name {
         SOLANA_ASSOCIATED_TOKEN_ACCOUNT.into()
     }

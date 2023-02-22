@@ -85,6 +85,10 @@ const SIGNATURE: &str = "signature";
 
 #[async_trait]
 impl CommandTrait for CreateMintAccount {
+    fn instruction_info(&self) -> Option<InstructionInfo> {
+        Some(InstructionInfo::simple(self, SIGNATURE))
+    }
+
     fn name(&self) -> Name {
         SOLANA_CREATE_MINT_ACCOUNT.into()
     }
