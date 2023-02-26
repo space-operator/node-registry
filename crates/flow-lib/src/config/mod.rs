@@ -45,6 +45,8 @@ pub enum ValueType {
     String,
     #[serde(rename = "array")]
     Array(Box<ValueType>),
+    #[serde(rename = "result")]
+    Result(Box<ValueType>),
     #[serde(rename = "object")]
     Map(indexmap::IndexMap<value::Key, ValueType>),
     #[serde(rename = "json")]

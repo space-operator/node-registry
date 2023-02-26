@@ -44,6 +44,7 @@ impl<'de> serde::de::Visitor<'de> for ValueVisitor {
             Variant::Bytes => Ok(Value::Bytes(a.newtype_variant()?)),
             Variant::Array => Ok(Value::Array(a.newtype_variant()?)),
             Variant::Map => Ok(Value::Map(a.newtype_variant()?)),
+            Variant::Result => Ok(Value::Result { location: a.newtype_variant()? } ),
         }
     }
 }
@@ -85,6 +86,7 @@ impl<'de> serde::Deserializer<'de> for Value {
             Value::B32(x) => visit_bytes(&x, visitor),
             Value::B64(x) => visit_bytes(&x, visitor),
             Value::Bytes(x) => visit_bytes(&x, visitor),
+            Value::Result { location } => visitor.visit_u32(location),
         }
     }
 
@@ -258,6 +260,7 @@ impl Value {
             Value::B32(_) => Unexpected::Other("[u8; 32]"),
             Value::B64(_) => Unexpected::Other("[u8; 64]"),
             Value::Bytes(_) => Unexpected::Other("bytes"),
+            Value::Result { .. } => Unexpected::Other("Result<T>"),
         }
     }
 }
