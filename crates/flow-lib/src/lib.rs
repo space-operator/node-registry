@@ -9,3 +9,16 @@ pub use config::{
 };
 pub use context::{Context, User};
 pub use value::{Error as ValueError, Value};
+
+pub mod solana {
+    use solana_client::nonblocking::rpc_client::RpcClient;
+    use solana_sdk::{instruction::Instruction, pubkey::Pubkey, signer::keypair::Keypair};
+
+    #[derive(Default)]
+    pub struct Instructions {
+        pub fee_payer: Pubkey,
+        pub signers: std::collections::BTreeSet<Keypair>,
+        pub minimum_balance_for_rent_exemption: u64,
+        pub instructions: Vec<Instruction>,
+    }
+}
