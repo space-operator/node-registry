@@ -11,7 +11,6 @@ pub use context::{Context, User};
 pub use value::{Error as ValueError, Value};
 
 pub mod solana {
-    use solana_client::nonblocking::rpc_client::RpcClient;
     use solana_sdk::{instruction::Instruction, pubkey::Pubkey, signer::keypair::Keypair};
 
     #[derive(Default)]
