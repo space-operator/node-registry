@@ -24,7 +24,7 @@ pub mod prelude {
     pub use crate::utils::{execute, submit_transaction, try_sign_wallet, KeypairExt};
     pub use async_trait::async_trait;
     pub use flow_lib::{
-        command::{CommandDescription, CommandError, CommandTrait},
+        command::{CommandDescription, CommandError, CommandTrait, InstructionInfo},
         context::Context,
         CmdInputDescription as CmdInput, CmdOutputDescription as CmdOutput, Name, SolanaNet,
         ValueSet, ValueType,

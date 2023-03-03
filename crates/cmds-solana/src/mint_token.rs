@@ -68,7 +68,7 @@ pub struct Input {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
 }
 
@@ -87,6 +87,10 @@ const SIGNATURE: &str = "signature";
 
 #[async_trait]
 impl CommandTrait for SolanaMintToken {
+    fn instruction_info(&self) -> Option<InstructionInfo> {
+        Some(InstructionInfo::simple(self, SIGNATURE))
+    }
+
     fn name(&self) -> Name {
         SOLANA_MINT_TOKEN.into()
     }

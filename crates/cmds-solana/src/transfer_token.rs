@@ -167,7 +167,7 @@ pub struct Input {
     pub amount: Decimal,
     #[serde(with = "value::pubkey")]
     pub recipient: Pubkey,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     pub sender_token_account: Option<Pubkey>,
     #[serde(with = "value::keypair")]
     pub sender_owner: Keypair,
@@ -184,7 +184,7 @@ pub struct Output {
     pub tx: String,
     #[serde(with = "value::pubkey")]
     pub recipient_token_account: Pubkey,
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     pub signature: Option<Signature>,
 }
 

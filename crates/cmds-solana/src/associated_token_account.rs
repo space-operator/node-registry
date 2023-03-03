@@ -24,7 +24,7 @@ pub struct Input {
 pub struct Output {
     #[serde(with = "value::pubkey")]
     associated_token_account: Pubkey,
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
 }
 
@@ -42,6 +42,10 @@ const SIGNATURE: &str = "signature";
 
 #[async_trait]
 impl CommandTrait for AssociatedTokenAccount {
+    fn instruction_info(&self) -> Option<InstructionInfo> {
+        Some(InstructionInfo::simple(self, SIGNATURE))
+    }
+
     fn name(&self) -> Name {
         SOLANA_ASSOCIATED_TOKEN_ACCOUNT.into()
     }

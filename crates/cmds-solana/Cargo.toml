@@ -11,11 +11,9 @@ solana-client = "1.14.13"
 solana-program = "1.14.13"
 spl-token = { version = "3.2", features = ["no-entrypoint"] }
 spl-memo = { version = "3.0", features = ["no-entrypoint"] }
-mpl-token-auth-rules = "=0.2.3"
-spl-associated-token-account = { version = "=1.1.2", features = [
-    "no-entrypoint",
-] }
-mpl-token-metadata = "=1.7.0-alpha.2"
+mpl-token-auth-rules = "1.2"
+spl-associated-token-account = { version = "1.1.2", features = ["no-entrypoint"] }
+mpl-token-metadata = "1.8"
 async-trait = "0.1"
 tiny-bip39 = "0.8"
 inventory = "0.3"
@@ -40,28 +38,41 @@ ed25519-dalek = "1"
 futures = "0.3"
 thiserror = "1"
 anyhow = "1"
-log = "0.4"
 serde_with = "2.1"
 rhai = "1.10.1"
 indexmap = { version = "1.9.1", features = ["serde-1"] }
 bs58 = "0.4"
-anchor-lang="0.26.0"
-anchor-spl="0.26.0"
+anchor-lang ="0.26.0"
+anchor-spl ="0.26.0"
+fasteval = "0.2.4"
+tracing = "0.1"
+
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
-fasteval = "0.2.4"
-clockwork-utils = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
-clockwork-client = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
-clockwork-thread-program = {git="https://github.com/space-operator/clockwork.git", rev="efd73675f670bfc0aab551d89c741e18c8cfed10"}
-payments = {git = "https://github.com/enzotar/examples.git", rev="704d40a85a19ad88aaa283f1e5a41b32af61ef97"}
+
+[dependencies.clockwork-utils]
+git = "https://github.com/space-operator/clockwork.git"
+rev = "efd73675f670bfc0aab551d89c741e18c8cfed10"
+
+[dependencies.clockwork-client]
+git = "https://github.com/space-operator/clockwork.git"
+rev = "efd73675f670bfc0aab551d89c741e18c8cfed10"
+
+[dependencies.clockwork-thread-program]
+git = "https://github.com/space-operator/clockwork.git"
+rev = "efd73675f670bfc0aab551d89c741e18c8cfed10"
+
+[dependencies.payments]
+git = "https://github.com/enzotar/examples.git"
+rev = "704d40a85a19ad88aaa283f1e5a41b32af61ef97"
 
 [dependencies.metaboss_utils]
 git = "https://github.com/space-operator/metaboss_utils.git"
-rev = "e2768c1e7b4fef4eb5dec99913c5200e8856be96"
+rev = "5e0a4c9bcd16d2f062549e190e928bebb135537f"
 
 [dependencies.space-wrapper]
 git = "https://github.com/space-operator/space-wrapper"
-rev = "fc4dc06f536384906ed6b21bf05c1eb67c60e738"
+rev = "2411d9230de957161ce39856d90383ada305c867"
 features = ["cpi"]
 
 

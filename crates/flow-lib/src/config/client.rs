@@ -32,7 +32,7 @@ where
                 Ok(Some(value)) => vec.push(value),
                 Ok(None) => break,
                 Err(error) => {
-                    log::warn!("ignoring {}: {}", self.dbg_info, error);
+                    tracing::warn!("ignoring {}: {}", self.dbg_info, error);
                     continue;
                 }
             }

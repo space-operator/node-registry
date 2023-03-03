@@ -2,6 +2,8 @@ use crate::{value_type::Variant, Value};
 use serde::de::VariantAccess;
 use std::borrow::Cow;
 
+pub use super::value_type::keys;
+
 pub mod iter_ser;
 
 #[derive(Debug)]

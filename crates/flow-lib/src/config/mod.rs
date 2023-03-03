@@ -185,7 +185,7 @@ impl FlowConfig {
             match names.get(id) {
                 Some(name) => Some(name.clone()),
                 None => {
-                    log::warn!("name not found for edge {}", id);
+                    tracing::warn!("name not found for edge {}", id);
                     None
                 }
             }
