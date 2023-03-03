@@ -77,6 +77,9 @@ impl<'a> serde::Serialize for JsonRepr<'a> {
                 k,
                 &iter_ser::Map::new(v.iter().map(|(k, v)| (k, JsonRepr::new(v)))),
             ),
+            Value::Result { location } => {
+                s.serialize_newtype_variant(NAME, i, k, itoa::Buffer::new().format(*location))
+            },
         }
     }
 }
@@ -119,6 +122,7 @@ impl<'de> serde::de::Visitor<'de> for EnumVisitor {
             Variant::Bytes => Ok(Value::Bytes(b64_str(a)?)),
             Variant::Array => Ok(Value::Array(a.newtype_variant::<JsonArray>()?.0)),
             Variant::Map => Ok(Value::Map(a.newtype_variant::<JsonMap>()?.0)),
+            Variant::Result => Ok(Value::Result { location: number_from_str(a)? }),
         }
     }
 }

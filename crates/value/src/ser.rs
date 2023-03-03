@@ -34,6 +34,7 @@ impl serde::Serialize for Value {
             Value::Bytes(v) => s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(v)),
             Value::Array(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
             Value::Map(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+            Value::Result { location } => s.serialize_newtype_variant(TOKEN, i, k, &location),
         }
     }
 }
