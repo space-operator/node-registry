@@ -51,6 +51,8 @@ pub enum ValueType {
     Json,
     #[serde(rename = "free")]
     Free,
+    #[serde(rename = "result")]
+    Result(Box<ValueType>),
     Other(String),
 }
 
