@@ -78,9 +78,6 @@ pub enum Value {
     Bytes(bytes::Bytes),
     Array(Vec<Self>),
     Map(Map),
-    Result {
-        location: u32,
-    },
 }
 
 impl Value {
@@ -338,7 +335,6 @@ impl std::fmt::Debug for Value {
                 .debug_tuple("B64")
                 .field(&bs58::encode(x).into_string())
                 .finish(),
-            Value::Result { location } => f.debug_tuple("Result").field(location).finish(),
         }
     }
 }

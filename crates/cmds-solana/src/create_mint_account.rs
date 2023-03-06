@@ -103,7 +103,7 @@ impl CommandTrait for CreateMintAccount {
             },
             CmdInput {
                 name: DECIMALS.into(),
-                type_bounds: [ValueType::U64].to_vec(),
+                type_bounds: [ValueType::U8].to_vec(),
                 required: true,
                 passthrough: false,
             },
