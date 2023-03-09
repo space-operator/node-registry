@@ -147,6 +147,28 @@ impl From<serde_json::Value> for Value {
     }
 }
 
+impl From<Value> for serde_json::Value {
+    fn from(value: Value) -> Self {
+        match value {
+            Value::Null => serde_json::Value::Null,
+            Value::String(value) => serde_json::Value::from(value),
+            Value::Bool(value) => serde_json::Value::from(value),
+            Value::U64(value) => serde_json::Value::from(value),
+            Value::I64(value) => serde_json::Value::from(value),
+            Value::F64(value) => serde_json::Value::from(value),
+            Value::Array(value) => serde_json::Value::from(value),
+            Value::Map(value) => {
+                let map = value
+                    .into_iter()
+                    .map(|(key, value)| (key, value.into()))
+                    .collect::<serde_json::Map<_, _>>();
+                serde_json::Value::from(map)
+            }
+            _ => todo!("Invalid value for WASM: {value:#?}"),
+        }
+    }
+}
+
 impl From<String> for Value {
     fn from(x: String) -> Self {
         Self::String(x)
