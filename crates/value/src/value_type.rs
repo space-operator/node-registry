@@ -17,7 +17,6 @@ pub enum Variant {
     Bytes = 11,
     Array = 12,
     Map = 13,
-    Result = 14,
 }
 
 impl Variant {
@@ -144,7 +143,6 @@ impl Value {
             Value::Bytes(_) => Variant::Bytes,
             Value::Array(_) => Variant::Array,
             Value::Map(_) => Variant::Map,
-            Value::Result { .. } => Variant::Result,
         }
     }
 }

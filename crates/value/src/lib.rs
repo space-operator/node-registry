@@ -78,9 +78,6 @@ pub enum Value {
     Bytes(bytes::Bytes),
     Array(Vec<Self>),
     Map(Map),
-    Result {
-        location: u32,
-    },
 }
 
 impl Value {
@@ -146,6 +143,28 @@ impl From<serde_json::Value> for Value {
             serde_json::Value::Object(map) => {
                 Value::Map(map.into_iter().map(|(k, v)| (k, Value::from(v))).collect())
             }
+        }
+    }
+}
+
+impl From<Value> for serde_json::Value {
+    fn from(value: Value) -> Self {
+        match value {
+            Value::Null => serde_json::Value::Null,
+            Value::String(value) => serde_json::Value::from(value),
+            Value::Bool(value) => serde_json::Value::from(value),
+            Value::U64(value) => serde_json::Value::from(value),
+            Value::I64(value) => serde_json::Value::from(value),
+            Value::F64(value) => serde_json::Value::from(value),
+            Value::Array(value) => serde_json::Value::from(value),
+            Value::Map(value) => {
+                let map = value
+                    .into_iter()
+                    .map(|(key, value)| (key, value.into()))
+                    .collect::<serde_json::Map<_, _>>();
+                serde_json::Value::from(map)
+            }
+            _ => todo!("Invalid value for WASM: {value:#?}"),
         }
     }
 }
@@ -338,7 +357,6 @@ impl std::fmt::Debug for Value {
                 .debug_tuple("B64")
                 .field(&bs58::encode(x).into_string())
                 .finish(),
-            Value::Result { location } => f.debug_tuple("Result").field(location).finish(),
         }
     }
 }
