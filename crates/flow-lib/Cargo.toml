@@ -19,7 +19,7 @@ serde_with = "2.2"
 solana-sdk = "1.14"
 solana-client = "1.14"
 http = "0.2"
-tower = { version = "0.4", features = ["full"] }
+tower = { version = "0.4", features = [] }
 indexmap = "1"
 tracing = "0.1"
 
