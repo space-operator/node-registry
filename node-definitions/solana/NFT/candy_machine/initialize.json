@@ -1,0 +1,72 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "initialize_candy_machine",
+    "version": "0.1",
+    "display_name": "Initialize Candy Machine",
+    "description": "",
+    "width": 200,
+    "height": 290,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "candy_machine",
+      "type_bounds": ["pubkey", "keypair", "string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "authority",
+      "type_bounds": ["pubkey", "keypair", "string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "payer",
+      "type_bounds": ["keypair", "string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "collection_mint",
+      "type_bounds": ["pubkey", "keypair", "string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "collection_update_authority",
+      "type_bounds": ["pubkey", "keypair", "string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "candy_machine_data",
+      "type_bounds": ["free"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}
