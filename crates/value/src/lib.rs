@@ -62,8 +62,9 @@ pub type Key = String;
 
 pub type Map = self::HashMap<Key, Value>;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Default)]
 pub enum Value {
+    #[default]
     Null,
     String(String),
     Bool(bool),
@@ -94,12 +95,6 @@ impl Value {
         }
 
         Ok(Value::B64(buf))
-    }
-}
-
-impl Default for Value {
-    fn default() -> Self {
-        Value::Null
     }
 }
 
