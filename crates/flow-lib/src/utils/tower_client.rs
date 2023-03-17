@@ -18,7 +18,9 @@ impl<T, U, E> Clone for TowerClient<T, U, E> {
 
 impl<T, U, E> TowerClient<T, U, E>
 where
-    E: Into<tower::BoxError> + StdError + 'static,
+    T: Send + 'static,
+    U: Send + 'static,
+    E: Into<tower::BoxError> + StdError + Send + Sync + 'static,
 {
     pub fn new(
         inner: Buffer<BoxService<T, U, E>, T>,
@@ -40,9 +42,34 @@ where
     }
 }
 
+impl<T, U, E> TowerClient<T, U, E>
+where
+    T: Send + 'static,
+    U: Send + 'static,
+    E: Into<tower::BoxError> + StdError + Send + Sync + 'static,
+{
+    pub fn unimplemented<F>(error: F, worker_error: fn(tower::BoxError) -> E) -> Self
+    where
+        F: Fn() -> E + Send + 'static,
+    {
+        let s = tower::ServiceBuilder::new()
+            .boxed()
+            .service_fn(move |_: T| {
+                let error = error();
+                async move { Err(error) }
+            });
+
+        let (buffer, worker) = tower::buffer::Buffer::pair(s, 32);
+        if let Ok(rt) = tokio::runtime::Handle::try_current() {
+            rt.spawn(worker);
+        }
+        TowerClient::new(buffer, worker_error)
+    }
+}
+
 impl<T, U, E> tower::Service<T> for TowerClient<T, U, E>
 where
-    E: Into<tower::BoxError> + StdError + 'static,
+    E: Into<tower::BoxError> + StdError + Send + Sync + 'static,
 {
     type Response = U;
     type Error = E;
@@ -71,7 +98,7 @@ pin_project_lite::pin_project! {
 
 impl<U, E> Future for ResponseFuture<U, E>
 where
-    E: Into<tower::BoxError> + StdError + 'static,
+    E: Into<tower::BoxError> + StdError + Send + Sync + 'static,
 {
     type Output = Result<U, E>;
     fn poll(

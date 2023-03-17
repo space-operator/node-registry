@@ -32,18 +32,16 @@ pub mod signer {
         pub message: bytes::Bytes,
     }
 
+    impl actix::Message for SignatureRequest {
+        type Result = Result<SignatureResponse, Error>;
+    }
+
     pub struct SignatureResponse {
         pub signature: Signature,
     }
 
     pub fn unimplemented_svc() -> Svc {
-        let s = tower::ServiceBuilder::new()
-            .boxed()
-            .service_fn(|_| async { Err(BoxError::from("unimplemented").into()) });
-
-        // throw away the worker
-        let (buffer, _) = tower::buffer::Buffer::pair(s, 32);
-        TowerClient::new(buffer, Error::Worker)
+        Svc::unimplemented(|| BoxError::from("unimplemented").into(), Error::Worker)
     }
 }
 
@@ -68,7 +66,7 @@ impl Default for Context {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct User {
     pub id: UserId,
     pub pubkey: Pubkey,
