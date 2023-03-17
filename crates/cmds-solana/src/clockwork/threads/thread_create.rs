@@ -1,14 +1,13 @@
+use super::Trigger;
 use crate::prelude::*;
 
-use clockwork_client::thread::state::Thread;
-use solana_program::instruction::Instruction;
-use solana_sdk::pubkey::Pubkey;
-
 use clockwork_client::thread::instruction::thread_create;
-
-use super::Trigger;
+use clockwork_client::thread::state::Thread;
 use clockwork_utils::thread::SerializableInstruction as ClockWorkInstruction;
 use clockwork_utils::thread::Trigger as ClockWorkTrigger;
+
+use solana_program::instruction::Instruction;
+use solana_sdk::pubkey::Pubkey;
 
 // Command Name
 const THREAD_CREATE: &str = "thread_create";
@@ -46,7 +45,7 @@ impl CommandTrait for ThreadCreate {
         [
             CmdInput {
                 name: "THREAD_AUTHORITY".into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
                 required: true,
                 passthrough: true,
             },
@@ -112,7 +111,7 @@ impl CommandTrait for ThreadCreate {
         let minimum_balance_for_rent_exemption = ctx
             .solana_client
             .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
-                clockwork_thread_program::state::Thread,
+                clockwork_thread_program::accounts::ThreadCreate,
             >())
             .await?;
 
@@ -150,7 +149,13 @@ impl CommandTrait for ThreadCreate {
         )
         .await?;
 
-        try_sign_wallet(&ctx, &mut transaction, &[&payer, &thread_authority], recent_blockhash).await?;
+        try_sign_wallet(
+            &ctx,
+            &mut transaction,
+            &[&payer, &thread_authority],
+            recent_blockhash,
+        )
+        .await?;
 
         let signature = submit_transaction(&ctx.solana_client, transaction).await?;
 

@@ -1,19 +1,19 @@
 use crate::prelude::*;
 use anchor_lang::{solana_program::sysvar, InstructionData};
 use anchor_spl::{associated_token, token};
+use clockwork_client::thread::{
+    instruction::thread_create,
+    state::{Thread, Trigger},
+};
+use clockwork_thread_program::state::PAYER_PUBKEY;
+use clockwork_utils::explorer::Explorer;
+use clockwork_utils::thread::SerializableInstruction as ClockWorkInstruction;
+use payments::state::Payment as ClockworkPayment;
 use solana_program::{
     instruction::{AccountMeta, Instruction},
     system_program,
 };
 use solana_sdk::pubkey::Pubkey;
-// use clockwork_client::thread::ID as thread_program_ID;
-use clockwork_client::thread::{
-    instruction::thread_create,
-    state::{Thread, Trigger},
-};
-use clockwork_thread_program::state::InstructionData as ClockworkInstructionData;
-use clockwork_utils::{explorer::Explorer, PAYER_PUBKEY};
-use payments::state::Payment as ClockworkPayment;
 use spl_associated_token_account::get_associated_token_address;
 
 #[derive(Debug)]
@@ -52,7 +52,7 @@ fn distribute_payment(
     thread: Pubkey,
     recipient: Pubkey,
     recipient_ata_pubkey: Pubkey,
-) -> ClockworkInstructionData {
+) -> ClockWorkInstruction {
     let distribute_payment_ix = Instruction {
         program_id: payments::ID,
         accounts: vec![
@@ -127,6 +127,7 @@ impl Payment {
                 amount,
             ),
             thread_create(
+                amount,
                 payer,
                 "payment".into(),
                 vec![distribute_payment_ix],
@@ -281,7 +282,7 @@ impl CommandTrait for Payment {
 
     async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let trigger = match value::from_map(inputs.clone())? {
-            Input::IsImmediate { is_immediate: _ } => Trigger::Immediate,
+            Input::IsImmediate { is_immediate: _ } => Trigger::Now,
             Input::Schedule {
                 schedule,
                 is_skippable,

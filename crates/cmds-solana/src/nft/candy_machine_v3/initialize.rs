@@ -1,11 +1,9 @@
 use crate::{nft::CandyMachineDataAlias, prelude::*};
 use anchor_lang::{InstructionData, ToAccountMetas};
-use solana_program::{
-    instruction::Instruction, lamports, system_instruction, system_program, sysvar::rent,
-};
+use solana_program::{instruction::Instruction, system_instruction, system_program};
 use solana_sdk::pubkey::Pubkey;
 
-use mpl_candy_machine_core::{candy_machine_core, instruction::Initialize, CandyMachineData};
+use mpl_candy_machine_core::{instruction::Initialize, CandyMachineData};
 
 // Command Name
 const INITIALIZE_CANDY_MACHINE: &str = "initialize_candy_machine";

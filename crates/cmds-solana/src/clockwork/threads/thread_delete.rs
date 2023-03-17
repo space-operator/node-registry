@@ -1,10 +1,6 @@
-use crate::{prelude::*, utils::anchor_sighash};
-use solana_program::instruction::{AccountMeta, Instruction};
-use solana_sdk::pubkey::Pubkey;
-
+use crate::prelude::*;
 use clockwork_client::thread::{instruction::thread_delete, state::Thread};
-
-
+use solana_sdk::pubkey::Pubkey;
 
 // Command Name
 const THREAD_DELETE: &str = "thread_delete";
@@ -29,7 +25,6 @@ pub struct Output {
     #[serde(with = "value::signature")]
     signature: Signature,
 }
-
 
 #[async_trait]
 impl CommandTrait for ThreadDelete {
@@ -91,9 +86,12 @@ impl CommandTrait for ThreadDelete {
 
         let close_to_input: Pubkey = close_to.unwrap_or(thread_authority.pubkey());
 
+        // FIXME
         let minimum_balance_for_rent_exemption = ctx
             .solana_client
-            .get_minimum_balance_for_rent_exemption(80)
+            .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
+                clockwork_thread_program::accounts::ThreadDelete,
+            >())
             .await?;
 
         let instructions = vec![thread_delete(

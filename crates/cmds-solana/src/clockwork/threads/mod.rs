@@ -1,13 +1,17 @@
-use serde::{Serialize, Deserialize};
 use crate::prelude::Pubkey;
+use serde::{Deserialize, Serialize};
 
-use clockwork_utils::thread::SerializableInstruction as ClockWorkInstruction;
+use clockwork_client::thread::state::ThreadSettings as ClockWorkThreadSettings;
 use clockwork_utils::thread::SerializableAccount as ClockWorkAccount;
+use clockwork_utils::thread::SerializableInstruction as ClockWorkInstruction;
 use clockwork_utils::thread::Trigger as ClockWorkTrigger;
 
 pub mod thread_create;
 pub mod thread_delete;
-
+pub mod thread_pause;
+pub mod thread_reset;
+pub mod thread_resume;
+pub mod thread_update;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Instruction {
@@ -22,7 +26,6 @@ pub struct AccountMeta {
     pub is_signer: bool,
     pub is_writable: bool,
 }
-
 
 impl From<Instruction> for ClockWorkInstruction {
     fn from(instruction: Instruction) -> Self {
@@ -41,7 +44,6 @@ impl From<Instruction> for ClockWorkInstruction {
         }
     }
 }
-
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 pub enum Trigger {
@@ -98,6 +100,30 @@ impl From<Trigger> for ClockWorkTrigger {
             Trigger::Now => ClockWorkTrigger::Now,
             Trigger::Slot { slot } => ClockWorkTrigger::Slot { slot },
             Trigger::Epoch { epoch } => ClockWorkTrigger::Epoch { epoch },
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ThreadSettings {
+    pub fee: Option<u64>,
+    pub instructions: Option<Vec<Instruction>>,
+    pub name: Option<String>,
+    pub rate_limit: Option<u64>,
+    pub trigger: Option<Trigger>,
+}
+
+// Implement From ThreadSettings to ClockWorkThreadSettings
+impl From<ThreadSettings> for ClockWorkThreadSettings {
+    fn from(thread_settings: ThreadSettings) -> Self {
+        ClockWorkThreadSettings {
+            fee: thread_settings.fee,
+            instructions: thread_settings
+                .instructions
+                .map(|i| i.into_iter().map(|i| i.into()).collect()),
+            name: thread_settings.name,
+            rate_limit: thread_settings.rate_limit,
+            trigger: thread_settings.trigger.map(|t| t.into()),
         }
     }
 }
