@@ -2,42 +2,15 @@ use crate::{prelude::*, utils::anchor_sighash};
 use solana_program::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
 
-use clockwork_client::thread::state::Thread;
+use clockwork_client::thread::{instruction::thread_delete, state::Thread};
+
+
+
+// Command Name
+const THREAD_DELETE: &str = "thread_delete";
 
 #[derive(Debug)]
 pub struct ThreadDelete;
-
-pub fn thread_delete(authority: Pubkey, thread: Pubkey, close_to: Pubkey) -> Instruction {
-    Instruction {
-        program_id: clockwork_thread_program::ID,
-        accounts: vec![
-            AccountMeta::new_readonly(authority, true),
-            AccountMeta::new(close_to, false),
-            AccountMeta::new(thread, false),
-        ],
-        data: anchor_sighash("thread_delete").to_vec(),
-    }
-}
-
-impl ThreadDelete {
-    #[allow(clippy::too_many_arguments)]
-    async fn command_thread_delete(
-        &self,
-        rpc_client: &RpcClient,
-        payer: Pubkey,
-        thread: Pubkey,
-        close_to: Pubkey,
-    ) -> crate::Result<(u64, Vec<Instruction>)> {
-        // FIXME min rent
-        let minimum_balance_for_rent_exemption = rpc_client
-            .get_minimum_balance_for_rent_exemption(80)
-            .await?;
-
-        let instructions = vec![thread_delete(payer, thread, close_to)];
-
-        Ok((minimum_balance_for_rent_exemption, instructions))
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -57,17 +30,6 @@ pub struct Output {
     signature: Signature,
 }
 
-// Command Name
-const THREAD_DELETE: &str = "thread_delete";
-
-// Inputs
-const THREAD_AUTHORITY: &str = "thread_authority";
-const PAYER: &str = "payer";
-const THREAD: &str = "thread";
-const CLOSE_TO: &str = "close_to";
-
-// Outputs
-const SIGNATURE: &str = "signature";
 
 #[async_trait]
 impl CommandTrait for ThreadDelete {
@@ -78,25 +40,25 @@ impl CommandTrait for ThreadDelete {
     fn inputs(&self) -> Vec<CmdInput> {
         [
             CmdInput {
-                name: THREAD_AUTHORITY.into(),
+                name: "THREAD_AUTHORITY".into(),
                 type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
-                name: PAYER.into(),
+                name: "PAYER".into(),
                 type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
                 required: false,
                 passthrough: false,
             },
             CmdInput {
-                name: THREAD.into(),
+                name: "THREAD".into(),
                 type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
                 required: false,
                 passthrough: false,
             },
             CmdInput {
-                name: CLOSE_TO.into(),
+                name: "CLOSE_TO".into(),
                 type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
                 required: false,
                 passthrough: false,
@@ -107,7 +69,7 @@ impl CommandTrait for ThreadDelete {
 
     fn outputs(&self) -> Vec<CmdOutput> {
         [CmdOutput {
-            name: SIGNATURE.into(),
+            name: "SIGNATURE".into(),
             r#type: ValueType::String,
         }]
         .to_vec()
@@ -129,15 +91,16 @@ impl CommandTrait for ThreadDelete {
 
         let close_to_input: Pubkey = close_to.unwrap_or(thread_authority.pubkey());
 
-        // Create Instructions
-        let (minimum_balance_for_rent_exemption, instructions) = self
-            .command_thread_delete(
-                &ctx.solana_client,
-                payer_input.pubkey(),
-                thread_input,
-                close_to_input,
-            )
+        let minimum_balance_for_rent_exemption = ctx
+            .solana_client
+            .get_minimum_balance_for_rent_exemption(80)
             .await?;
+
+        let instructions = vec![thread_delete(
+            payer_input.pubkey(),
+            thread_input,
+            close_to_input,
+        )];
 
         let (mut transaction, recent_blockhash) = execute(
             &ctx.solana_client,
