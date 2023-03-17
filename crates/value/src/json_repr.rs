@@ -6,6 +6,30 @@ pub use super::value_type::keys;
 
 pub mod iter_ser;
 
+pub mod map {
+    use crate::value_type::Variant;
+
+    pub type Target = crate::Map;
+
+    pub fn serialize<S>(v: &Target, s: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        const NAME: &str = "JsonRepr";
+
+        let (i, k) = Variant::Map.variant();
+        s.serialize_newtype_variant(
+            NAME,
+            i,
+            k,
+            &super::iter_ser::Map::new(v.iter().map(|(k, v)| (k, super::JsonRepr::new(v)))),
+        )
+    }
+
+    // TODO
+    // pub fn deserialize() {}
+}
+
 #[derive(Debug)]
 pub struct JsonRepr<'a>(std::borrow::Cow<'a, Value>);
 
