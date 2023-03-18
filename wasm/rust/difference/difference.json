@@ -11,19 +11,12 @@
     },
     "targets": [
         {
-            "name": "left",
+            "name": "input",
             "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "right",
-            "type_bounds": [
-                "string"
+                "object": {
+                    "left": "string",
+                    "right": "string"
+                }
             ],
             "required": true,
             "defaultValue": "",
