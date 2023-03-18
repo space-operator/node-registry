@@ -13,10 +13,12 @@
         {
             "name": "numbers",
             "type_bounds": [
-                "string"
+                {
+                    "array": "i64"
+                }
             ],
             "required": true,
-            "defaultValue": "{[]}",
+            "defaultValue": "",
             "tooltip": "",
             "passthrough": false
         }
@@ -24,7 +26,9 @@
     "sources": [
         {
             "name": "sorted numbers",
-            "type": "string",
+            "type": {
+                "array": "i64"
+            },
             "defaultValue": "",
             "tooltip": ""
         }
