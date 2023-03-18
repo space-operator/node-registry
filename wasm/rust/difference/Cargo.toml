@@ -3,11 +3,14 @@ name = "difference"
 version = "0.1.0"
 edition = "2021"
 
+[profile.release]
+lto = true
+strip = true
+
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-diff = "0.1.12"
-serde_json = "1.0.87"
-serde = { version = "1.0.145", features = ["derive"] }
-thiserror = "1.0.38"
+diff = "0.1"
+space-lib = "0.5"
+serde = { version = "1.0", features = ["derive"] }

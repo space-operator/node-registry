@@ -11,23 +11,16 @@
     },
     "targets": [
         {
-            "name": "expression",
+            "name": "input",
             "type_bounds": [
-                "string"
+                "object": {
+                    "expr": "string",
+                    "vars": "string"
+                }
             ],
             "required": true,
             "defaultValue": "",
-            "tooltip": "'x + y'",
-            "passthrough": false
-        },
-        {
-            "name": "variables",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "'{\"x\": 100, \"y\": 20}'",
+            "tooltip": "'x + y' and '{\"x\": 100, \"y\": 20}'",
             "passthrough": false
         }
     ],

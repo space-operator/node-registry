@@ -13,21 +13,14 @@
         {
             "name": "input",
             "type_bounds": [
-                "string"
+                "object": {
+                    "value": "string",
+                    "case_type": "string"
+                }
             ],
             "required": true,
             "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "output type",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "Allowed values: upper, lower, title, toggle, camel, pascal, upper_camel, snake, upper_snake, screaming_snake, kebab, cobol, upper_kebab, train, flat, upper_flat, alternating",
+            "tooltip": "Allowed values for case: upper, lower, title, toggle, camel, pascal, upper_camel, snake, upper_snake, screaming_snake, kebab, cobol, upper_kebab, train, flat, upper_flat, alternating",
             "passthrough": false
         }
     ],
