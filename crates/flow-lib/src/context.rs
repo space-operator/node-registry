@@ -24,6 +24,8 @@ pub mod signer {
         #[error(transparent)]
         Worker(BoxError),
         #[error(transparent)]
+        MailBox(#[from] actix::MailboxError),
+        #[error(transparent)]
         Other(#[from] BoxError),
     }
 

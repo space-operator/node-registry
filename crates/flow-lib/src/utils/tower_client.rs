@@ -32,6 +32,15 @@ where
         }
     }
 
+    pub fn from_service<S>(s: S, worker_error: fn(tower::BoxError) -> E, size: usize) -> Self
+    where
+        S: tower::Service<T, Response = U, Error = E> + Send + 'static,
+        S::Future: Send + 'static,
+    {
+        let buffer = Buffer::new(BoxService::new(s), size);
+        Self::new(buffer, worker_error)
+    }
+
     pub async fn call_mut(&mut self, req: T) -> Result<U, E> {
         self.ready().await?.call(req).await
     }
