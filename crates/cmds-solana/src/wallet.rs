@@ -4,7 +4,7 @@ use thiserror::Error as ThisError;
 
 #[derive(Debug)]
 pub struct Wallet {
-    form: Option<Result<Output, WalletError>>,
+    form: Result<Output, WalletError>,
 }
 
 #[derive(Deserialize)]
@@ -16,10 +16,12 @@ enum FormData {
     Adapter { wallet_data: String },
 }
 
-#[derive(ThisError, Debug, Clone)]
+#[derive(ThisError, Debug)]
 enum WalletError {
     #[error("failed to decode wallet as base58")]
     InvalidBase58,
+    #[error(transparent)]
+    Form(serde_json::Error),
 }
 
 fn adapter_wallet(pubkey: Pubkey) -> Output {
@@ -60,8 +62,8 @@ impl FormData {
 impl Wallet {
     fn new(nd: &NodeData) -> Self {
         let form = serde_json::from_value::<FormData>(nd.targets_form.form_data.clone())
-            .ok()
-            .map(FormData::into_output);
+            .map_err(WalletError::Form)
+            .and_then(FormData::into_output);
         Self { form }
     }
 }
@@ -100,13 +102,10 @@ impl CommandTrait for Wallet {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, _inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, _: Context, _: ValueSet) -> Result<ValueSet, CommandError> {
         match &self.form {
-            None => Ok(value::to_map(&adapter_wallet(ctx.user.pubkey))?),
-            Some(result) => match result {
-                Ok(output) => Ok(value::to_map(output)?),
-                Err(e) => Err(e.clone().into()),
-            },
+            Ok(output) => Ok(value::to_map(output)?),
+            Err(e) => Err(CommandError::msg(e.to_string())),
         }
     }
 }

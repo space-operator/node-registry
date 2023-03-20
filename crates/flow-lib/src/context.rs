@@ -69,15 +69,11 @@ impl Default for Context {
 #[derive(Clone, Copy)]
 pub struct User {
     pub id: UserId,
-    pub pubkey: Pubkey,
 }
 
 impl User {
-    pub fn new(id: UserId, pubkey: [u8; 32]) -> Self {
-        Self {
-            id,
-            pubkey: Pubkey::new_from_array(pubkey),
-        }
+    pub fn new(id: UserId) -> Self {
+        Self { id }
     }
 }
 
@@ -86,7 +82,6 @@ impl Default for User {
     fn default() -> Self {
         User {
             id: uuid::uuid!("00000000-0000-0000-0000-000000000000"),
-            pubkey: Pubkey::new_from_array([0u8; 32]),
         }
     }
 }
