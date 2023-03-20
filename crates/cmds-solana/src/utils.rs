@@ -107,7 +107,7 @@ pub async fn try_sign_wallet(
             if k.is_user_wallet() {
                 let pk = k.pubkey();
                 let task = ctx
-                    .request_signature(pk, msg.clone())
+                    .request_signature(pk, msg.clone(), SIGNATURE_TIMEOUT)
                     .map_ok(move |sig| (pk, sig));
                 Some(task)
             } else {
@@ -118,7 +118,7 @@ pub async fn try_sign_wallet(
 
     let presigners = tokio::time::timeout(SIGNATURE_TIMEOUT, futs.try_collect::<Vec<_>>())
         .await
-        .map_err(|_| crate::Error::SignatureTimedOut)??
+        .map_err(|_| crate::Error::SignatureTimeout)??
         .into_iter()
         .map(|(pk, sig)| Presigner::new(&pk, &sig))
         .collect::<Vec<Presigner>>();

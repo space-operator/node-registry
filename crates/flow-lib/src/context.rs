@@ -2,7 +2,7 @@ use crate::{ContextConfig, UserId};
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
 use solana_sdk::{pubkey::Pubkey, signature::Signature};
-use std::{any::Any, collections::HashMap, sync::Arc};
+use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
 use tower::{Service, ServiceExt};
 
 pub use http::Extensions;
@@ -10,6 +10,7 @@ pub use http::Extensions;
 pub mod signer {
     use crate::{utils::TowerClient, BoxError, UserId};
     use solana_sdk::{pubkey::Pubkey, signature::Signature};
+    use std::time::Duration;
     use thiserror::Error as ThisError;
 
     #[derive(ThisError, Debug)]
@@ -18,6 +19,8 @@ pub mod signer {
         Pubkey,
         #[error("can't sign for this user")]
         User,
+        #[error("timeout")]
+        Timeout,
         #[error(transparent)]
         Worker(BoxError),
         #[error(transparent)]
@@ -26,16 +29,19 @@ pub mod signer {
 
     pub type Svc = TowerClient<SignatureRequest, SignatureResponse, Error>;
 
+    #[derive(Debug)]
     pub struct SignatureRequest {
         pub user_id: UserId,
         pub pubkey: Pubkey,
         pub message: bytes::Bytes,
+        pub timeout: Duration,
     }
 
     impl actix::Message for SignatureRequest {
         type Result = Result<SignatureResponse, Error>;
     }
 
+    #[derive(Debug)]
     pub struct SignatureResponse {
         pub signature: Signature,
     }
@@ -110,6 +116,7 @@ impl Context {
         &self,
         pubkey: Pubkey,
         message: Bytes,
+        timeout: Duration,
     ) -> Result<Signature, anyhow::Error> {
         let mut s = self.signer.clone();
         let user_id = self.user.id;
@@ -121,6 +128,7 @@ impl Context {
                 user_id,
                 pubkey,
                 message,
+                timeout,
             })
             .await?;
         Ok(signature)

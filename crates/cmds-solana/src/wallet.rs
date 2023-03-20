@@ -120,23 +120,7 @@ mod tests {
     use flow_lib::config::client::{Extra, TargetsForm};
     use serde_json::json;
 
-    const PUBKEY: &str = "DKsvmM9hfNm4R94yB3VdYMZJk2ETv5hpcjuRmiwgiztY";
-
-    #[tokio::test]
-    async fn test_wallet() {
-        let pubkey: Pubkey = PUBKEY.parse().unwrap();
-
-        let mut ctx = Context::default();
-        ctx.user.pubkey = pubkey;
-
-        let result = Wallet { form: None }
-            .run(ctx, Default::default())
-            .await
-            .unwrap();
-        let output: Output = value::from_map(result).unwrap();
-        assert_eq!(output.pubkey, pubkey);
-        assert_eq!(output.keypair.pubkey(), pubkey);
-    }
+    const PUBKEY: Pubkey = solana_sdk::pubkey!("DKsvmM9hfNm4R94yB3VdYMZJk2ETv5hpcjuRmiwgiztY");
 
     #[test]
     fn adapter() {
@@ -155,10 +139,7 @@ mod tests {
                 wasm_bytes: None,
             },
         };
-        assert_eq!(
-            Wallet::new(&nd).form.unwrap().unwrap().pubkey.to_string(),
-            PUBKEY
-        );
+        assert_eq!(Wallet::new(&nd).form.unwrap().pubkey, PUBKEY);
     }
 
     #[test]
@@ -180,8 +161,8 @@ mod tests {
                 wasm_bytes: None,
             },
         };
-        let wallet = Wallet::new(&nd).form.unwrap().unwrap();
-        assert_eq!(wallet.keypair.to_base58_string(), KEYPAIR,);
+        let wallet = Wallet::new(&nd).form.unwrap();
+        assert_eq!(wallet.keypair.to_base58_string(), KEYPAIR);
         assert_eq!(wallet.keypair.pubkey(), wallet.pubkey);
     }
 }

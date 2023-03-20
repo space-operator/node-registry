@@ -29,8 +29,11 @@ impl bundlr_sdk::Signer for BundlrSigner {
             let ctx = self.ctx.clone();
             let pubkey = self.keypair.pubkey();
             rt.block_on(async move {
-                tokio::time::timeout(super::SIGNATURE_TIMEOUT, ctx.request_signature(pubkey, msg))
-                    .await
+                tokio::time::timeout(
+                    super::SIGNATURE_TIMEOUT,
+                    ctx.request_signature(pubkey, msg, super::SIGNATURE_TIMEOUT),
+                )
+                .await
             })
             .map_err(|e| BundlrError::SigningError(e.to_string()))?
             .map_err(|e| BundlrError::SigningError(e.to_string()))?
