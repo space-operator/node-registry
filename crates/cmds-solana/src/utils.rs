@@ -40,6 +40,9 @@ impl KeypairExt for Keypair {
     }
 }
 
+// TODO: Make this into a new command?
+// the new Execute command can wrap the output of nodes that generate instructions,
+// the output of this command could be a signature that can be used to track the status of the transaction
 pub async fn execute(
     client: &RpcClient,
     fee_payer: &Pubkey,
