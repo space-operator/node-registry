@@ -11,29 +11,13 @@
     },
     "targets": [
         {
-            "name": "lower bound",
+            "name": "input",
             "type_bounds": [
-                "u64"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "upper bound",
-            "type_bounds": [
-                "u64"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "length",
-            "type_bounds": [
-                "u64"
+                "object": {
+                    "min": "u64",
+                    "max": "u64",
+                    "len": "u64"
+                }
             ],
             "required": true,
             "defaultValue": "",
@@ -43,8 +27,10 @@
     ],
     "sources": [
         {
-            "name": "array",
-            "type": "string",
+            "name": "output",
+            "type": {
+                "array": "u64"
+            },
             "defaultValue": "",
             "tooltip": ""
         }

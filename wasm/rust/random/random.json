@@ -11,19 +11,12 @@
     },
     "targets": [
         {
-            "name": "start",
+            "name": "input",
             "type_bounds": [
-                "u64"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "end",
-            "type_bounds": [
-                "u64"
+                "object": {
+                    "start": "u64",
+                    "end": "u64"
+                }
             ],
             "required": true,
             "defaultValue": "",
