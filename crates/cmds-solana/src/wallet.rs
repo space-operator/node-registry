@@ -121,6 +121,7 @@ mod tests {
     use serde_json::json;
 
     const PUBKEY: Pubkey = solana_sdk::pubkey!("DKsvmM9hfNm4R94yB3VdYMZJk2ETv5hpcjuRmiwgiztY");
+    const PUBKEY_STR: &str = "DKsvmM9hfNm4R94yB3VdYMZJk2ETv5hpcjuRmiwgiztY";
 
     #[test]
     fn adapter() {
@@ -133,7 +134,7 @@ mod tests {
                 form_data: json!({
                     // there is also "wallet_id", but it is not used
                     "wallet_type": "ADAPTER",
-                    "wallet_data": PUBKEY,
+                    "wallet_data": PUBKEY_STR,
                 }),
                 extra: Extra::default(),
                 wasm_bytes: None,
