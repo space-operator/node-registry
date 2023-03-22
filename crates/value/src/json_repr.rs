@@ -6,6 +6,8 @@ pub use super::value_type::keys;
 
 pub mod iter_ser;
 
+pub use map as json_map;
+
 pub mod map {
     use crate::value_type::Variant;
 
