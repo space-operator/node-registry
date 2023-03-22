@@ -4,7 +4,7 @@ use thiserror::Error as ThisError;
 
 #[derive(Debug)]
 pub struct Wallet {
-    form: Option<Result<Output, WalletError>>,
+    form: Result<Output, WalletError>,
 }
 
 #[derive(Deserialize)]
@@ -16,10 +16,12 @@ enum FormData {
     Adapter { wallet_data: String },
 }
 
-#[derive(ThisError, Debug, Clone)]
+#[derive(ThisError, Debug)]
 enum WalletError {
     #[error("failed to decode wallet as base58")]
     InvalidBase58,
+    #[error(transparent)]
+    Form(serde_json::Error),
 }
 
 fn adapter_wallet(pubkey: Pubkey) -> Output {
@@ -60,8 +62,8 @@ impl FormData {
 impl Wallet {
     fn new(nd: &NodeData) -> Self {
         let form = serde_json::from_value::<FormData>(nd.targets_form.form_data.clone())
-            .ok()
-            .map(FormData::into_output);
+            .map_err(WalletError::Form)
+            .and_then(FormData::into_output);
         Self { form }
     }
 }
@@ -100,13 +102,10 @@ impl CommandTrait for Wallet {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, _inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, _: Context, _: ValueSet) -> Result<ValueSet, CommandError> {
         match &self.form {
-            None => Ok(value::to_map(&adapter_wallet(ctx.user.pubkey))?),
-            Some(result) => match result {
-                Ok(output) => Ok(value::to_map(output)?),
-                Err(e) => Err(e.clone().into()),
-            },
+            Ok(output) => Ok(value::to_map(output)?),
+            Err(e) => Err(CommandError::msg(e.to_string())),
         }
     }
 }
@@ -121,23 +120,8 @@ mod tests {
     use flow_lib::config::client::{Extra, TargetsForm};
     use serde_json::json;
 
-    const PUBKEY: &str = "DKsvmM9hfNm4R94yB3VdYMZJk2ETv5hpcjuRmiwgiztY";
-
-    #[tokio::test]
-    async fn test_wallet() {
-        let pubkey: Pubkey = PUBKEY.parse().unwrap();
-
-        let mut ctx = Context::default();
-        ctx.user.pubkey = pubkey;
-
-        let result = Wallet { form: None }
-            .run(ctx, Default::default())
-            .await
-            .unwrap();
-        let output: Output = value::from_map(result).unwrap();
-        assert_eq!(output.pubkey, pubkey);
-        assert_eq!(output.keypair.pubkey(), pubkey);
-    }
+    const PUBKEY: Pubkey = solana_sdk::pubkey!("DKsvmM9hfNm4R94yB3VdYMZJk2ETv5hpcjuRmiwgiztY");
+    const PUBKEY_STR: &str = "DKsvmM9hfNm4R94yB3VdYMZJk2ETv5hpcjuRmiwgiztY";
 
     #[test]
     fn adapter() {
@@ -150,16 +134,13 @@ mod tests {
                 form_data: json!({
                     // there is also "wallet_id", but it is not used
                     "wallet_type": "ADAPTER",
-                    "wallet_data": PUBKEY,
+                    "wallet_data": PUBKEY_STR,
                 }),
                 extra: Extra::default(),
                 wasm_bytes: None,
             },
         };
-        assert_eq!(
-            Wallet::new(&nd).form.unwrap().unwrap().pubkey.to_string(),
-            PUBKEY
-        );
+        assert_eq!(Wallet::new(&nd).form.unwrap().pubkey, PUBKEY);
     }
 
     #[test]
@@ -181,8 +162,8 @@ mod tests {
                 wasm_bytes: None,
             },
         };
-        let wallet = Wallet::new(&nd).form.unwrap().unwrap();
-        assert_eq!(wallet.keypair.to_base58_string(), KEYPAIR,);
+        let wallet = Wallet::new(&nd).form.unwrap();
+        assert_eq!(wallet.keypair.to_base58_string(), KEYPAIR);
         assert_eq!(wallet.keypair.pubkey(), wallet.pubkey);
     }
 }

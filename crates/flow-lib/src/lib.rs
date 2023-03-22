@@ -1,6 +1,11 @@
 pub mod command;
 pub mod config;
 pub mod context;
+pub mod utils;
+
+pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
+
+pub type UserId = uuid::Uuid;
 
 pub use config::{
     CmdInputDescription, CmdOutputDescription, CommandType, ContextConfig, FlowConfig, FlowId,

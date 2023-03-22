@@ -1,51 +1,55 @@
-use crate::ContextConfig;
+use crate::{ContextConfig, UserId};
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
 use solana_sdk::{pubkey::Pubkey, signature::Signature};
-use std::{any::Any, collections::HashMap, sync::Arc};
+use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
 use tower::{Service, ServiceExt};
-use uuid::Uuid;
 
 pub use http::Extensions;
 
 pub mod signer {
+    use crate::{utils::TowerClient, BoxError, UserId};
     use solana_sdk::{pubkey::Pubkey, signature::Signature};
-    use tower::{
-        buffer::Buffer,
-        util::{BoxService, MapErr},
-    };
+    use std::time::Duration;
+    use thiserror::Error as ThisError;
 
-    pub type Svc = MapErr<
-        Buffer<BoxService<SignatureRequest, SignatureResponse, anyhow::Error>, SignatureRequest>,
-        fn(tower::BoxError) -> anyhow::Error,
-    >;
-
-    pub struct SignatureRequest {
-        pub user_id: uuid::Uuid,
-        pub pubkey: Pubkey,
-        pub message: bytes::Bytes,
+    #[derive(ThisError, Debug)]
+    pub enum Error {
+        #[error("can't sign for this pubkey")]
+        Pubkey,
+        #[error("can't sign for this user")]
+        User,
+        #[error("timeout")]
+        Timeout,
+        #[error(transparent)]
+        Worker(BoxError),
+        #[error(transparent)]
+        MailBox(#[from] actix::MailboxError),
+        #[error(transparent)]
+        Other(#[from] BoxError),
     }
 
+    pub type Svc = TowerClient<SignatureRequest, SignatureResponse, Error>;
+
+    #[derive(Debug)]
+    pub struct SignatureRequest {
+        pub user_id: UserId,
+        pub pubkey: Pubkey,
+        pub message: bytes::Bytes,
+        pub timeout: Duration,
+    }
+
+    impl actix::Message for SignatureRequest {
+        type Result = Result<SignatureResponse, Error>;
+    }
+
+    #[derive(Debug)]
     pub struct SignatureResponse {
         pub signature: Signature,
     }
 
-    pub fn wrap_box(s: BoxService<SignatureRequest, SignatureResponse, anyhow::Error>) -> Svc {
-        MapErr::new(Buffer::new(s, 32), map_err)
-    }
-
-    fn map_err(e: tower::BoxError) -> anyhow::Error {
-        anyhow::anyhow!(e)
-    }
-
     pub fn unimplemented_svc() -> Svc {
-        let s = tower::ServiceBuilder::new()
-            .boxed()
-            .service_fn(|_| std::future::ready(Err(anyhow::anyhow!("not implemented"))));
-
-        // throw away the worker
-        let (s, _) = Buffer::pair(s, 32);
-        MapErr::new(s, map_err)
+        Svc::unimplemented(|| BoxError::from("unimplemented").into(), Error::Worker)
     }
 }
 
@@ -70,18 +74,14 @@ impl Default for Context {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct User {
-    pub id: Uuid,
-    pub pubkey: Pubkey,
+    pub id: UserId,
 }
 
 impl User {
-    pub fn new(id: Uuid, pubkey: [u8; 32]) -> Self {
-        Self {
-            id,
-            pubkey: Pubkey::new_from_array(pubkey),
-        }
+    pub fn new(id: UserId) -> Self {
+        Self { id }
     }
 }
 
@@ -90,7 +90,6 @@ impl Default for User {
     fn default() -> Self {
         User {
             id: uuid::uuid!("00000000-0000-0000-0000-000000000000"),
-            pubkey: Pubkey::new_from_array([0u8; 32]),
         }
     }
 }
@@ -119,6 +118,7 @@ impl Context {
         &self,
         pubkey: Pubkey,
         message: Bytes,
+        timeout: Duration,
     ) -> Result<Signature, anyhow::Error> {
         let mut s = self.signer.clone();
         let user_id = self.user.id;
@@ -130,6 +130,7 @@ impl Context {
                 user_id,
                 pubkey,
                 message,
+                timeout,
             })
             .await?;
         Ok(signature)
