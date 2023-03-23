@@ -2,7 +2,7 @@
     "type": "WASM",
     "data": {
         "node_id": "blake2b512",
-        "version": "0.1",
+        "version": "0.2",
         "display_name": "BLAKE2b-512",
         "description": "Calculates blake2b-512 hash",
         "width": 200,

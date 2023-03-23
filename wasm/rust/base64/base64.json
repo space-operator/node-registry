@@ -2,7 +2,7 @@
   "type": "WASM",
   "data": {
     "node_id": "base64",
-    "version": "0.1",
+    "version": "0.2",
     "display_name": "Base64",
     "description": "Calculates base64 hash",
     "width": 200,
