@@ -1,4 +1,4 @@
-use crate::{ContextConfig, UserId};
+use crate::{solana::Instructions, ContextConfig, UserId};
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
 use solana_sdk::{pubkey::Pubkey, signature::Signature};
@@ -53,6 +53,53 @@ pub mod signer {
     }
 }
 
+pub mod execute {
+    use crate::{solana::Instructions, utils::TowerClient, BoxError};
+    use solana_client::client_error::ClientError;
+    use solana_sdk::{signature::Signature, signer::SignerError};
+    use thiserror::Error as ThisError;
+
+    pub type Svc = TowerClient<Request, Response, Error>;
+
+    pub struct Request {
+        pub instructions: Instructions,
+        pub output: value::Map,
+    }
+
+    pub struct Response {
+        pub signature: Option<Signature>,
+    }
+
+    #[derive(ThisError, Debug)]
+    pub enum Error {
+        #[error("not available on this Context")]
+        NotAvailable,
+        #[error("time out")]
+        Timeout,
+        #[error("insufficient solana balance, needed={needed}; have={balance};")]
+        InsufficientSolanaBalance { needed: u64, balance: u64 },
+        #[error(transparent)]
+        Solana(#[from] ClientError),
+        #[error(transparent)]
+        Signer(#[from] SignerError),
+        #[error(transparent)]
+        Worker(BoxError),
+        #[error(transparent)]
+        MailBox(#[from] actix::MailboxError),
+        #[error(transparent)]
+        Other(#[from] BoxError),
+    }
+
+    pub fn unimplemented_svc() -> Svc {
+        Svc::unimplemented(|| BoxError::from("unimplemented").into(), Error::Worker)
+    }
+}
+
+#[derive(Clone)]
+pub struct CommandContext {
+    pub svc: execute::Svc,
+}
+
 #[derive(Clone)]
 pub struct Context {
     pub cfg: ContextConfig,
@@ -61,6 +108,7 @@ pub struct Context {
     pub user: User,
     pub signer: signer::Svc,
     pub extensions: Arc<Extensions>,
+    pub command: Option<CommandContext>,
 }
 
 impl Default for Context {
@@ -111,6 +159,26 @@ impl Context {
             user,
             extensions: Arc::new(extensions),
             signer: sig_svc,
+            command: None,
+        }
+    }
+
+    pub async fn execute(
+        &mut self,
+        instructions: Instructions,
+        output: value::Map,
+    ) -> Result<execute::Response, execute::Error> {
+        if let Some(ctx) = &mut self.command {
+            ctx.svc
+                .ready()
+                .await?
+                .call(execute::Request {
+                    instructions,
+                    output,
+                })
+                .await
+        } else {
+            Err(execute::Error::NotAvailable)
         }
     }
 

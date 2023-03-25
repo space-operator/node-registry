@@ -1,7 +1,4 @@
-use crate::{
-    prelude::*,
-    utils::{execute, submit_transaction},
-};
+use crate::prelude::*;
 use solana_sdk::program_pack::Pack;
 use solana_sdk::system_instruction;
 use spl_token::state::Mint;
@@ -19,12 +16,12 @@ impl CreateMintAccount {
         mint_authority: Pubkey,
         freeze_authority: Option<Pubkey>,
         memo: &str,
-    ) -> crate::Result<(u64, Vec<solana_sdk::instruction::Instruction>)> {
+    ) -> crate::Result<(u64, Vec<Instruction>)> {
         let minimum_balance_for_rent_exemption = rpc_client
             .get_minimum_balance_for_rent_exemption(Mint::LEN)
             .await?;
 
-        let instructions = vec![
+        let instructions = [
             system_instruction::create_account(
                 fee_payer,
                 mint_account,
@@ -40,7 +37,8 @@ impl CreateMintAccount {
                 decimals,
             )?,
             spl_memo::build_memo(memo.as_bytes(), &[fee_payer]),
-        ];
+        ]
+        .to_vec();
 
         Ok((minimum_balance_for_rent_exemption, instructions))
     }
@@ -149,7 +147,7 @@ impl CommandTrait for CreateMintAccount {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, mut ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let input: Input = value::from_map(inputs)?;
 
         let (minimum_balance_for_rent_exemption, instructions) = self
@@ -164,29 +162,25 @@ impl CommandTrait for CreateMintAccount {
             )
             .await?;
 
-        let fee_payer_pubkey = input.fee_payer.pubkey();
-
-        let (mut transaction, recent_blockhash) = execute(
-            &ctx.solana_client,
-            &fee_payer_pubkey,
-            &instructions,
-            minimum_balance_for_rent_exemption,
-        )
-        .await?;
-
-        try_sign_wallet(
-            &ctx,
-            &mut transaction,
-            &[&input.mint_authority, &input.fee_payer, &input.mint_account],
-            recent_blockhash,
-        )
-        .await?;
-
-        let signature = if input.submit {
-            Some(submit_transaction(&ctx.solana_client, transaction).await?)
+        let instructions = if input.submit {
+            Instructions {
+                fee_payer: input.fee_payer.pubkey(),
+                signers: vec![
+                    input.mint_authority.clone_keypair(),
+                    input.fee_payer.clone_keypair(),
+                    input.mint_account.clone_keypair(),
+                ],
+                minimum_balance_for_rent_exemption,
+                instructions,
+            }
         } else {
-            None
+            Instructions::default()
         };
+
+        let signature = ctx
+            .execute(instructions, Default::default())
+            .await?
+            .signature;
 
         Ok(value::to_map(&Output { signature })?)
     }
