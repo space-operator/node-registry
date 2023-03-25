@@ -119,8 +119,8 @@ impl Instructions {
             tx.try_sign(&signers, recent_blockhash)?;
         }
 
-        rpc.send_and_confirm_transaction(&tx).await?;
+        let sig = rpc.send_and_confirm_transaction(&tx).await?;
 
-        Ok(Default::default())
+        Ok(sig)
     }
 }
