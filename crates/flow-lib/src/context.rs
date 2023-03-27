@@ -66,6 +66,7 @@ pub mod execute {
         pub output: value::Map,
     }
 
+    #[derive(Clone, Copy)]
     pub struct Response {
         pub signature: Option<Signature>,
     }

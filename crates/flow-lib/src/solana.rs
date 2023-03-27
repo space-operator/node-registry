@@ -39,6 +39,22 @@ pub struct Instructions {
 }
 
 impl Instructions {
+    pub fn combine(&mut self, next: Self) -> Result<(), Self> {
+        if next.fee_payer != self.fee_payer {
+            return Err(next);
+        }
+
+        // TODO: is += the right operation
+        self.minimum_balance_for_rent_exemption += next.minimum_balance_for_rent_exemption;
+
+        // TODO: sort and dedup?
+        self.signers.extend(next.signers);
+
+        self.instructions.extend(next.instructions);
+
+        Ok(())
+    }
+
     pub async fn execute(
         self,
         rpc: &RpcClient,
