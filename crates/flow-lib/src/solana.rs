@@ -30,7 +30,7 @@ impl KeypairExt for Keypair {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Instructions {
     pub fee_payer: Pubkey,
     pub signers: Vec<Keypair>,

@@ -74,6 +74,8 @@ pub mod execute {
     pub enum Error {
         #[error("not available on this Context")]
         NotAvailable,
+        #[error("some node failed to provide instructions")]
+        TxIncomplete,
         #[error("time out")]
         Timeout,
         #[error("insufficient solana balance, needed={needed}; have={balance};")]
