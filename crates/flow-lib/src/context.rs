@@ -96,6 +96,22 @@ pub mod execute {
     pub fn unimplemented_svc() -> Svc {
         Svc::unimplemented(|| BoxError::from("unimplemented").into(), Error::Worker)
     }
+
+    pub fn simple(ctx: &super::Context) -> Svc {
+        let rpc = ctx.solana_client.clone();
+        let signer = ctx.signer.clone();
+        let user_id = ctx.user.id;
+        let handle = move |req: Request| {
+            let rpc = rpc.clone();
+            let signer = signer.clone();
+            async move {
+                Ok(Response {
+                    signature: Some(req.instructions.execute(&rpc, signer, user_id).await?),
+                })
+            }
+        };
+        Svc::from_service(tower::service_fn(handle), Error::Worker, 1)
+    }
 }
 
 #[derive(Clone)]
@@ -116,12 +132,16 @@ pub struct Context {
 
 impl Default for Context {
     fn default() -> Self {
-        Context::from_cfg(
+        let mut ctx = Context::from_cfg(
             &ContextConfig::default(),
             User::default(),
             signer::unimplemented_svc(),
             Extensions::default(),
-        )
+        );
+        ctx.command = Some(CommandContext {
+            svc: execute::simple(&ctx),
+        });
+        ctx
     }
 }
 
