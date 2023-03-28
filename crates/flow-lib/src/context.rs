@@ -97,7 +97,7 @@ pub mod execute {
         Svc::unimplemented(|| BoxError::from("unimplemented").into(), Error::Worker)
     }
 
-    pub fn simple(ctx: &super::Context) -> Svc {
+    pub fn simple(ctx: &super::Context, size: usize) -> Svc {
         let rpc = ctx.solana_client.clone();
         let signer = ctx.signer.clone();
         let user_id = ctx.user.id;
@@ -110,7 +110,7 @@ pub mod execute {
                 })
             }
         };
-        Svc::from_service(tower::service_fn(handle), Error::Worker, 1)
+        Svc::from_service(tower::service_fn(handle), Error::Worker, size)
     }
 }
 
@@ -139,7 +139,7 @@ impl Default for Context {
             Extensions::default(),
         );
         ctx.command = Some(CommandContext {
-            svc: execute::simple(&ctx),
+            svc: execute::simple(&ctx, 1),
         });
         ctx
     }
