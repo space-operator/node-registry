@@ -1,7 +1,4 @@
-use crate::{
-    prelude::*,
-    utils::{execute, submit_transaction, ui_amount_to_amount},
-};
+use crate::{prelude::*, utils::ui_amount_to_amount};
 use solana_program::instruction::Instruction;
 use spl_token::instruction::mint_to_checked;
 
@@ -9,19 +6,13 @@ use spl_token::instruction::mint_to_checked;
 pub struct SolanaMintToken;
 
 impl SolanaMintToken {
-    async fn resolve_mint_info(
-        &self,
-        client: &RpcClient,
-        token_account: Pubkey,
-    ) -> crate::Result<(Pubkey, u8)> {
+    async fn get_decimals(&self, client: &RpcClient, token_account: Pubkey) -> crate::Result<u8> {
         let source_account = client
             .get_token_account(&token_account)
             .await
             .map_err(|_| crate::Error::NotTokenAccount(token_account))?
             .ok_or(crate::Error::NotTokenAccount(token_account))?;
-        // TODO: error instead of unwrap
-        let source_mint: Pubkey = source_account.mint.parse().unwrap();
-        Ok((source_mint, source_account.token_amount.decimals))
+        Ok(source_account.token_amount.decimals)
     }
 
     async fn command_mint(
@@ -32,11 +23,15 @@ impl SolanaMintToken {
         ui_amount: Decimal,
         recipient: Pubkey,
         mint_authority: Pubkey,
+        decimals: Option<u8>,
     ) -> crate::Result<(u64, Vec<Instruction>)> {
-        let (_, decimals) = self.resolve_mint_info(client, recipient).await?;
+        let decimals = match decimals {
+            Some(d) => d,
+            None => self.get_decimals(client, recipient).await?,
+        };
         let amount = ui_amount_to_amount(ui_amount, decimals)?;
 
-        let instructions = vec![mint_to_checked(
+        let instructions = [mint_to_checked(
             &spl_token::id(),
             &mint_account,
             &recipient,
@@ -44,7 +39,8 @@ impl SolanaMintToken {
             &[&fee_payer, &mint_authority],
             amount,
             decimals,
-        )?];
+        )?]
+        .to_vec();
 
         Ok((0, instructions))
     }
@@ -62,6 +58,7 @@ pub struct Input {
     recipient: Pubkey,
     #[serde(with = "value::decimal")]
     amount: Decimal,
+    decimals: Option<u8>,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
 }
@@ -128,6 +125,12 @@ impl CommandTrait for SolanaMintToken {
                 passthrough: false,
             },
             CmdInput {
+                name: "decimals".into(),
+                type_bounds: [ValueType::U8].to_vec(),
+                required: false,
+                passthrough: false,
+            },
+            CmdInput {
                 name: SUBMIT.into(),
                 type_bounds: [ValueType::Bool].to_vec(),
                 required: false,
@@ -145,7 +148,7 @@ impl CommandTrait for SolanaMintToken {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, mut ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let input: Input = value::from_map(inputs)?;
 
         let (minimum_balance_for_rent_exemption, instructions) = self
@@ -156,30 +159,28 @@ impl CommandTrait for SolanaMintToken {
                 input.amount,
                 input.recipient,
                 input.mint_authority.pubkey(),
+                input.decimals,
             )
             .await?;
 
-        let (mut transaction, recent_blockhash) = execute(
-            &ctx.solana_client,
-            &input.fee_payer.pubkey(),
-            &instructions,
-            minimum_balance_for_rent_exemption,
-        )
-        .await?;
-
-        try_sign_wallet(
-            &ctx,
-            &mut transaction,
-            &[&input.fee_payer, &input.mint_authority],
-            recent_blockhash,
-        )
-        .await?;
-
-        let signature = if input.submit {
-            Some(submit_transaction(&ctx.solana_client, transaction).await?)
+        let instructions = if input.submit {
+            Instructions {
+                fee_payer: input.fee_payer.pubkey(),
+                signers: vec![
+                    input.fee_payer.clone_keypair(),
+                    input.mint_authority.clone_keypair(),
+                ],
+                instructions,
+                minimum_balance_for_rent_exemption,
+            }
         } else {
-            None
+            Instructions::default()
         };
+
+        let signature = ctx
+            .execute(instructions, Default::default())
+            .await?
+            .signature;
 
         Ok(value::to_map(&Output { signature })?)
     }

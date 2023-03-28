@@ -75,6 +75,16 @@
             "passthrough": false
         },
         {
+            "name": "decimals",
+            "type_bounds": [
+                "u8"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "NFTs should have decimals = 0",
+            "passthrough": false
+        },
+        {
             "name": "submit",
             "type_bounds": [
                 "bool"

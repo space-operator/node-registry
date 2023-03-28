@@ -1,4 +1,4 @@
-use crate::{ContextConfig, UserId};
+use crate::{solana::Instructions, ContextConfig, UserId};
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
 use solana_sdk::{pubkey::Pubkey, signature::Signature};
@@ -53,6 +53,72 @@ pub mod signer {
     }
 }
 
+pub mod execute {
+    use crate::{solana::Instructions, utils::TowerClient, BoxError};
+    use solana_client::client_error::ClientError;
+    use solana_sdk::{signature::Signature, signer::SignerError};
+    use thiserror::Error as ThisError;
+
+    pub type Svc = TowerClient<Request, Response, Error>;
+
+    pub struct Request {
+        pub instructions: Instructions,
+        pub output: value::Map,
+    }
+
+    #[derive(Clone, Copy)]
+    pub struct Response {
+        pub signature: Option<Signature>,
+    }
+
+    #[derive(ThisError, Debug)]
+    pub enum Error {
+        #[error("not available on this Context")]
+        NotAvailable,
+        #[error("some node failed to provide instructions")]
+        TxIncomplete,
+        #[error("time out")]
+        Timeout,
+        #[error("insufficient solana balance, needed={needed}; have={balance};")]
+        InsufficientSolanaBalance { needed: u64, balance: u64 },
+        #[error(transparent)]
+        Solana(#[from] ClientError),
+        #[error(transparent)]
+        Signer(#[from] SignerError),
+        #[error(transparent)]
+        Worker(BoxError),
+        #[error(transparent)]
+        MailBox(#[from] actix::MailboxError),
+        #[error(transparent)]
+        Other(#[from] BoxError),
+    }
+
+    pub fn unimplemented_svc() -> Svc {
+        Svc::unimplemented(|| BoxError::from("unimplemented").into(), Error::Worker)
+    }
+
+    pub fn simple(ctx: &super::Context, size: usize) -> Svc {
+        let rpc = ctx.solana_client.clone();
+        let signer = ctx.signer.clone();
+        let user_id = ctx.user.id;
+        let handle = move |req: Request| {
+            let rpc = rpc.clone();
+            let signer = signer.clone();
+            async move {
+                Ok(Response {
+                    signature: Some(req.instructions.execute(&rpc, signer, user_id).await?),
+                })
+            }
+        };
+        Svc::from_service(tower::service_fn(handle), Error::Worker, size)
+    }
+}
+
+#[derive(Clone)]
+pub struct CommandContext {
+    pub svc: execute::Svc,
+}
+
 #[derive(Clone)]
 pub struct Context {
     pub cfg: ContextConfig,
@@ -61,16 +127,21 @@ pub struct Context {
     pub user: User,
     pub signer: signer::Svc,
     pub extensions: Arc<Extensions>,
+    pub command: Option<CommandContext>,
 }
 
 impl Default for Context {
     fn default() -> Self {
-        Context::from_cfg(
+        let mut ctx = Context::from_cfg(
             &ContextConfig::default(),
             User::default(),
             signer::unimplemented_svc(),
             Extensions::default(),
-        )
+        );
+        ctx.command = Some(CommandContext {
+            svc: execute::simple(&ctx, 1),
+        });
+        ctx
     }
 }
 
@@ -111,6 +182,26 @@ impl Context {
             user,
             extensions: Arc::new(extensions),
             signer: sig_svc,
+            command: None,
+        }
+    }
+
+    pub async fn execute(
+        &mut self,
+        instructions: Instructions,
+        output: value::Map,
+    ) -> Result<execute::Response, execute::Error> {
+        if let Some(ctx) = &mut self.command {
+            ctx.svc
+                .ready()
+                .await?
+                .call(execute::Request {
+                    instructions,
+                    output,
+                })
+                .await
+        } else {
+            Err(execute::Error::NotAvailable)
         }
     }
 

@@ -1,7 +1,4 @@
-use crate::{
-    prelude::*,
-    utils::{sol_to_lamports, tx_to_string},
-};
+use crate::{prelude::*, utils::sol_to_lamports};
 
 #[derive(Debug, Clone)]
 pub struct TransferSol;
@@ -39,6 +36,10 @@ const SIGNATURE: &str = "signature";
 
 #[async_trait]
 impl CommandTrait for TransferSol {
+    fn instruction_info(&self) -> Option<InstructionInfo> {
+        Some(InstructionInfo::simple(self, SIGNATURE))
+    }
+
     fn name(&self) -> Name {
         SOLANA_TRANSFER_SOL.into()
     }
@@ -87,7 +88,7 @@ impl CommandTrait for TransferSol {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, mut ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let Input {
             sender,
             recipient,
@@ -98,22 +99,26 @@ impl CommandTrait for TransferSol {
 
         let instruction =
             solana_sdk::system_instruction::transfer(&sender.pubkey(), &recipient, amount);
-        let (mut tx, recent_blockhash) =
-            execute(&ctx.solana_client, &sender.pubkey(), &[instruction], 0).await?;
 
-        try_sign_wallet(&ctx, &mut tx, &[&sender], recent_blockhash).await?;
-
-        let tx_str = tx_to_string(&tx)?;
-
-        let signature = if submit {
-            Some(submit_transaction(&ctx.solana_client, tx).await?)
+        let instructions = if submit {
+            Instructions {
+                fee_payer: sender.pubkey(),
+                signers: vec![sender.clone_keypair()],
+                minimum_balance_for_rent_exemption: 0,
+                instructions: vec![instruction],
+            }
         } else {
-            None
+            Instructions::default()
         };
+
+        let signature = ctx
+            .execute(instructions, Default::default())
+            .await?
+            .signature;
 
         Ok(value::to_map(&Output {
             signature,
-            tx: tx_str,
+            tx: String::new(), // TODO
         })?)
     }
 }

@@ -1,7 +1,4 @@
-use crate::{
-    prelude::*,
-    utils::{execute, submit_transaction},
-};
+use crate::prelude::*;
 use solana_program::program_pack::Pack;
 use spl_associated_token_account::instruction::create_associated_token_account;
 
@@ -22,8 +19,6 @@ pub struct Input {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::pubkey")]
-    associated_token_account: Pubkey,
     #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
 }
@@ -94,7 +89,7 @@ impl CommandTrait for AssociatedTokenAccount {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, mut ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let input: Input = value::from_map(inputs)?;
 
         let minimum_balance_for_rent_exemption = ctx
@@ -102,41 +97,37 @@ impl CommandTrait for AssociatedTokenAccount {
             .get_minimum_balance_for_rent_exemption(spl_token::state::Account::LEN)
             .await?;
 
-        let instructions = create_associated_token_account(
+        let instruction = create_associated_token_account(
             &input.fee_payer.pubkey(),
             &input.owner,
             &input.mint_account,
             &spl_token::id(),
         );
 
-        let associated_token_account = instructions.accounts[1].pubkey;
+        let associated_token_account = instruction.accounts[1].pubkey;
 
-        let (mut transaction, recent_blockhash) = execute(
-            &ctx.solana_client,
-            &input.fee_payer.pubkey(),
-            &[instructions],
-            minimum_balance_for_rent_exemption,
-        )
-        .await?;
-
-        try_sign_wallet(
-            &ctx,
-            &mut transaction,
-            &[&input.fee_payer],
-            recent_blockhash,
-        )
-        .await?;
-
-        let signature = if input.submit {
-            Some(submit_transaction(&ctx.solana_client, transaction).await?)
+        let instructions = if input.submit {
+            Instructions {
+                fee_payer: input.fee_payer.pubkey(),
+                signers: vec![input.fee_payer.clone_keypair()],
+                minimum_balance_for_rent_exemption,
+                instructions: [instruction].to_vec(),
+            }
         } else {
-            None
+            Instructions::default()
         };
 
-        Ok(value::to_map(&Output {
-            associated_token_account,
-            signature,
-        })?)
+        let signature = ctx
+            .execute(
+                instructions,
+                value::map! {
+                    ASSOCIATED_TOKEN_ACCOUNT => associated_token_account,
+                },
+            )
+            .await?
+            .signature;
+
+        Ok(value::to_map(&Output { signature })?)
     }
 }
 

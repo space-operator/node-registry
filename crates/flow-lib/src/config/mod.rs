@@ -104,6 +104,8 @@ pub struct FlowConfig {
     pub ctx: ContextConfig,
     pub nodes: Vec<NodeConfig>,
     pub edges: Vec<(Gate, Gate)>,
+    #[serde(default)]
+    pub instructions_bundling: client::BundlingMode,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -256,6 +258,7 @@ impl FlowConfig {
             },
             nodes,
             edges,
+            instructions_bundling: config.instructions_bundling,
         }
     }
 
