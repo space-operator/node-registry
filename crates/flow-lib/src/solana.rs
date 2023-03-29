@@ -135,6 +135,7 @@ impl Instructions {
             tx.try_sign(&signers, recent_blockhash)?;
         }
 
+        tracing::trace!("submitting transaction");
         let sig = rpc.send_and_confirm_transaction(&tx).await?;
 
         Ok(sig)
