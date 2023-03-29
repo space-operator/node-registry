@@ -1,7 +1,12 @@
 use crate::{context::execute::Error, context::signer, UserId};
 use bytes::Bytes;
 use futures::TryStreamExt;
-use solana_client::nonblocking::rpc_client::RpcClient;
+use solana_client::{
+    client_error::{ClientError, ClientErrorKind},
+    nonblocking::rpc_client::RpcClient,
+    rpc_request::{RpcError, RpcResponseErrorData},
+    rpc_response::RpcSimulateTransactionResult,
+};
 use solana_sdk::{
     instruction::Instruction,
     message::Message,
@@ -14,6 +19,32 @@ use std::time::Duration;
 use tower::ServiceExt;
 
 pub const SIGNATURE_TIMEOUT: Duration = Duration::from_secs(5 * 60);
+
+pub fn verbose_solana_error(err: &ClientError) -> String {
+    use std::fmt::Write;
+    if let ClientErrorKind::RpcError(RpcError::RpcResponseError {
+        code,
+        message,
+        data,
+    }) = &err.kind
+    {
+        let mut s = String::new();
+        writeln!(s, "{} ({})", message, code).unwrap();
+        if let RpcResponseErrorData::SendTransactionPreflightFailure(
+            RpcSimulateTransactionResult {
+                logs: Some(logs), ..
+            },
+        ) = data
+        {
+            for (i, log) in logs.iter().enumerate() {
+                writeln!(s, "{}: {}", i + 1, log).unwrap();
+            }
+        }
+        s
+    } else {
+        err.to_string()
+    }
+}
 
 pub trait KeypairExt {
     fn clone_keypair(&self) -> Self;
@@ -135,6 +166,7 @@ impl Instructions {
             tx.try_sign(&signers, recent_blockhash)?;
         }
 
+        tracing::trace!("submitting transaction");
         let sig = rpc.send_and_confirm_transaction(&tx).await?;
 
         Ok(sig)

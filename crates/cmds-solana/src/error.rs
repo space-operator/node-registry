@@ -10,7 +10,7 @@ pub type Result<T> = StdResult<T, Error>;
 pub enum Error {
     #[error(transparent)]
     Any(#[from] anyhow::Error),
-    #[error(transparent)]
+    #[error("{}", flow_lib::solana::verbose_solana_error(.0))]
     SolanaClient(#[from] solana_client::client_error::ClientError),
     #[error(transparent)]
     SolanaProgram(#[from] solana_sdk::program_error::ProgramError),
