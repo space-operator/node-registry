@@ -55,8 +55,10 @@ pub mod signer {
 
 pub mod execute {
     use crate::{solana::Instructions, utils::TowerClient, BoxError};
+    use futures::channel::oneshot::Canceled;
     use solana_client::client_error::ClientError;
     use solana_sdk::{signature::Signature, signer::SignerError};
+    use std::sync::Arc;
     use thiserror::Error as ThisError;
 
     pub type Svc = TowerClient<Request, Response, Error>;
@@ -71,7 +73,7 @@ pub mod execute {
         pub signature: Option<Signature>,
     }
 
-    #[derive(ThisError, Debug)]
+    #[derive(ThisError, Debug, Clone)]
     pub enum Error {
         #[error("not available on this Context")]
         NotAvailable,
@@ -82,19 +84,55 @@ pub mod execute {
         #[error("insufficient solana balance, needed={needed}; have={balance};")]
         InsufficientSolanaBalance { needed: u64, balance: u64 },
         #[error(transparent)]
-        Solana(#[from] ClientError),
+        Solana(#[from] Arc<ClientError>),
         #[error(transparent)]
-        Signer(#[from] SignerError),
+        Signer(#[from] Arc<SignerError>),
         #[error(transparent)]
-        Worker(BoxError),
+        Worker(Arc<BoxError>),
         #[error(transparent)]
         MailBox(#[from] actix::MailboxError),
         #[error(transparent)]
-        Other(#[from] BoxError),
+        ChannelClosed(#[from] Canceled),
+        #[error(transparent)]
+        Other(#[from] Arc<BoxError>),
+    }
+
+    impl From<anyhow::Error> for Error {
+        fn from(value: anyhow::Error) -> Self {
+            value.downcast::<Self>().unwrap_or_else(Self::other)
+        }
+    }
+
+    impl From<ClientError> for Error {
+        fn from(value: ClientError) -> Self {
+            Error::Solana(Arc::new(value))
+        }
+    }
+
+    impl From<BoxError> for Error {
+        fn from(value: BoxError) -> Self {
+            Error::Other(Arc::new(value))
+        }
+    }
+
+    impl From<SignerError> for Error {
+        fn from(value: SignerError) -> Self {
+            Error::Signer(Arc::new(value))
+        }
+    }
+
+    impl Error {
+        pub fn worker(e: BoxError) -> Self {
+            Error::Worker(Arc::new(e))
+        }
+
+        pub fn other<E: Into<BoxError>>(e: E) -> Self {
+            Error::Other(Arc::new(e.into()))
+        }
     }
 
     pub fn unimplemented_svc() -> Svc {
-        Svc::unimplemented(|| BoxError::from("unimplemented").into(), Error::Worker)
+        Svc::unimplemented(|| Error::other("unimplemented"), Error::worker)
     }
 
     pub fn simple(ctx: &super::Context, size: usize) -> Svc {
@@ -110,7 +148,7 @@ pub mod execute {
                 })
             }
         };
-        Svc::from_service(tower::service_fn(handle), Error::Worker, size)
+        Svc::from_service(tower::service_fn(handle), Error::worker, size)
     }
 }
 
