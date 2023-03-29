@@ -37,7 +37,7 @@ pub fn verbose_solana_error(err: &ClientError) -> String {
         ) = data
         {
             for (i, log) in logs.iter().enumerate() {
-                writeln!(s, "{:>3}: {}", i + 1, log).unwrap();
+                writeln!(s, "{}: {}", i + 1, log).unwrap();
             }
         }
         s
