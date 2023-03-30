@@ -46,8 +46,8 @@ impl<'de> serde::de::Visitor<'de> for EnumVisitor {
             Variant::B32 => Ok(Value::B32(b58_str(a)?)),
             Variant::B64 => Ok(Value::B64(b58_str(a)?)),
             Variant::Bytes => Ok(Value::Bytes(b64_str(a)?)),
-            Variant::Array => Ok(Value::Array(a.newtype_variant::<JsonArray>()?.0)),
-            Variant::Map => Ok(Value::Map(a.newtype_variant::<JsonMap>()?.0)),
+            Variant::Array => Ok(Value::Array(a.newtype_variant::<Array>()?.0)),
+            Variant::Map => Ok(Value::Map(a.newtype_variant::<Map>()?.0)),
         }
     }
 }
@@ -76,14 +76,14 @@ impl<'de> serde::de::Visitor<'de> for MapVisitor {
     }
 }
 
-struct JsonMap(crate::Map);
+struct Map(crate::Map);
 
-impl<'de> serde::Deserialize<'de> for JsonMap {
+impl<'de> serde::Deserialize<'de> for Map {
     fn deserialize<D>(d: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        Ok(JsonMap(d.deserialize_map(MapVisitor)?))
+        Ok(Map(d.deserialize_map(MapVisitor)?))
     }
 }
 
@@ -111,14 +111,14 @@ impl<'de> serde::de::Visitor<'de> for ArrayVisitor {
     }
 }
 
-struct JsonArray(Vec<Value>);
+struct Array(Vec<Value>);
 
-impl<'de> serde::Deserialize<'de> for JsonArray {
+impl<'de> serde::Deserialize<'de> for Array {
     fn deserialize<D>(d: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        Ok(JsonArray(d.deserialize_seq(ArrayVisitor)?))
+        Ok(Array(d.deserialize_seq(ArrayVisitor)?))
     }
 }
 
