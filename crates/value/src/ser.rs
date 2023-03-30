@@ -1,9 +1,11 @@
 use crate::{Error, Map, Value};
 
+pub(self) mod iter_ser;
 pub(self) mod map_key;
 pub(self) mod maps;
 pub(self) mod seq;
 pub(self) mod tagged_bytes;
+pub(self) mod text_repr;
 
 use maps::{SerializeMap, SerializeStructVariant, SerializeTupleVariant};
 use seq::SerializeSeq;
@@ -17,27 +19,32 @@ impl serde::Serialize for Value {
         use crate::TOKEN;
 
         let (i, k) = self.kind().variant();
-        match self {
-            Value::Null => s.serialize_newtype_variant(TOKEN, i, k, &()),
-            Value::String(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
-            Value::Bool(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
-            Value::U64(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
-            Value::I64(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
-            Value::F64(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
-            Value::Decimal(v) => {
-                s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(&v.serialize()))
+        if s.is_human_readable() {
+            text_repr::TextRepr::new(self).serialize(s)
+        } else {
+            match self {
+                Value::Null => s.serialize_newtype_variant(TOKEN, i, k, &()),
+                Value::String(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+                Value::Bool(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+                Value::U64(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+                Value::I64(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+                Value::F64(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+                Value::Decimal(v) => {
+                    s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(&v.serialize()))
+                }
+                Value::I128(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+                Value::U128(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+                Value::B32(v) => s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(v)),
+                Value::B64(v) => s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(v)),
+                Value::Bytes(v) => s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(v)),
+                Value::Array(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
+                Value::Map(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
             }
-            Value::I128(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
-            Value::U128(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
-            Value::B32(v) => s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(v)),
-            Value::B64(v) => s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(v)),
-            Value::Bytes(v) => s.serialize_newtype_variant(TOKEN, i, k, &crate::Bytes(v)),
-            Value::Array(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
-            Value::Map(v) => s.serialize_newtype_variant(TOKEN, i, k, &v),
         }
     }
 }
 
+/// Turn any type that implements `Serialize` into `Value`.
 pub struct Serializer;
 
 impl serde::Serializer for Serializer {
