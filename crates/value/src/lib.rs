@@ -1,4 +1,4 @@
-use rust_decimal::Decimal;
+use rust_decimal::{prelude::ToPrimitive, Decimal};
 use thiserror::Error as ThisError;
 
 pub(crate) mod value_type;
@@ -95,6 +95,47 @@ impl Value {
         }
 
         Ok(Value::B64(buf))
+    }
+
+    pub fn normalize(self) -> Self {
+        match self {
+            Value::Null
+            | Value::String(_)
+            | Value::Bool(_)
+            | Value::U64(_)
+            | Value::I64(_)
+            | Value::F64(_)
+            | Value::B32(_)
+            | Value::B64(_)
+            | Value::Bytes(_) => self,
+            Value::Decimal(mut d) => {
+                d.normalize_assign();
+                if d.scale() == 0 {
+                    Value::I128(d.to_i128().expect("always fit into i128")).normalize()
+                } else {
+                    Value::Decimal(d)
+                }
+            }
+            Value::I128(i) => if i < 0 {
+                i64::try_from(i).map(Value::I64).ok()
+            } else {
+                u64::try_from(i).map(Value::U64).ok()
+            }
+            .unwrap_or(self),
+            Value::U128(u) => u64::try_from(u).map(Value::U64).unwrap_or(self),
+            Value::Array(mut a) => {
+                for v in &mut a {
+                    *v = std::mem::take(v).normalize();
+                }
+                Value::Array(a)
+            }
+            Value::Map(mut m) => {
+                for v in m.values_mut() {
+                    *v = std::mem::take(v).normalize();
+                }
+                Value::Map(m)
+            }
+        }
     }
 }
 
