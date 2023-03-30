@@ -98,68 +98,93 @@ impl Value {
     }
 }
 
-impl From<serde_json::Value> for Value {
-    fn from(value: serde_json::Value) -> Self {
-        match value {
-            serde_json::Value::Null => Value::Null,
-            serde_json::Value::Bool(b) => Value::Bool(b),
-            serde_json::Value::Number(n) => {
-                if let Some(u) = n.as_u64() {
-                    Value::U64(u)
-                } else if let Some(i) = n.as_i64() {
-                    if i < 0 {
-                        Value::I64(i)
+#[cfg(feature = "json")]
+mod json {
+    use crate::Value;
+    use rust_decimal::Decimal;
+
+    impl From<serde_json::Value> for Value {
+        fn from(value: serde_json::Value) -> Self {
+            match value {
+                serde_json::Value::Null => Value::Null,
+                serde_json::Value::Bool(b) => Value::Bool(b),
+                serde_json::Value::Number(n) => {
+                    if let Some(u) = n.as_u64() {
+                        Value::U64(u)
+                    } else if let Some(i) = n.as_i64() {
+                        if i < 0 {
+                            Value::I64(i)
+                        } else {
+                            Value::U64(i as u64)
+                        }
                     } else {
-                        Value::U64(i as u64)
-                    }
-                } else {
-                    let s = n.to_string();
-                    if let Ok(u) = s.parse::<u128>() {
-                        Value::U128(u)
-                    } else if let Ok(i) = s.parse::<i128>() {
-                        Value::I128(i)
-                    } else if let Ok(d) = s.parse::<Decimal>() {
-                        Value::Decimal(d)
-                    } else if let Ok(d) = Decimal::from_scientific(&s) {
-                        Value::Decimal(d)
-                    } else if let Ok(f) = s.parse::<f64>() {
-                        Value::F64(f)
-                    } else {
-                        // unlikely to happen
-                        // if happen, probably a bug in serde_json
-                        Value::String(s)
+                        let s = n.to_string();
+                        if let Ok(u) = s.parse::<u128>() {
+                            Value::U128(u)
+                        } else if let Ok(i) = s.parse::<i128>() {
+                            Value::I128(i)
+                        } else if let Ok(d) = s.parse::<Decimal>() {
+                            Value::Decimal(d)
+                        } else if let Ok(d) = Decimal::from_scientific(&s) {
+                            Value::Decimal(d)
+                        } else if let Ok(f) = s.parse::<f64>() {
+                            Value::F64(f)
+                        } else {
+                            // unlikely to happen
+                            // if happen, probably a bug in serde_json
+                            Value::String(s)
+                        }
                     }
                 }
-            }
-            serde_json::Value::String(s) => Value::String(s),
-            serde_json::Value::Array(vec) => {
-                Value::Array(vec.into_iter().map(Value::from).collect())
-            }
-            serde_json::Value::Object(map) => {
-                Value::Map(map.into_iter().map(|(k, v)| (k, Value::from(v))).collect())
+                serde_json::Value::String(s) => Value::String(s),
+                serde_json::Value::Array(vec) => {
+                    Value::Array(vec.into_iter().map(Value::from).collect())
+                }
+                serde_json::Value::Object(map) => {
+                    Value::Map(map.into_iter().map(|(k, v)| (k, Value::from(v))).collect())
+                }
             }
         }
     }
-}
 
-impl From<Value> for serde_json::Value {
-    fn from(value: Value) -> Self {
-        match value {
-            Value::Null => serde_json::Value::Null,
-            Value::String(value) => serde_json::Value::from(value),
-            Value::Bool(value) => serde_json::Value::from(value),
-            Value::U64(value) => serde_json::Value::from(value),
-            Value::I64(value) => serde_json::Value::from(value),
-            Value::F64(value) => serde_json::Value::from(value),
-            Value::Array(value) => serde_json::Value::from(value),
-            Value::Map(value) => {
-                let map = value
-                    .into_iter()
-                    .map(|(key, value)| (key, value.into()))
-                    .collect::<serde_json::Map<_, _>>();
-                serde_json::Value::from(map)
+    impl From<Value> for serde_json::Value {
+        fn from(value: Value) -> Self {
+            match value {
+                Value::Null => serde_json::Value::Null,
+                Value::String(value) => serde_json::Value::from(value),
+                Value::Bool(value) => serde_json::Value::from(value),
+                Value::U64(value) => serde_json::Value::from(value),
+                Value::I64(value) => serde_json::Value::from(value),
+                Value::F64(value) => serde_json::Value::from(value),
+                Value::Array(value) => serde_json::Value::from(value),
+                Value::Map(value) => {
+                    let map = value
+                        .into_iter()
+                        .map(|(key, value)| (key, value.into()))
+                        .collect::<serde_json::Map<_, _>>();
+                    serde_json::Value::from(map)
+                }
+                Value::U128(value) => value
+                    .try_into()
+                    .map(|u: u64| serde_json::Value::from(u))
+                    .unwrap_or_else(|_| serde_json::Value::from(value as f64)),
+                Value::I128(value) => value
+                    .try_into()
+                    .map(|u: i64| serde_json::Value::from(u))
+                    .unwrap_or_else(|_| serde_json::Value::from(value as f64)),
+                Value::Decimal(d) => {
+                    if let Ok(n) = u64::try_from(d) {
+                        serde_json::Value::from(n)
+                    } else if let Ok(n) = i64::try_from(d) {
+                        serde_json::Value::from(n)
+                    } else {
+                        f64::try_from(d).map_or(serde_json::Value::Null, Into::into)
+                    }
+                }
+                Value::B32(b) => serde_json::Value::from(&b[..]),
+                Value::B64(b) => serde_json::Value::from(&b[..]),
+                Value::Bytes(b) => serde_json::Value::from(&b[..]),
             }
-            _ => todo!("Invalid value for WASM: {value:#?}"),
         }
     }
 }
