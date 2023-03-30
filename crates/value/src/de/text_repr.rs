@@ -4,9 +4,9 @@ use std::borrow::Cow;
 
 pub struct TextRepr(Value);
 
-impl Into<Value> for TextRepr {
-    fn into(self) -> Value {
-        self.0
+impl From<TextRepr> for Value {
+    fn from(v: TextRepr) -> Value {
+        v.0
     }
 }
 
@@ -160,7 +160,7 @@ where
         .map(Into::into)
 }
 
-impl<'a, 'de> serde::Deserialize<'de> for TextRepr {
+impl<'de> serde::Deserialize<'de> for TextRepr {
     fn deserialize<D>(d: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
