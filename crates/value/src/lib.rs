@@ -5,9 +5,9 @@ pub(crate) mod value_type;
 
 pub(crate) const TOKEN: &str = "$V";
 
+pub use value_type::keys;
 pub mod crud;
 pub mod de;
-pub mod json_repr;
 pub mod macros;
 pub mod ser;
 
