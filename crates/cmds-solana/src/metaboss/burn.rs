@@ -37,13 +37,13 @@ impl CommandTrait for Burn {
         [
             CmdInput {
                 name: KEYPAIR.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: MINT_PUBKEY.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: false,
             },

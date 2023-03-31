@@ -48,13 +48,13 @@ impl CommandTrait for TransferSol {
         [
             CmdInput {
                 name: SENDER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: RECIPIENT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: false,
             },

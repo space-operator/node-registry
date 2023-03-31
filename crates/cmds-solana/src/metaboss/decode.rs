@@ -33,7 +33,7 @@ impl CommandTrait for Decode {
     fn inputs(&self) -> Vec<CmdInput> {
         [CmdInput {
             name: MINT_ACCOUNT.into(),
-            type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+            type_bounds: [ValueType::Pubkey].to_vec(),
             required: true,
             passthrough: false,
         }]

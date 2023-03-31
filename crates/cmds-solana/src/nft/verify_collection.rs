@@ -46,25 +46,25 @@ impl CommandTrait for VerifyCollection {
         [
             CmdInput {
                 name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: COLLECTION_AUTHORITY.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: COLLECTION_MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },

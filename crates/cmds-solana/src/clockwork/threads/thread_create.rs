@@ -80,25 +80,25 @@ impl CommandTrait for ThreadCreate {
         [
             CmdInput {
                 name: THREAD_AUTHORITY.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: false,
                 passthrough: false,
             },
             CmdInput {
                 name: THREAD.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: false,
                 passthrough: false,
             },
             CmdInput {
                 name: CLOSE_TO.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: false,
                 passthrough: false,
             },

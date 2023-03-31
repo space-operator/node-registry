@@ -36,19 +36,19 @@ impl CommandTrait for MigrateCollection {
         [
             CmdInput {
                 name: KEYPAIR.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: MINT_ADDRESS.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: CANDY_MACHINE_ID.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: false,
                 passthrough: false,
             },

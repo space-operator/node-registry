@@ -96,25 +96,25 @@ impl CommandTrait for SolanaMintToken {
         [
             CmdInput {
                 name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: MINT_AUTHORITY.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: RECIPIENT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },

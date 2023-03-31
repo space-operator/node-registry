@@ -32,7 +32,7 @@ impl CommandTrait for GetBalance {
     fn inputs(&self) -> Vec<CmdInput> {
         [CmdInput {
             name: PUBKEY.into(),
-            type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+            type_bounds: [ValueType::Pubkey].to_vec(),
             required: true,
             passthrough: false,
         }]
