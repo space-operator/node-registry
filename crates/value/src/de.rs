@@ -7,6 +7,7 @@ use serde::de::value::SeqDeserializer;
 pub mod const_bytes;
 pub(self) mod de_enum;
 pub(self) mod de_struct;
+pub(self) mod text_repr;
 
 use const_bytes::ConstBytes;
 use de_enum::{EnumDeserializer, ValueEnumAccess};
@@ -55,7 +56,11 @@ impl<'de> serde::Deserialize<'de> for Value {
     where
         D: serde::Deserializer<'de>,
     {
-        d.deserialize_enum(crate::TOKEN, crate::value_type::keys::ALL, ValueVisitor)
+        if d.is_human_readable() {
+            text_repr::TextRepr::deserialize(d).map(Into::into)
+        } else {
+            d.deserialize_enum(crate::TOKEN, crate::value_type::keys::ALL, ValueVisitor)
+        }
     }
 }
 

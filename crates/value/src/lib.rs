@@ -1,13 +1,13 @@
-use rust_decimal::Decimal;
+use rust_decimal::{prelude::ToPrimitive, Decimal};
 use thiserror::Error as ThisError;
 
 pub(crate) mod value_type;
 
 pub(crate) const TOKEN: &str = "$V";
 
+pub use value_type::keys;
 pub mod crud;
 pub mod de;
-pub mod json_repr;
 pub mod macros;
 pub mod ser;
 
@@ -96,70 +96,136 @@ impl Value {
 
         Ok(Value::B64(buf))
     }
-}
 
-impl From<serde_json::Value> for Value {
-    fn from(value: serde_json::Value) -> Self {
-        match value {
-            serde_json::Value::Null => Value::Null,
-            serde_json::Value::Bool(b) => Value::Bool(b),
-            serde_json::Value::Number(n) => {
-                if let Some(u) = n.as_u64() {
-                    Value::U64(u)
-                } else if let Some(i) = n.as_i64() {
-                    if i < 0 {
-                        Value::I64(i)
-                    } else {
-                        Value::U64(i as u64)
-                    }
+    pub fn normalize(self) -> Self {
+        match self {
+            Value::Null
+            | Value::String(_)
+            | Value::Bool(_)
+            | Value::U64(_)
+            | Value::I64(_)
+            | Value::F64(_)
+            | Value::B32(_)
+            | Value::B64(_)
+            | Value::Bytes(_) => self,
+            Value::Decimal(mut d) => {
+                d.normalize_assign();
+                if d.scale() == 0 {
+                    Value::I128(d.to_i128().expect("always fit into i128")).normalize()
                 } else {
-                    let s = n.to_string();
-                    if let Ok(u) = s.parse::<u128>() {
-                        Value::U128(u)
-                    } else if let Ok(i) = s.parse::<i128>() {
-                        Value::I128(i)
-                    } else if let Ok(d) = s.parse::<Decimal>() {
-                        Value::Decimal(d)
-                    } else if let Ok(d) = Decimal::from_scientific(&s) {
-                        Value::Decimal(d)
-                    } else if let Ok(f) = s.parse::<f64>() {
-                        Value::F64(f)
-                    } else {
-                        // unlikely to happen
-                        // if happen, probably a bug in serde_json
-                        Value::String(s)
-                    }
+                    Value::Decimal(d)
                 }
             }
-            serde_json::Value::String(s) => Value::String(s),
-            serde_json::Value::Array(vec) => {
-                Value::Array(vec.into_iter().map(Value::from).collect())
+            Value::I128(i) => if i < 0 {
+                i64::try_from(i).map(Value::I64).ok()
+            } else {
+                u64::try_from(i).map(Value::U64).ok()
             }
-            serde_json::Value::Object(map) => {
-                Value::Map(map.into_iter().map(|(k, v)| (k, Value::from(v))).collect())
+            .unwrap_or(self),
+            Value::U128(u) => u64::try_from(u).map(Value::U64).unwrap_or(self),
+            Value::Array(mut a) => {
+                for v in &mut a {
+                    *v = std::mem::take(v).normalize();
+                }
+                Value::Array(a)
+            }
+            Value::Map(mut m) => {
+                for v in m.values_mut() {
+                    *v = std::mem::take(v).normalize();
+                }
+                Value::Map(m)
             }
         }
     }
 }
 
-impl From<Value> for serde_json::Value {
-    fn from(value: Value) -> Self {
-        match value {
-            Value::Null => serde_json::Value::Null,
-            Value::String(value) => serde_json::Value::from(value),
-            Value::Bool(value) => serde_json::Value::from(value),
-            Value::U64(value) => serde_json::Value::from(value),
-            Value::I64(value) => serde_json::Value::from(value),
-            Value::F64(value) => serde_json::Value::from(value),
-            Value::Array(value) => serde_json::Value::from(value),
-            Value::Map(value) => {
-                let map = value
-                    .into_iter()
-                    .map(|(key, value)| (key, value.into()))
-                    .collect::<serde_json::Map<_, _>>();
-                serde_json::Value::from(map)
+#[cfg(feature = "json")]
+mod json {
+    use crate::Value;
+    use rust_decimal::Decimal;
+
+    impl From<serde_json::Value> for Value {
+        fn from(value: serde_json::Value) -> Self {
+            match value {
+                serde_json::Value::Null => Value::Null,
+                serde_json::Value::Bool(b) => Value::Bool(b),
+                serde_json::Value::Number(n) => {
+                    if let Some(u) = n.as_u64() {
+                        Value::U64(u)
+                    } else if let Some(i) = n.as_i64() {
+                        if i < 0 {
+                            Value::I64(i)
+                        } else {
+                            Value::U64(i as u64)
+                        }
+                    } else {
+                        let s = n.to_string();
+                        if let Ok(u) = s.parse::<u128>() {
+                            Value::U128(u)
+                        } else if let Ok(i) = s.parse::<i128>() {
+                            Value::I128(i)
+                        } else if let Ok(d) = s.parse::<Decimal>() {
+                            Value::Decimal(d)
+                        } else if let Ok(d) = Decimal::from_scientific(&s) {
+                            Value::Decimal(d)
+                        } else if let Ok(f) = s.parse::<f64>() {
+                            Value::F64(f)
+                        } else {
+                            // unlikely to happen
+                            // if happen, probably a bug in serde_json
+                            Value::String(s)
+                        }
+                    }
+                }
+                serde_json::Value::String(s) => Value::String(s),
+                serde_json::Value::Array(vec) => {
+                    Value::Array(vec.into_iter().map(Value::from).collect())
+                }
+                serde_json::Value::Object(map) => {
+                    Value::Map(map.into_iter().map(|(k, v)| (k, Value::from(v))).collect())
+                }
             }
-            _ => todo!("Invalid value for WASM: {value:#?}"),
+        }
+    }
+
+    impl From<Value> for serde_json::Value {
+        fn from(value: Value) -> Self {
+            match value {
+                Value::Null => serde_json::Value::Null,
+                Value::String(value) => serde_json::Value::from(value),
+                Value::Bool(value) => serde_json::Value::from(value),
+                Value::U64(value) => serde_json::Value::from(value),
+                Value::I64(value) => serde_json::Value::from(value),
+                Value::F64(value) => serde_json::Value::from(value),
+                Value::Array(value) => serde_json::Value::from(value),
+                Value::Map(value) => {
+                    let map = value
+                        .into_iter()
+                        .map(|(key, value)| (key, value.into()))
+                        .collect::<serde_json::Map<_, _>>();
+                    serde_json::Value::from(map)
+                }
+                Value::U128(value) => value
+                    .try_into()
+                    .map(|u: u64| serde_json::Value::from(u))
+                    .unwrap_or_else(|_| serde_json::Value::from(value as f64)),
+                Value::I128(value) => value
+                    .try_into()
+                    .map(|u: i64| serde_json::Value::from(u))
+                    .unwrap_or_else(|_| serde_json::Value::from(value as f64)),
+                Value::Decimal(d) => {
+                    if let Ok(n) = u64::try_from(d) {
+                        serde_json::Value::from(n)
+                    } else if let Ok(n) = i64::try_from(d) {
+                        serde_json::Value::from(n)
+                    } else {
+                        f64::try_from(d).map_or(serde_json::Value::Null, Into::into)
+                    }
+                }
+                Value::B32(b) => serde_json::Value::from(&b[..]),
+                Value::B64(b) => serde_json::Value::from(&b[..]),
+                Value::Bytes(b) => serde_json::Value::from(&b[..]),
+            }
         }
     }
 }
@@ -437,32 +503,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    /*
-    #[test]
-    fn de_pubkey() {
-        from_value::<Pubkey>(Value::Pubkey(Pubkey::new(&[0; 32]))).unwrap();
-    }
-
-    #[test]
-    fn serde() {
-        #[derive(Deserialize, Serialize, Debug)]
-        struct Foo {
-            key: Value,
-            pk: Pubkey,
-        }
-
-        let value = Value::Map(map! {
-            "key" => Value::Map(map! {
-                "a" => Value::I8(0),
-                "b" => Value::Pubkey(Pubkey::new(&[1; 32])),
-            }),
-            "pk" => Value::Pubkey(Pubkey::new(&[0; 32])),
-        });
-        let v = to_value(&from_value::<Foo>(value.clone()).unwrap()).unwrap();
-        assert_eq!(v, value);
-    }
-    */
+    use rust_decimal_macros::dec;
 
     #[test]
     fn test_solana_instruction() {
@@ -485,5 +526,67 @@ mod tests {
         let i1: Instruction = from_value(v).unwrap();
 
         assert_eq!(i, i1);
+    }
+
+    #[test]
+    fn test_json() {
+        fn t(v: Value, s: &str) {
+            assert_eq!(s, serde_json::to_string(&v).unwrap());
+            assert_eq!(v, serde_json::from_str::<Value>(s).unwrap());
+        }
+        t(Value::Null, r#"{"N":0}"#);
+        t(Value::String("hello".to_owned()), r#"{"S":"hello"}"#);
+        t(Value::U64(0), r#"{"U":"0"}"#);
+        t(Value::I64(-1), r#"{"I":"-1"}"#);
+        t(
+            Value::U128(u128::MAX),
+            r#"{"U1":"340282366920938463463374607431768211455"}"#,
+        );
+        t(
+            Value::I128(i128::MIN),
+            r#"{"I1":"-170141183460469231731687303715884105728"}"#,
+        );
+        t(Value::Bool(true), r#"{"B":true}"#);
+        t(
+            Value::Decimal(dec!(3.1415926535897932384626433833)),
+            r#"{"D":"3.1415926535897932384626433833"}"#,
+        );
+        t(
+            crate::map! {
+                "foo" => 1i64,
+            }
+            .into(),
+            r#"{"M":{"foo":{"I":"1"}}}"#,
+        );
+        t(
+            Value::Array(vec![1i64.into(), "hello".into()]),
+            r#"{"A":[{"I":"1"},{"S":"hello"}]}"#,
+        );
+        t(
+            Value::B32(
+                bs58::decode("5sNRWMrT2P3KULzW3faaktCB3k2eqHow2GBJtcsCPcg7")
+                    .into_vec()
+                    .unwrap()
+                    .try_into()
+                    .unwrap(),
+            ),
+            r#"{"B3":"5sNRWMrT2P3KULzW3faaktCB3k2eqHow2GBJtcsCPcg7"}"#,
+        );
+        t(
+            Value::B64(
+                bs58::decode("3PvNxykqBz1BzBaq2AMU4Sa3CPJGnSC9JXkyzXe33m6W7Sj4MMgsZet6YxUQdPx1fEFU79QWm6RpPRVJAyeqiNsR")
+                    .into_vec()
+                    .unwrap()
+                    .try_into()
+                    .unwrap(),
+            ),
+            r#"{"B6":"3PvNxykqBz1BzBaq2AMU4Sa3CPJGnSC9JXkyzXe33m6W7Sj4MMgsZet6YxUQdPx1fEFU79QWm6RpPRVJAyeqiNsR"}"#,
+        );
+        t(
+            Value::Bytes(bytes::Bytes::from_static(&[
+                104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100,
+            ])),
+            r#"{"BY":"aGVsbG8gd29ybGQ="}"#,
+        );
     }
 }
