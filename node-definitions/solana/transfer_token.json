@@ -33,8 +33,7 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,
@@ -90,8 +89,7 @@
         {
             "name": "sender_owner",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,

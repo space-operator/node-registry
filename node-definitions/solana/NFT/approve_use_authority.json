@@ -33,8 +33,7 @@
         {
             "name": "owner",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",
@@ -44,8 +43,7 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": "",

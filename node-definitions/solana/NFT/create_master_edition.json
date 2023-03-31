@@ -44,8 +44,7 @@
         {
             "name": "update_authority",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": false,
             "defaultValue": null,
@@ -79,8 +78,7 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,

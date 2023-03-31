@@ -33,8 +33,7 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,
@@ -56,8 +55,7 @@
         {
             "name": "token_account",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,

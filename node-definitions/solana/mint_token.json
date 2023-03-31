@@ -21,8 +21,7 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,
@@ -32,8 +31,7 @@
         {
             "name": "mint_authority",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,
