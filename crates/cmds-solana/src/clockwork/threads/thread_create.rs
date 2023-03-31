@@ -1,12 +1,11 @@
 use crate::{prelude::*, utils::anchor_sighash};
+use clockwork_client::thread::{instruction::thread_create, state::Thread};
 use clockwork_thread_program::state::{InstructionData, Trigger};
 use solana_program::{
     instruction::{AccountMeta, Instruction},
     system_program,
 };
 use solana_sdk::pubkey::Pubkey;
-
-use clockwork_client::thread::{instruction::thread_create, state::Thread};
 
 #[derive(Debug)]
 pub struct ThreadCreate;
