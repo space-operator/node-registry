@@ -1,3 +1,4 @@
+// ignore
 {
     "type": "native",
     "data": {
@@ -21,7 +22,7 @@
         {
             "name": "keypair",
             "type_bounds": [
-                "keypair",
+                "keypair"
             ],
             "required": false,
             "defaultValue": null,
@@ -31,7 +32,7 @@
         {
             "name": "payer",
             "type_bounds": [
-                "keypair",
+                "keypair"
             ],
             "required": false,
             "defaultValue": null,

@@ -37,7 +37,7 @@
         {
             "name": "private_key",
             "type_bounds": [
-                "string"
+                "keypair"
             ],
             "required": false,
             "defaultValue": null,
