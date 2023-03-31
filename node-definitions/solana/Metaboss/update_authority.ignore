@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "signature",
-            "type": "free",
+            "type": "signature",
             "defaultValue": null,
             "tooltip": ""
         }
@@ -21,7 +21,7 @@
         {
             "name": "keypair",
             "type_bounds": [
-                "keypair", "string"
+                "keypair",
             ],
             "required": false,
             "defaultValue": null,
@@ -31,7 +31,7 @@
         {
             "name": "payer",
             "type_bounds": [
-                "keypair", "string"
+                "keypair",
             ],
             "required": false,
             "defaultValue": null,

@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": null,
             "tooltip": ""
         },
@@ -25,27 +25,27 @@
     ],
     "targets": [
         {
-        "name": "proxy_as_update_authority",
-        "type_bounds": [
-            "pubkey",
-            "string"
-        ],
-        "required": false,
-        "defaultValue": null,
-        "tooltip": "Whether a Proxy Authority is signing the Update Authority",
-        "passthrough": true
-    },
-    {
-        "name": "update_authority",
-        "type_bounds": [
-            "keypair",
-            "string"
-        ],
-        "required": false,
-        "defaultValue": null,
-        "tooltip": "Who can update the on-chain metadata",
-        "passthrough": false
-    },
+            "name": "proxy_as_update_authority",
+            "type_bounds": [
+                "pubkey",
+                "string"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "Whether a Proxy Authority is signing the Update Authority",
+            "passthrough": true
+        },
+        {
+            "name": "update_authority",
+            "type_bounds": [
+                "keypair",
+                "string"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "Who can update the on-chain metadata",
+            "passthrough": false
+        },
         {
             "name": "is_mutable",
             "type_bounds": [
@@ -86,7 +86,6 @@
             "tooltip": "",
             "passthrough": true
         },
-        
         {
             "name": "metadata",
             "type_bounds": [
