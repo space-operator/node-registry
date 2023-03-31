@@ -43,9 +43,7 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -65,9 +63,7 @@
         {
             "name": "recipient",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -77,9 +73,7 @@
         {
             "name": "sender_token_account",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": false,
             "defaultValue": null,

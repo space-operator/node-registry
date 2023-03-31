@@ -59,9 +59,7 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -71,9 +69,7 @@
         {
             "name": "mint_authority",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -124,9 +120,7 @@
         {
             "name": "collection_mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
