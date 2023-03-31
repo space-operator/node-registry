@@ -33,8 +33,7 @@
         {
             "name": "proxy_as_update_authority",
             "type_bounds": [
-                "pubkey",
-                "string"
+                "pubkey"
             ],
             "required": false,
             "defaultValue": null,

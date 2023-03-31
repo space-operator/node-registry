@@ -27,8 +27,7 @@
         {
             "name": "proxy_as_update_authority",
             "type_bounds": [
-                "pubkey",
-                "string"
+                "pubkey"
             ],
             "required": false,
             "defaultValue": null,
@@ -38,8 +37,7 @@
         {
             "name": "update_authority",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": false,
             "defaultValue": null,
@@ -121,7 +119,7 @@
             "type_bounds": [
                 "pubkey"
             ],
-            "required": true,
+            "required": false,
             "defaultValue": null,
             "tooltip": "",
             "passthrough": true

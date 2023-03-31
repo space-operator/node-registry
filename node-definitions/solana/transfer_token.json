@@ -53,7 +53,7 @@
         {
             "name": "amount",
             "type_bounds": [
-                "number"
+                "f64"
             ],
             "required": true,
             "defaultValue": null,
