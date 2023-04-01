@@ -192,39 +192,37 @@ mod json {
         fn from(value: Value) -> Self {
             match value {
                 Value::Null => serde_json::Value::Null,
-                Value::String(value) => serde_json::Value::from(value),
-                Value::Bool(value) => serde_json::Value::from(value),
-                Value::U64(value) => serde_json::Value::from(value),
-                Value::I64(value) => serde_json::Value::from(value),
-                Value::F64(value) => serde_json::Value::from(value),
-                Value::Array(value) => serde_json::Value::from(value),
-                Value::Map(value) => {
-                    let map = value
-                        .into_iter()
-                        .map(|(key, value)| (key, value.into()))
-                        .collect::<serde_json::Map<_, _>>();
-                    serde_json::Value::from(map)
-                }
+                Value::String(x) => x.into(),
+                Value::Bool(x) => x.into(),
+                Value::U64(x) => x.into(),
+                Value::I64(x) => x.into(),
+                Value::F64(x) => x.into(),
+                Value::Array(x) => x.into(),
+                Value::Map(x) => x
+                    .into_iter()
+                    .map(|(key, value)| (key, value.into()))
+                    .collect::<serde_json::Map<_, _>>()
+                    .into(),
                 Value::U128(value) => value
                     .try_into()
-                    .map(|u: u64| serde_json::Value::from(u))
-                    .unwrap_or_else(|_| serde_json::Value::from(value as f64)),
+                    .map(u64::into)
+                    .unwrap_or_else(|_| (value as f64).into()),
                 Value::I128(value) => value
                     .try_into()
-                    .map(|u: i64| serde_json::Value::from(u))
-                    .unwrap_or_else(|_| serde_json::Value::from(value as f64)),
+                    .map(i64::into)
+                    .unwrap_or_else(|_| (value as f64).into()),
                 Value::Decimal(d) => {
                     if let Ok(n) = u64::try_from(d) {
-                        serde_json::Value::from(n)
+                        n.into()
                     } else if let Ok(n) = i64::try_from(d) {
-                        serde_json::Value::from(n)
+                        n.into()
                     } else {
                         f64::try_from(d).map_or(serde_json::Value::Null, Into::into)
                     }
                 }
-                Value::B32(b) => serde_json::Value::from(&b[..]),
-                Value::B64(b) => serde_json::Value::from(&b[..]),
-                Value::Bytes(b) => serde_json::Value::from(&b[..]),
+                Value::B32(b) => (&b[..]).into(),
+                Value::B64(b) => (&b[..]).into(),
+                Value::Bytes(b) => (&b[..]).into(),
             }
         }
     }
