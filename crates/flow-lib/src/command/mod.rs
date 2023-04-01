@@ -39,21 +39,24 @@ pub trait CommandTrait: Send + Sync + 'static {
                     }
 
                     let value = match i.type_bounds.first() {
-                        Some(ValueType::Pubkey) => value::pubkey::deserialize(value.clone())
-                            .map(Into::into)
-                            .ok(),
-                        Some(ValueType::Keypair) => value::keypair::deserialize(value.clone())
-                            .map(Into::into)
-                            .ok(),
-                        Some(ValueType::Signature) => value::signature::deserialize(value.clone())
-                            .map(Into::into)
-                            .ok(),
-                        Some(ValueType::Decimal) => value::decimal::deserialize(value.clone())
-                            .map(Into::into)
-                            .ok(),
-                        _ => None,
+                        Some(ValueType::Pubkey) => {
+                            value::pubkey::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Keypair) => {
+                            value::keypair::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Signature) => {
+                            value::signature::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Decimal) => {
+                            value::decimal::deserialize(value.clone()).map(Into::into)
+                        }
+                        _ => Ok(value.clone()),
                     }
-                    .unwrap_or_else(|| value.clone());
+                    .unwrap_or_else(|error| {
+                        tracing::warn!("error reading passthrough: {}", error);
+                        value.clone()
+                    });
                     res.insert(i.name, value);
                 }
             }
