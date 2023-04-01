@@ -306,6 +306,12 @@ impl From<i128> for Value {
     }
 }
 
+impl From<Decimal> for Value {
+    fn from(x: Decimal) -> Self {
+        Self::Decimal(x)
+    }
+}
+
 impl From<f32> for Value {
     fn from(x: f32) -> Self {
         Self::F64(x as f64)
