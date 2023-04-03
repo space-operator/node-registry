@@ -95,7 +95,7 @@ impl CommandTrait for CreateMintAccount {
         [
             CmdInput {
                 name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
@@ -107,7 +107,7 @@ impl CommandTrait for CreateMintAccount {
             },
             CmdInput {
                 name: MINT_AUTHORITY.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
@@ -119,7 +119,7 @@ impl CommandTrait for CreateMintAccount {
             },
             CmdInput {
                 name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },

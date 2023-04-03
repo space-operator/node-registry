@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": "",
             "tooltip": ""
         }
@@ -21,8 +21,7 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": "",
@@ -52,8 +51,7 @@
         {
             "name": "collection_mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": "",

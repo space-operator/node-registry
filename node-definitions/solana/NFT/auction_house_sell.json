@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": "",
             "tooltip": ""
         }
@@ -21,8 +21,7 @@
         {
             "name": "treasury_mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": "",
@@ -62,8 +61,7 @@
         {
             "name": "seller_token_account",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": true,
@@ -73,8 +71,7 @@
         {
             "name": "seller_token_mint_authority",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": true,

@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": null,
             "tooltip": ""
         },
@@ -33,8 +33,7 @@
         {
             "name": "proxy_as_update_authority",
             "type_bounds": [
-                "pubkey",
-                "string"
+                "pubkey"
             ],
             "required": false,
             "defaultValue": null,
@@ -44,8 +43,7 @@
         {
             "name": "update_authority",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": false,
             "defaultValue": null,
@@ -55,9 +53,7 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -67,9 +63,7 @@
         {
             "name": "mint_authority",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -79,8 +73,7 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,

@@ -88,7 +88,7 @@ impl CommandTrait for ArweaveNftUpload {
         [
             CmdInput {
                 name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },

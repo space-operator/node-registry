@@ -1,6 +1,7 @@
 use crate::{
     config::{client::NodeData, CmdInputDescription, CmdOutputDescription, Name, ValueSet},
     context::Context,
+    ValueType,
 };
 use std::borrow::Cow;
 use value::Value;
@@ -33,7 +34,30 @@ pub trait CommandTrait: Send + Sync + 'static {
         for i in self.inputs() {
             if i.passthrough {
                 if let Some(value) = inputs.get(&i.name) {
-                    res.insert(i.name, value.clone());
+                    if !i.required && matches!(value, Value::Null) {
+                        continue;
+                    }
+
+                    let value = match i.type_bounds.first() {
+                        Some(ValueType::Pubkey) => {
+                            value::pubkey::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Keypair) => {
+                            value::keypair::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Signature) => {
+                            value::signature::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Decimal) => {
+                            value::decimal::deserialize(value.clone()).map(Into::into)
+                        }
+                        _ => Ok(value.clone()),
+                    }
+                    .unwrap_or_else(|error| {
+                        tracing::warn!("error reading passthrough: {}", error);
+                        value.clone()
+                    });
+                    res.insert(i.name, value);
                 }
             }
         }

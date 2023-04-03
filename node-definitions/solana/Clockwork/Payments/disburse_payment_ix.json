@@ -21,7 +21,7 @@
              {
             "name": "payer",
             "type_bounds": [
-                "string","pubkey","keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -31,7 +31,7 @@
         {
             "name": "authority_token_account",
             "type_bounds": [
-                "string","pubkey","keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -41,7 +41,7 @@
         {
             "name": "mint",
             "type_bounds": [
-                "string","pubkey","keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -50,7 +50,7 @@
         }, {
             "name": "payment",
             "type_bounds": [
-                "string","pubkey","keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -60,7 +60,7 @@
         {
             "name": "thread",
             "type_bounds": [
-                "string","keypair", "pubkey"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -70,7 +70,7 @@
         {
             "name": "recipient",
             "type_bounds": [
-                "string","keypair", "pubkey"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -80,7 +80,7 @@
         {
             "name": "recipient_ata",
             "type_bounds": [
-                "string","keypair", "pubkey"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,

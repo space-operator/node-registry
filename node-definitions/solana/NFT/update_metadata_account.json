@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": "",
             "tooltip": ""
         },
@@ -37,8 +37,7 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": "",
@@ -58,8 +57,7 @@
         {
             "name": "new_update_authority",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": "",

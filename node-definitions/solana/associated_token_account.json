@@ -18,7 +18,7 @@
         },
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": null,
             "tooltip": ""
         }
@@ -27,9 +27,7 @@
         {
             "name": "owner",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -39,8 +37,7 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,
@@ -50,9 +47,7 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,

@@ -1,12 +1,11 @@
 use crate::{prelude::*, utils::anchor_sighash};
+use clockwork_client::thread::{instruction::thread_create, state::Thread};
 use clockwork_thread_program::state::{InstructionData, Trigger};
 use solana_program::{
     instruction::{AccountMeta, Instruction},
     system_program,
 };
 use solana_sdk::pubkey::Pubkey;
-
-use clockwork_client::thread::{instruction::thread_create, state::Thread};
 
 #[derive(Debug)]
 pub struct ThreadCreate;
@@ -81,25 +80,25 @@ impl CommandTrait for ThreadCreate {
         [
             CmdInput {
                 name: THREAD_AUTHORITY.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: false,
                 passthrough: false,
             },
             CmdInput {
                 name: THREAD.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: false,
                 passthrough: false,
             },
             CmdInput {
                 name: CLOSE_TO.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: false,
                 passthrough: false,
             },

@@ -13,18 +13,13 @@ fn random_seed() -> String {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[serde(untagged)]
-pub enum Input {
-    PrivateKey {
-        #[serde(with = "value::keypair")]
-        private_key: Keypair,
-    },
-    Seed {
-        #[serde(default = "random_seed")]
-        seed: String,
-        #[serde(default)]
-        passphrase: String,
-    },
+pub struct Input {
+    #[serde(default, with = "value::keypair::opt")]
+    private_key: Option<Keypair>,
+    #[serde(default = "random_seed")]
+    seed: String,
+    #[serde(default)]
+    passphrase: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -86,11 +81,12 @@ impl CommandTrait for GenerateKeypair {
         .to_vec()
     }
 
-    async fn run(&self, _: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let keypair = match value::from_map(inputs)? {
-            Input::PrivateKey { private_key } => private_key,
-            Input::Seed { seed, passphrase } => generate_keypair(&passphrase, &seed)?,
-        };
+    async fn run(&self, _: Context, input: ValueSet) -> Result<ValueSet, CommandError> {
+        let input: Input = value::from_map(input)?;
+        let keypair = input
+            .private_key
+            .map(Ok)
+            .unwrap_or_else(|| generate_keypair(&input.passphrase, &input.seed))?;
 
         Ok(value::to_map(&Output {
             pubkey: keypair.pubkey(),
@@ -226,14 +222,7 @@ mod tests {
             "passphrase" => Value::String(passphrase.to_owned()),
             "private_key" => Value::String(private_key.to_string()),
         };
-        let output = GenerateKeypair
-            .run(Context::default(), input)
-            .await
-            .unwrap();
-        let output = value::from_map::<Output>(output).unwrap();
-        assert_eq!(
-            output.keypair,
-            generate_keypair(passphrase, seed_phrase).unwrap(),
-        );
+        let result = GenerateKeypair.run(Context::default(), input).await;
+        assert!(result.is_err());
     }
 }

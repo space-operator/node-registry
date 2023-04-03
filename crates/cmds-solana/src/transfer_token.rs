@@ -217,13 +217,13 @@ impl CommandTrait for TransferToken {
         [
             CmdInput {
                 name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: false,
             },
@@ -235,19 +235,19 @@ impl CommandTrait for TransferToken {
             },
             CmdInput {
                 name: RECIPIENT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: SENDER_TOKEN_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: false,
                 passthrough: true,
             },
             CmdInput {
                 name: SENDER_OWNER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },

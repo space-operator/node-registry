@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": null,
             "tooltip": ""
         }
@@ -21,7 +21,7 @@
            {
             "name": "payer",
             "type_bounds": [
-                "string","keypair"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,
@@ -31,7 +31,7 @@
         {
             "name": "recipient",
             "type_bounds": [
-                "string","keypair", "pubkey"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -41,7 +41,7 @@
         {
             "name": "token_mint",
             "type_bounds": [
-                "string","pubkey","keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,

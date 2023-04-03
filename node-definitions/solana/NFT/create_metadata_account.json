@@ -12,7 +12,7 @@
     "sources": [
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": null,
             "tooltip": ""
         },
@@ -25,27 +25,25 @@
     ],
     "targets": [
         {
-        "name": "proxy_as_update_authority",
-        "type_bounds": [
-            "pubkey",
-            "string"
-        ],
-        "required": false,
-        "defaultValue": null,
-        "tooltip": "Whether a Proxy Authority is signing the Update Authority",
-        "passthrough": true
-    },
-    {
-        "name": "update_authority",
-        "type_bounds": [
-            "keypair",
-            "string"
-        ],
-        "required": false,
-        "defaultValue": null,
-        "tooltip": "Who can update the on-chain metadata",
-        "passthrough": false
-    },
+            "name": "proxy_as_update_authority",
+            "type_bounds": [
+                "pubkey"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "Whether a Proxy Authority is signing the Update Authority",
+            "passthrough": true
+        },
+        {
+            "name": "update_authority",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "Who can update the on-chain metadata",
+            "passthrough": false
+        },
         {
             "name": "is_mutable",
             "type_bounds": [
@@ -59,9 +57,7 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -71,9 +67,7 @@
         {
             "name": "mint_authority",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -83,15 +77,13 @@
         {
             "name": "fee_payer",
             "type_bounds": [
-                "keypair",
-                "string"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
-        
         {
             "name": "metadata",
             "type_bounds": [
@@ -125,11 +117,9 @@
         {
             "name": "collection_mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair",
-                "string"
+                "pubkey"
             ],
-            "required": true,
+            "required": false,
             "defaultValue": null,
             "tooltip": "",
             "passthrough": true
