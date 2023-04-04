@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Definition {
     pub r#type: super::CommandType,
@@ -14,7 +14,7 @@ pub struct Definition {
     pub ui_schema: serde_json::Map<String, JsonValue>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Data {
     pub node_id: String,
@@ -27,7 +27,7 @@ pub struct Data {
     pub background_color: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Source {
     pub name: String,
@@ -37,7 +37,7 @@ pub struct Source {
     pub tooltip: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Target {
     pub name: String,

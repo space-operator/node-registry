@@ -1,50 +1,6 @@
 use crate::{prelude::*, utils::ui_amount_to_amount};
-use solana_program::instruction::Instruction;
+use once_cell::sync::Lazy;
 use spl_token::instruction::mint_to_checked;
-
-#[derive(Debug)]
-pub struct SolanaMintToken;
-
-impl SolanaMintToken {
-    async fn get_decimals(&self, client: &RpcClient, token_account: Pubkey) -> crate::Result<u8> {
-        let source_account = client
-            .get_token_account(&token_account)
-            .await
-            .map_err(|_| crate::Error::NotTokenAccount(token_account))?
-            .ok_or(crate::Error::NotTokenAccount(token_account))?;
-        Ok(source_account.token_amount.decimals)
-    }
-
-    async fn command_mint(
-        &self,
-        client: &RpcClient,
-        mint_account: Pubkey,
-        fee_payer: Pubkey,
-        ui_amount: Decimal,
-        recipient: Pubkey,
-        mint_authority: Pubkey,
-        decimals: Option<u8>,
-    ) -> crate::Result<(u64, Vec<Instruction>)> {
-        let decimals = match decimals {
-            Some(d) => d,
-            None => self.get_decimals(client, recipient).await?,
-        };
-        let amount = ui_amount_to_amount(ui_amount, decimals)?;
-
-        let instructions = [mint_to_checked(
-            &spl_token::id(),
-            &mint_account,
-            &recipient,
-            &mint_authority,
-            &[&fee_payer, &mint_authority],
-            amount,
-            decimals,
-        )?]
-        .to_vec();
-
-        Ok((0, instructions))
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -69,123 +25,61 @@ pub struct Output {
     signature: Option<Signature>,
 }
 
-const SOLANA_MINT_TOKEN: &str = "mint_token";
-
-// Inputs
-const FEE_PAYER: &str = "fee_payer";
-const MINT_AUTHORITY: &str = "mint_authority";
-const MINT_ACCOUNT: &str = "mint_account";
-const RECIPIENT: &str = "recipient";
-const AMOUNT: &str = "amount";
-const SUBMIT: &str = "submit";
-
-// Outputs
-const SIGNATURE: &str = "signature";
-
-#[async_trait]
-impl CommandTrait for SolanaMintToken {
-    fn instruction_info(&self) -> Option<InstructionInfo> {
-        Some(InstructionInfo::simple(self, SIGNATURE))
-    }
-
-    fn name(&self) -> Name {
-        SOLANA_MINT_TOKEN.into()
-    }
-
-    fn inputs(&self) -> Vec<CmdInput> {
-        [
-            CmdInput {
-                name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: MINT_AUTHORITY.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: RECIPIENT.into(),
-                type_bounds: [ValueType::Pubkey].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: AMOUNT.into(),
-                type_bounds: [ValueType::F64].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: "decimals".into(),
-                type_bounds: [ValueType::U8].to_vec(),
-                required: false,
-                passthrough: false,
-            },
-            CmdInput {
-                name: SUBMIT.into(),
-                type_bounds: [ValueType::Bool].to_vec(),
-                required: false,
-                passthrough: false,
-            },
-        ]
-        .to_vec()
-    }
-
-    fn outputs(&self) -> Vec<CmdOutput> {
-        [CmdOutput {
-            name: SIGNATURE.into(),
-            r#type: ValueType::String,
-        }]
-        .to_vec()
-    }
-
-    async fn run(&self, mut ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let input: Input = value::from_map(inputs)?;
-
-        let (minimum_balance_for_rent_exemption, instructions) = self
-            .command_mint(
-                &ctx.solana_client,
-                input.mint_account,
-                input.fee_payer.pubkey(),
-                input.amount,
-                input.recipient,
-                input.mint_authority.pubkey(),
-                input.decimals,
-            )
-            .await?;
-
-        let instructions = if input.submit {
-            Instructions {
-                fee_payer: input.fee_payer.pubkey(),
-                signers: vec![
-                    input.fee_payer.clone_keypair(),
-                    input.mint_authority.clone_keypair(),
-                ],
-                instructions,
-                minimum_balance_for_rent_exemption,
-            }
-        } else {
-            Instructions::default()
-        };
-
-        let signature = ctx
-            .execute(instructions, Default::default())
-            .await?
-            .signature;
-
-        Ok(value::to_map(&Output { signature })?)
-    }
+async fn get_decimals(client: &RpcClient, token_account: Pubkey) -> crate::Result<u8> {
+    let source_account = client
+        .get_token_account(&token_account)
+        .await
+        .map_err(|_| crate::Error::NotTokenAccount(token_account))?
+        .ok_or(crate::Error::NotTokenAccount(token_account))?;
+    Ok(source_account.token_amount.decimals)
 }
 
-inventory::submit!(CommandDescription::new(SOLANA_MINT_TOKEN, |_| Box::new(
-    SolanaMintToken
-)));
+async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+    let decimals = match input.decimals {
+        Some(d) => d,
+        None => get_decimals(&ctx.solana_client, input.recipient).await?,
+    };
+    let amount = ui_amount_to_amount(input.amount, decimals)?;
+
+    let ins = Instructions {
+        fee_payer: input.fee_payer.pubkey(),
+        signers: [
+            input.fee_payer.clone_keypair(),
+            input.mint_authority.clone_keypair(),
+        ]
+        .into(),
+        instructions: [mint_to_checked(
+            &spl_token::id(),
+            &input.mint_account,
+            &input.recipient,
+            &input.mint_authority.pubkey(),
+            &[&input.fee_payer.pubkey(), &input.mint_authority.pubkey()],
+            amount,
+            decimals,
+        )?]
+        .into(),
+        minimum_balance_for_rent_exemption: 0,
+    };
+
+    let ins = input.submit.then_some(ins).unwrap_or_default();
+
+    let signature = ctx.execute(ins, <_>::default()).await?.signature;
+
+    Ok(Output { signature })
+}
+
+const SOLANA_MINT_TOKEN: &str = "mint_token";
+
+const DEFINITION: &str = include_str!("../../../node-definitions/solana/mint_token.json");
+
+static BUILDER: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+    CmdBuilder::new(DEFINITION)?
+        .check_name(SOLANA_MINT_TOKEN)?
+        .simple_instruction_info("signature")
+});
+
+fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+    Ok(BUILDER.clone()?.build(run))
+}
+
+inventory::submit!(CommandDescription::new(SOLANA_MINT_TOKEN, |_| build().unwrap()));

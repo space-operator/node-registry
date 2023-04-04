@@ -5,20 +5,27 @@ use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
 use thiserror::Error as ThisError;
 
-pub fn wrap_error() {}
-
+#[derive(Clone)]
 pub struct CmdBuilder {
     def: Definition,
     signature_name: Option<String>,
 }
 
-#[derive(ThisError, Debug)]
-#[error("wrong command name: {0}")]
-pub struct WrongName(String);
+#[derive(ThisError, Debug, Clone)]
+pub enum BuilderError {
+    #[error("{0}")]
+    Json(String),
+    #[error("wrong command name: {0}")]
+    WrongName(String),
+    #[error("output not found: {0}")]
+    OutputNotFound(String),
+}
 
-#[derive(ThisError, Debug)]
-#[error("output not found: {0}")]
-pub struct OutputNotFound(String);
+impl From<serde_json::Error> for BuilderError {
+    fn from(value: serde_json::Error) -> Self {
+        BuilderError::Json(value.to_string())
+    }
+}
 
 impl CmdBuilder {
     pub fn new(def: &str) -> Result<Self, serde_json::Error> {
@@ -29,30 +36,27 @@ impl CmdBuilder {
         })
     }
 
-    pub fn check_name(self, name: &str) -> Result<Self, WrongName> {
+    pub fn check_name(self, name: &str) -> Result<Self, BuilderError> {
         if self.def.data.node_id == name {
             Ok(self)
         } else {
-            Err(WrongName(self.def.data.node_id))
+            Err(BuilderError::WrongName(self.def.data.node_id))
         }
     }
 
-    pub fn simple_instruction_info(
-        mut self,
-        signature_name: String,
-    ) -> Result<Self, OutputNotFound> {
+    pub fn simple_instruction_info(mut self, signature_name: &str) -> Result<Self, BuilderError> {
         if self.def.sources.iter().any(|x| x.name == signature_name) {
-            self.signature_name = Some(signature_name);
+            self.signature_name = Some(signature_name.to_owned());
             Ok(self)
         } else {
-            Err(OutputNotFound(signature_name))
+            Err(BuilderError::OutputNotFound(signature_name.to_owned()))
         }
     }
 
     pub fn build<T, U, Fut, F>(self, f: F) -> Box<dyn CommandTrait>
     where
         F: Fn(Context, T) -> Fut + Send + Sync + 'static,
-        Fut: Future<Output = Result<U, CommandError>> + Send + Sync + 'static,
+        Fut: Future<Output = Result<U, CommandError>> + Send + 'static,
         T: DeserializeOwned + 'static,
         U: Serialize,
     {
@@ -66,7 +70,7 @@ impl CmdBuilder {
 
         impl<T, U, Fut> CommandTrait for Command<T, Fut>
         where
-            Fut: Future<Output = Result<U, CommandError>> + Send + Sync + 'static,
+            Fut: Future<Output = Result<U, CommandError>> + Send + 'static,
             T: DeserializeOwned + 'static,
             U: Serialize,
         {
