@@ -73,13 +73,12 @@ const SOLANA_MINT_TOKEN: &str = "mint_token";
 
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/mint_token.json");
 
-static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
-    CmdBuilder::new(DEFINITION)?
-        .check_name(SOLANA_MINT_TOKEN)?
-        .simple_instruction_info("signature")
-});
-
 fn build(_: &NodeData) -> Result<Box<dyn CommandTrait>, CommandError> {
+    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+        CmdBuilder::new(DEFINITION)?
+            .check_name(SOLANA_MINT_TOKEN)?
+            .simple_instruction_info("signature")
+    });
     Ok(CACHE.clone()?.build(run))
 }
 
