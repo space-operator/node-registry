@@ -58,9 +58,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let instructions = if input.submit {
         Instructions {
             fee_payer: input.fee_payer.pubkey(),
-            signers: vec![input.fee_payer.clone_keypair()],
+            signers: [input.fee_payer.clone_keypair()].into(),
             minimum_balance_for_rent_exemption,
-            instructions: [instruction].to_vec(),
+            instructions: [instruction].into(),
         }
     } else {
         Instructions::default()
