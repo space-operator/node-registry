@@ -1,6 +1,4 @@
 use crate::{prelude::*, utils::ui_amount_to_amount};
-use flow_lib::config::client::NodeData;
-use once_cell::sync::Lazy;
 use spl_token::instruction::mint_to_checked;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -73,7 +71,9 @@ const SOLANA_MINT_TOKEN: &str = "mint_token";
 
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/mint_token.json");
 
-fn build(_: &NodeData) -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+    use once_cell::sync::Lazy;
+
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(SOLANA_MINT_TOKEN)?
@@ -82,4 +82,4 @@ fn build(_: &NodeData) -> Result<Box<dyn CommandTrait>, CommandError> {
     Ok(CACHE.clone()?.build(run))
 }
 
-inventory::submit!(CommandDescription::new(SOLANA_MINT_TOKEN, build));
+inventory::submit!(CommandDescription::new(SOLANA_MINT_TOKEN, |_| build()));
