@@ -77,6 +77,11 @@ async fn run(_: Context, input: Input) -> Result<Output, CommandError> {
 mod tests {
     use super::*;
 
+    #[test]
+    fn test_build() {
+        build().unwrap();
+    }
+
     #[tokio::test]
     async fn test_no_input() {
         let ctx = Context::default();

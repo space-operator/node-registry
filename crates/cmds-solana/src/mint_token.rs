@@ -1,6 +1,22 @@
 use crate::{prelude::*, utils::ui_amount_to_amount};
 use spl_token::instruction::mint_to_checked;
 
+const SOLANA_MINT_TOKEN: &str = "mint_token";
+
+const DEFINITION: &str = include_str!("../../../node-definitions/solana/mint_token.json");
+
+fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+    use once_cell::sync::Lazy;
+    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+        CmdBuilder::new(DEFINITION)?
+            .check_name(SOLANA_MINT_TOKEN)?
+            .simple_instruction_info("signature")
+    });
+    Ok(CACHE.clone()?.build(run))
+}
+
+inventory::submit!(CommandDescription::new(SOLANA_MINT_TOKEN, |_| build()));
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
     #[serde(with = "value::keypair")]
@@ -67,19 +83,12 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     Ok(Output { signature })
 }
 
-const SOLANA_MINT_TOKEN: &str = "mint_token";
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-const DEFINITION: &str = include_str!("../../../node-definitions/solana/mint_token.json");
-
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
-    use once_cell::sync::Lazy;
-
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
-        CmdBuilder::new(DEFINITION)?
-            .check_name(SOLANA_MINT_TOKEN)?
-            .simple_instruction_info("signature")
-    });
-    Ok(CACHE.clone()?.build(run))
+    #[test]
+    fn test_build() {
+        build().unwrap();
+    }
 }
-
-inventory::submit!(CommandDescription::new(SOLANA_MINT_TOKEN, |_| build()));
