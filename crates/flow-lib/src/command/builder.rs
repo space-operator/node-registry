@@ -1,0 +1,136 @@
+use super::{CommandError, CommandTrait};
+use crate::{command::InstructionInfo, config::node::Definition, Context, Name};
+use futures::future::BoxFuture;
+use serde::{de::DeserializeOwned, Serialize};
+use std::future::Future;
+use thiserror::Error as ThisError;
+
+pub fn wrap_error() {}
+
+pub struct CmdBuilder {
+    def: Definition,
+    signature_name: Option<String>,
+}
+
+#[derive(ThisError, Debug)]
+#[error("wrong command name: {0}")]
+pub struct WrongName(String);
+
+#[derive(ThisError, Debug)]
+#[error("output not found: {0}")]
+pub struct OutputNotFound(String);
+
+impl CmdBuilder {
+    pub fn new(def: &str) -> Result<Self, serde_json::Error> {
+        let def = serde_json::from_str(def)?;
+        Ok(Self {
+            def,
+            signature_name: None,
+        })
+    }
+
+    pub fn check_name(self, name: &str) -> Result<Self, WrongName> {
+        if self.def.data.node_id == name {
+            Ok(self)
+        } else {
+            Err(WrongName(self.def.data.node_id))
+        }
+    }
+
+    pub fn simple_instruction_info(
+        mut self,
+        signature_name: String,
+    ) -> Result<Self, OutputNotFound> {
+        if self.def.sources.iter().any(|x| x.name == signature_name) {
+            self.signature_name = Some(signature_name);
+            Ok(self)
+        } else {
+            Err(OutputNotFound(signature_name))
+        }
+    }
+
+    pub fn build<T, U, Fut, F>(self, f: F) -> Box<dyn CommandTrait>
+    where
+        F: Fn(Context, T) -> Fut + Send + Sync + 'static,
+        Fut: Future<Output = Result<U, CommandError>> + Send + Sync + 'static,
+        T: DeserializeOwned + 'static,
+        U: Serialize,
+    {
+        struct Command<T, Fut> {
+            name: Name,
+            inputs: Vec<crate::CmdInputDescription>,
+            outputs: Vec<crate::CmdOutputDescription>,
+            instruction_info: Option<InstructionInfo>,
+            run: Box<dyn Fn(Context, T) -> Fut + Send + Sync + 'static>,
+        }
+
+        impl<T, U, Fut> CommandTrait for Command<T, Fut>
+        where
+            Fut: Future<Output = Result<U, CommandError>> + Send + Sync + 'static,
+            T: DeserializeOwned + 'static,
+            U: Serialize,
+        {
+            fn name(&self) -> Name {
+                self.name.clone()
+            }
+
+            fn instruction_info(&self) -> Option<InstructionInfo> {
+                self.instruction_info.clone()
+            }
+
+            fn inputs(&self) -> Vec<crate::CmdInputDescription> {
+                self.inputs.clone()
+            }
+
+            fn outputs(&self) -> Vec<crate::CmdOutputDescription> {
+                self.outputs.clone()
+            }
+
+            fn run<'a: 'b, 'b>(
+                &'a self,
+                ctx: Context,
+                params: crate::ValueSet,
+            ) -> BoxFuture<'b, Result<crate::ValueSet, CommandError>> {
+                match value::from_map(params) {
+                    Ok(input) => {
+                        let fut = (self.run)(ctx, input);
+                        Box::pin(async move { Ok(value::to_map(&fut.await?)?) })
+                    }
+                    Err(error) => Box::pin(async move { Err(error.into()) }),
+                }
+            }
+        }
+
+        let mut cmd = Command {
+            name: self.def.data.node_id.clone(),
+            run: Box::new(f),
+            inputs: self
+                .def
+                .targets
+                .into_iter()
+                .map(|x| crate::CmdInputDescription {
+                    name: x.name,
+                    type_bounds: x.type_bounds,
+                    required: x.required,
+                    passthrough: x.passthrough,
+                })
+                .collect(),
+            outputs: self
+                .def
+                .sources
+                .into_iter()
+                .map(|x| crate::CmdOutputDescription {
+                    name: x.name,
+                    r#type: x.r#type,
+                })
+                .collect(),
+            instruction_info: None,
+        };
+
+        if let Some(name) = self.signature_name {
+            cmd.instruction_info = Some(InstructionInfo::simple(&cmd, &name))
+        }
+
+        Box::new(cmd)
+    }
+}

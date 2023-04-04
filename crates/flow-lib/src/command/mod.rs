@@ -6,6 +6,8 @@ use crate::{
 use std::borrow::Cow;
 use value::Value;
 
+pub mod builder;
+
 pub type CommandError = anyhow::Error;
 
 #[async_trait::async_trait]
