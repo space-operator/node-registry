@@ -5,6 +5,9 @@ use thiserror::Error as ThisError;
 use url::Url;
 use uuid::Uuid;
 
+pub mod client;
+pub mod node;
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ValueType {
     #[serde(rename = "bool")]
@@ -33,6 +36,7 @@ pub enum ValueType {
     F32,
     #[serde(rename = "f64")]
     F64,
+    #[serde(alias = "number")]
     #[serde(rename = "decimal")]
     Decimal,
     #[serde(rename = "pubkey")]
@@ -44,19 +48,16 @@ pub enum ValueType {
     #[serde(rename = "string")]
     String,
     #[serde(rename = "array")]
-    Array(Box<ValueType>),
+    Array,
     #[serde(rename = "object")]
-    Map(indexmap::IndexMap<value::Key, ValueType>),
+    Map,
     #[serde(rename = "json")]
     Json,
     #[serde(rename = "free")]
     Free,
-    #[serde(rename = "result")]
-    Result(Box<ValueType>),
-    Other(String),
+    #[serde(other)]
+    Other,
 }
-
-pub mod client;
 
 // ID types
 pub type FlowId = i32;

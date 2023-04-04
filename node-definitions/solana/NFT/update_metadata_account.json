@@ -67,7 +67,7 @@
         {
             "name": "data",
             "type_bounds": [
-                "metadata_account_data"
+                "json"
             ],
             "required": true,
             "defaultValue": "",

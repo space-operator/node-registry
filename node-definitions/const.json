@@ -13,7 +13,6 @@
         {
             "name": "Source",
             "type": "free",
-            "required": true,
             "defaultValue": "",
             "tooltip": ""
         }

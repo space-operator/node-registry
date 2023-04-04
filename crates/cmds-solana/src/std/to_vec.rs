@@ -51,7 +51,7 @@ impl CommandTrait for ToVec {
     fn outputs(&self) -> Vec<CmdOutput> {
         [CmdOutput {
             name: RESULT.into(),
-            r#type: ValueType::Array(Box::new(ValueType::Free)),
+            r#type: ValueType::Array,
         }]
         .to_vec()
     }
@@ -66,10 +66,3 @@ impl CommandTrait for ToVec {
 }
 
 inventory::submit!(CommandDescription::new(TO_VEC, |_| Box::new(ToVec {})));
-
-#[cfg(test)]
-mod tests {
-
-    #[tokio::test]
-    async fn test_valid() {}
-}
