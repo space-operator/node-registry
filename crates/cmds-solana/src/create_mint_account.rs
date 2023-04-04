@@ -3,46 +3,23 @@ use solana_sdk::program_pack::Pack;
 use solana_sdk::system_instruction;
 use spl_token::state::Mint;
 
-#[derive(Debug, Clone)]
-pub struct CreateMintAccount;
+const SOLANA_CREATE_MINT_ACCOUNT: &str = "create_mint_account";
 
-impl CreateMintAccount {
-    pub async fn command_create_mint_account(
-        &self,
-        rpc_client: &RpcClient,
-        fee_payer: &Pubkey,
-        decimals: u8,
-        mint_account: &Pubkey,
-        mint_authority: Pubkey,
-        freeze_authority: Option<Pubkey>,
-        memo: &str,
-    ) -> crate::Result<(u64, Vec<Instruction>)> {
-        let minimum_balance_for_rent_exemption = rpc_client
-            .get_minimum_balance_for_rent_exemption(Mint::LEN)
-            .await?;
+const DEFINITION: &str = include_str!("../../../node-definitions/solana/create_mint_account.json");
 
-        let instructions = [
-            system_instruction::create_account(
-                fee_payer,
-                mint_account,
-                minimum_balance_for_rent_exemption,
-                Mint::LEN as u64,
-                &spl_token::id(),
-            ),
-            spl_token::instruction::initialize_mint2(
-                &spl_token::id(),
-                mint_account,
-                &mint_authority,
-                freeze_authority.as_ref(),
-                decimals,
-            )?,
-            spl_memo::build_memo(memo.as_bytes(), &[fee_payer]),
-        ]
-        .to_vec();
-
-        Ok((minimum_balance_for_rent_exemption, instructions))
-    }
+fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+    use once_cell::sync::Lazy;
+    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+        CmdBuilder::new(DEFINITION)?
+            .check_name(SOLANA_CREATE_MINT_ACCOUNT)?
+            .simple_instruction_info("signature")
+    });
+    Ok(CACHE.clone()?.build(run))
 }
+
+inventory::submit!(CommandDescription::new(SOLANA_CREATE_MINT_ACCOUNT, |_| {
+    build()
+}));
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -67,125 +44,54 @@ pub struct Output {
     signature: Option<Signature>,
 }
 
-const SOLANA_CREATE_MINT_ACCOUNT: &str = "create_mint_account";
+async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+    let minimum_balance_for_rent_exemption = ctx
+        .solana_client
+        .get_minimum_balance_for_rent_exemption(Mint::LEN)
+        .await?;
 
-// Inputs
-const FEE_PAYER: &str = "fee_payer";
-const DECIMALS: &str = "decimals";
-const MINT_AUTHORITY: &str = "mint_authority";
-const FREEZE_AUTHORITY: &str = "freeze_authority";
-const MINT_ACCOUNT: &str = "mint_account";
-const MEMO: &str = "memo";
-const SUBMIT: &str = "submit";
-
-// Outputs
-const SIGNATURE: &str = "signature";
-
-#[async_trait]
-impl CommandTrait for CreateMintAccount {
-    fn instruction_info(&self) -> Option<InstructionInfo> {
-        Some(InstructionInfo::simple(self, SIGNATURE))
-    }
-
-    fn name(&self) -> Name {
-        SOLANA_CREATE_MINT_ACCOUNT.into()
-    }
-
-    fn inputs(&self) -> Vec<CmdInput> {
-        [
-            CmdInput {
-                name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: DECIMALS.into(),
-                type_bounds: [ValueType::U8].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: MINT_AUTHORITY.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: FREEZE_AUTHORITY.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String, ValueType::Pubkey].to_vec(),
-                required: false,
-                passthrough: true,
-            },
-            CmdInput {
-                name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: MEMO.into(),
-                type_bounds: [ValueType::String].to_vec(),
-                required: false,
-                passthrough: false,
-            },
-            CmdInput {
-                name: SUBMIT.into(),
-                type_bounds: [ValueType::Bool].to_vec(),
-                required: false,
-                passthrough: false,
-            },
+    let ins = Instructions {
+        fee_payer: input.fee_payer.pubkey(),
+        signers: [
+            input.fee_payer.clone_keypair(),
+            input.mint_authority.clone_keypair(),
+            input.mint_account.clone_keypair(),
         ]
-        .to_vec()
-    }
-
-    fn outputs(&self) -> Vec<CmdOutput> {
-        [CmdOutput {
-            name: SIGNATURE.into(),
-            r#type: ValueType::String,
-        }]
-        .to_vec()
-    }
-
-    async fn run(&self, mut ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let input: Input = value::from_map(inputs)?;
-
-        let (minimum_balance_for_rent_exemption, instructions) = self
-            .command_create_mint_account(
-                &ctx.solana_client,
+        .into(),
+        instructions: [
+            system_instruction::create_account(
                 &input.fee_payer.pubkey(),
-                input.decimals,
                 &input.mint_account.pubkey(),
-                input.mint_authority.pubkey(),
-                input.freeze_authority,
-                &input.memo,
-            )
-            .await?;
-
-        let instructions = if input.submit {
-            Instructions {
-                fee_payer: input.fee_payer.pubkey(),
-                signers: vec![
-                    input.mint_authority.clone_keypair(),
-                    input.fee_payer.clone_keypair(),
-                    input.mint_account.clone_keypair(),
-                ],
                 minimum_balance_for_rent_exemption,
-                instructions,
-            }
-        } else {
-            Instructions::default()
-        };
+                Mint::LEN as u64,
+                &spl_token::id(),
+            ),
+            spl_token::instruction::initialize_mint2(
+                &spl_token::id(),
+                &input.mint_account.pubkey(),
+                &input.mint_authority.pubkey(),
+                input.freeze_authority.as_ref(),
+                input.decimals,
+            )?,
+            spl_memo::build_memo(input.memo.as_bytes(), &[&input.fee_payer.pubkey()]),
+        ]
+        .into(),
+        minimum_balance_for_rent_exemption,
+    };
 
-        let signature = ctx
-            .execute(instructions, Default::default())
-            .await?
-            .signature;
+    let ins = input.submit.then_some(ins).unwrap_or_default();
 
-        Ok(value::to_map(&Output { signature })?)
-    }
+    let signature = ctx.execute(ins, <_>::default()).await?.signature;
+
+    Ok(Output { signature })
 }
 
-inventory::submit!(CommandDescription::new(SOLANA_CREATE_MINT_ACCOUNT, |_| {
-    Ok(Box::new(CreateMintAccount))
-}));
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_build() {
+        build().unwrap();
+    }
+}
