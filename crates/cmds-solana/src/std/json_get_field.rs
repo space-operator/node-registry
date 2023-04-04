@@ -116,9 +116,9 @@ impl CommandTrait for JsonGetField {
     }
 }
 
-inventory::submit!(CommandDescription::new(JSON_GET_FIELD, |_| Box::new(
+inventory::submit!(CommandDescription::new(JSON_GET_FIELD, |_| Ok(Box::new(
     JsonGetField {}
-)));
+))));
 
 #[cfg(test)]
 mod tests {

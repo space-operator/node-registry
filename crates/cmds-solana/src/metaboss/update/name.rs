@@ -88,6 +88,6 @@ impl CommandTrait for UpdateName {
     }
 }
 
-inventory::submit!(CommandDescription::new(UPDATE_NAME, |_| Box::new(
+inventory::submit!(CommandDescription::new(UPDATE_NAME, |_| Ok(Box::new(
     UpdateName
-)));
+))));

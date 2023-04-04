@@ -111,7 +111,7 @@ impl CommandTrait for Wallet {
 }
 
 inventory::submit!(CommandDescription::new(WALLET, |nd| {
-    Box::new(Wallet::new(nd))
+    Ok(Box::new(Wallet::new(nd)))
 }));
 
 #[cfg(test)]

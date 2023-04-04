@@ -210,5 +210,5 @@ impl CommandTrait for ApproveUseAuthority {
 
 inventory::submit!(CommandDescription::new(
     APPROVE_USE_AUTHORITY,
-    |_| Box::new(ApproveUseAuthority)
+    |_| Ok(Box::new(ApproveUseAuthority))
 ));

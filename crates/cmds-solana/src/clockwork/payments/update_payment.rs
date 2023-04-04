@@ -155,5 +155,5 @@ impl CommandTrait for UpdatePayment {
 }
 
 inventory::submit!(CommandDescription::new(UPDATE_PAYMENT, |_| {
-    Box::new(UpdatePayment)
+    Ok(Box::new(UpdatePayment))
 }));

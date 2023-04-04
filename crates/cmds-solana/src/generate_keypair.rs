@@ -119,9 +119,9 @@ fn generate_keypair(passphrase: &str, seed: &str) -> crate::Result<Keypair> {
     keypair_from_seed(seed.as_bytes()).map_err(|e| crate::Error::KeypairFromSeed(e.to_string()))
 }
 
-inventory::submit!(CommandDescription::new(GENERATE_KEYPAIR, |_| Box::new(
+inventory::submit!(CommandDescription::new(GENERATE_KEYPAIR, |_| Ok(Box::new(
     GenerateKeypair
-)));
+))));
 
 #[cfg(test)]
 mod tests {

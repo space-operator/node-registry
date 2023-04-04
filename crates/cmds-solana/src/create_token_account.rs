@@ -183,7 +183,7 @@ impl CommandTrait for CreateTokenAccount {
 }
 
 inventory::submit!(CommandDescription::new(SOLANA_CREATE_TOKEN_ACCOUNT, |_| {
-    Box::new(CreateTokenAccount)
+    Ok(Box::new(CreateTokenAccount))
 }));
 
 #[cfg(test)]

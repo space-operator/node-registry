@@ -72,6 +72,6 @@ impl CommandTrait for SnapshotCMAccounts {
     }
 }
 
-inventory::submit!(CommandDescription::new(SNAPSHOT_CM_ACCOUNTS, |_| Box::new(
+inventory::submit!(CommandDescription::new(SNAPSHOT_CM_ACCOUNTS, |_| Ok(Box::new(
     SnapshotCMAccounts
-)));
+))));

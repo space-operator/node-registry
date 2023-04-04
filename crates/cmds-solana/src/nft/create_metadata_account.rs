@@ -347,7 +347,7 @@ impl CommandTrait for CreateMetadataAccount {
 }
 
 inventory::submit!(CommandDescription::new(CREATE_METADATA_ACCOUNT, |_| {
-    Box::new(CreateMetadataAccount)
+    Ok(Box::new(CreateMetadataAccount))
 }));
 
 #[cfg(test)]

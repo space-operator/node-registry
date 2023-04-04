@@ -123,9 +123,9 @@ impl CommandTrait for TransferSol {
     }
 }
 
-inventory::submit!(CommandDescription::new(SOLANA_TRANSFER_SOL, |_| Box::new(
+inventory::submit!(CommandDescription::new(SOLANA_TRANSFER_SOL, |_| Ok(Box::new(
     TransferSol
-)));
+))));
 
 #[cfg(test)]
 mod tests {

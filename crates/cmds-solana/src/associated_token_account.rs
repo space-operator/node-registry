@@ -133,5 +133,5 @@ impl CommandTrait for AssociatedTokenAccount {
 
 inventory::submit!(CommandDescription::new(
     SOLANA_ASSOCIATED_TOKEN_ACCOUNT,
-    |_| { Box::new(AssociatedTokenAccount) }
+    |_| { Ok(Box::new(AssociatedTokenAccount)) }
 ));

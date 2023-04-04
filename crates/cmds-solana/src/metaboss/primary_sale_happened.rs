@@ -83,5 +83,5 @@ impl CommandTrait for PrimarySaleHappened {
 
 inventory::submit!(CommandDescription::new(
     PRIMARY_SALE_HAPPENED,
-    |_| Box::new(PrimarySaleHappened)
+    |_| Ok(Box::new(PrimarySaleHappened))
 ));

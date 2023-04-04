@@ -187,5 +187,5 @@ impl CommandTrait for CreateMintAccount {
 }
 
 inventory::submit!(CommandDescription::new(SOLANA_CREATE_MINT_ACCOUNT, |_| {
-    Box::new(CreateMintAccount)
+    Ok(Box::new(CreateMintAccount))
 }));

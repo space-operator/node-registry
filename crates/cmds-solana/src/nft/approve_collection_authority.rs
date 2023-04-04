@@ -189,5 +189,5 @@ impl CommandTrait for ApproveCollectionAuthority {
 
 inventory::submit!(CommandDescription::new(
     APPROVE_COLLECTION_AUTHORITY,
-    |_| Box::new(ApproveCollectionAuthority)
+    |_| Ok(Box::new(ApproveCollectionAuthority))
 ));

@@ -356,7 +356,7 @@ impl CommandTrait for Payment {
 }
 
 inventory::submit!(CommandDescription::new(CREATE_PAYMENT, |_| {
-    Box::new(Payment)
+    Ok(Box::new(Payment))
 }));
 
 pub fn explorer() -> Explorer {

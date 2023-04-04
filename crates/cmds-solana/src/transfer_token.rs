@@ -350,5 +350,5 @@ impl CommandTrait for TransferToken {
 
 inventory::submit!(CommandDescription::new(
     SOLANA_TRANSFER_TOKEN,
-    |_| Box::new(TransferToken)
+    |_| Ok(Box::new(TransferToken))
 ));

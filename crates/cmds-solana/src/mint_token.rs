@@ -1,4 +1,5 @@
 use crate::{prelude::*, utils::ui_amount_to_amount};
+use flow_lib::config::client::NodeData;
 use once_cell::sync::Lazy;
 use spl_token::instruction::mint_to_checked;
 
@@ -72,14 +73,14 @@ const SOLANA_MINT_TOKEN: &str = "mint_token";
 
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/mint_token.json");
 
-static BUILDER: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
     CmdBuilder::new(DEFINITION)?
         .check_name(SOLANA_MINT_TOKEN)?
         .simple_instruction_info("signature")
 });
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
-    Ok(BUILDER.clone()?.build(run))
+fn build(_: &NodeData) -> Result<Box<dyn CommandTrait>, CommandError> {
+    Ok(CACHE.clone()?.build(run))
 }
 
-inventory::submit!(CommandDescription::new(SOLANA_MINT_TOKEN, |_| build().unwrap()));
+inventory::submit!(CommandDescription::new(SOLANA_MINT_TOKEN, build));
