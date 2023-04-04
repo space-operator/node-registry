@@ -64,8 +64,6 @@ pub type NodeId = Uuid;
 pub type FlowRunId = Uuid;
 
 /// Command name and field name,
-/// all of them are `'static str` right now,
-/// but could be dynamic in the future.
 pub type Name = String;
 
 /// Inputs and outputs of commands
