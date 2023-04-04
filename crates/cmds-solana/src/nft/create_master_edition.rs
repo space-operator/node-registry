@@ -317,7 +317,6 @@ impl CommandTrait for CreateMasterEdition {
     }
 }
 
-inventory::submit!(CommandDescription::new(
-    CREATE_MASTER_EDITION,
-    |_| Ok(Box::new(CreateMasterEdition))
-));
+inventory::submit!(CommandDescription::new(CREATE_MASTER_EDITION, |_| Ok(
+    Box::new(CreateMasterEdition)
+)));
