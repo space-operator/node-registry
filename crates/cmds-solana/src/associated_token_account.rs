@@ -63,7 +63,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             instructions: [instruction].into(),
         }
     } else {
-        Instructions::default()
+        <_>::default()
     };
 
     let signature = ctx

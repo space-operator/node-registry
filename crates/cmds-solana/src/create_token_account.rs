@@ -1,65 +1,21 @@
-use crate::{
-    prelude::*,
-    utils::{execute, submit_transaction},
-};
-use solana_program::instruction::Instruction;
+use crate::prelude::*;
 use solana_program::program_pack::Pack;
 use solana_program::{system_instruction, system_program};
 
-#[derive(Debug, Clone)]
-pub struct CreateTokenAccount;
+const SOLANA_CREATE_TOKEN_ACCOUNT: &str = "create_token_account";
 
-impl CreateTokenAccount {
-    async fn command_create_token_account(
-        &self,
-        client: &RpcClient,
-        fee_payer: Pubkey,
-        token: Pubkey,
-        owner: Pubkey,
-        account_pubkey: Pubkey,
-    ) -> crate::Result<(u64, Vec<Instruction>)> {
-        let minimum_balance_for_rent_exemption = client
-            .get_minimum_balance_for_rent_exemption(spl_token::state::Account::LEN)
-            .await?;
+const DEFINITION: &str = include_str!("../../../node-definitions/solana/create_token_account.json");
 
-        let (account, system_account_ok, instructions) = {
-            (
-                account_pubkey,
-                false,
-                vec![
-                    system_instruction::create_account(
-                        &fee_payer,
-                        &account_pubkey,
-                        minimum_balance_for_rent_exemption,
-                        spl_token::state::Account::LEN as u64,
-                        &spl_token::id(),
-                    ),
-                    spl_token::instruction::initialize_account(
-                        &spl_token::id(),
-                        &account_pubkey,
-                        &token,
-                        &owner,
-                    )?,
-                ],
-            )
-        };
-
-        if let Some(account_data) = client
-            .get_account_with_commitment(&account, client.commitment())
-            .await?
-            .value
-        {
-            if !(account_data.owner == system_program::id() && system_account_ok) {
-                return Err(crate::Error::custom(anyhow::anyhow!(
-                    "Error: Account already exists: {}",
-                    account
-                )));
-            }
-        }
-
-        Ok((minimum_balance_for_rent_exemption, instructions))
-    }
+fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+    use once_cell::sync::Lazy;
+    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> =
+        Lazy::new(|| CmdBuilder::new(DEFINITION)?.check_name(SOLANA_CREATE_TOKEN_ACCOUNT));
+    Ok(CACHE.clone()?.build(run))
 }
+
+inventory::submit!(CommandDescription::new(SOLANA_CREATE_TOKEN_ACCOUNT, |_| {
+    build()
+}));
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -81,130 +37,73 @@ pub struct Output {
     signature: Option<Signature>,
 }
 
-const SOLANA_CREATE_TOKEN_ACCOUNT: &str = "create_token_account";
+async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+    let minimum_balance_for_rent_exemption = ctx
+        .solana_client
+        .get_minimum_balance_for_rent_exemption(spl_token::state::Account::LEN)
+        .await?;
 
-// Inputs
-const OWNER: &str = "owner";
-const FEE_PAYER: &str = "fee_payer";
-const MINT_ACCOUNT: &str = "mint_account";
-const TOKEN_ACCOUNT: &str = "token_account";
-const SUBMIT: &str = "submit";
-
-// Outputs
-const SIGNATURE: &str = "signature";
-
-#[async_trait]
-impl CommandTrait for CreateTokenAccount {
-    fn name(&self) -> Name {
-        SOLANA_CREATE_TOKEN_ACCOUNT.into()
-    }
-
-    fn inputs(&self) -> Vec<CmdInput> {
-        [
-            CmdInput {
-                name: OWNER.into(),
-                type_bounds: [ValueType::Pubkey].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: TOKEN_ACCOUNT.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: SUBMIT.into(),
-                type_bounds: [ValueType::Bool].to_vec(),
-                required: false,
-                passthrough: false,
-            },
-        ]
-        .to_vec()
-    }
-
-    fn outputs(&self) -> Vec<CmdOutput> {
-        [CmdOutput {
-            name: SIGNATURE.into(),
-            r#type: ValueType::String,
-        }]
-        .to_vec()
-    }
-
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let input: Input = value::from_map(inputs)?;
-
-        let (minimum_balance_for_rent_exemption, instructions) = self
-            .command_create_token_account(
-                &ctx.solana_client,
-                input.fee_payer.pubkey(),
-                input.mint_account,
-                input.owner,
-                input.token_account.pubkey(),
-            )
-            .await?;
-
-        let (mut transaction, recent_blockhash) = execute(
-            &ctx.solana_client,
+    let account = input.token_account.pubkey();
+    let system_account_ok = false;
+    let instructions = [
+        system_instruction::create_account(
             &input.fee_payer.pubkey(),
-            &instructions,
+            &account,
             minimum_balance_for_rent_exemption,
-        )
-        .await?;
+            spl_token::state::Account::LEN as u64,
+            &spl_token::id(),
+        ),
+        spl_token::instruction::initialize_account(
+            &spl_token::id(),
+            &account,
+            &input.mint_account,
+            &input.owner,
+        )?,
+    ]
+    .into();
 
-        try_sign_wallet(
-            &ctx,
-            &mut transaction,
-            &[&input.fee_payer, &input.token_account],
-            recent_blockhash,
-        )
-        .await?;
-
-        let signature = if input.submit {
-            Some(submit_transaction(&ctx.solana_client, transaction).await?)
-        } else {
-            None
-        };
-
-        Ok(value::to_map(&Output { signature })?)
+    // TODO: with bundling, this data might be outdated when tx is submitted
+    if let Some(account_data) = ctx
+        .solana_client
+        .get_account_with_commitment(&account, ctx.solana_client.commitment())
+        .await?
+        .value
+    {
+        if !(account_data.owner == system_program::id() && system_account_ok) {
+            return Err(crate::Error::custom(anyhow::anyhow!(
+                "Error: Account already exists: {}",
+                account
+            ))
+            .into());
+        }
     }
-}
 
-inventory::submit!(CommandDescription::new(SOLANA_CREATE_TOKEN_ACCOUNT, |_| {
-    Ok(Box::new(CreateTokenAccount))
-}));
+    let instructions = if input.submit {
+        Instructions {
+            fee_payer: input.fee_payer.pubkey(),
+            signers: [
+                input.fee_payer.clone_keypair(),
+                input.token_account.clone_keypair(),
+            ]
+            .into(),
+            minimum_balance_for_rent_exemption,
+            instructions,
+        }
+    } else {
+        <_>::default()
+    };
+
+    let signature = ctx.execute(instructions, <_>::default()).await?.signature;
+
+    Ok(Output { signature })
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[tokio::test]
-    async fn test_invalid() {
-        let input = Input {
-            owner: Pubkey::new_unique(),
-            fee_payer: Keypair::new(),
-            mint_account: Pubkey::new_unique(),
-            token_account: Keypair::new(),
-            submit: false,
-        };
-        let input = value::to_map(&input).unwrap();
-
-        let error = CreateTokenAccount
-            .run(Context::default(), input)
-            .await
-            .unwrap_err();
-        dbg!(error);
+    #[test]
+    fn test_build() {
+        build().unwrap();
     }
 }
