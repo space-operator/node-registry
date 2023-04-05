@@ -17,12 +17,6 @@
             "tooltip": ""
         },
         {
-            "name": "tx",
-            "type": "string",
-            "defaultValue": null,
-            "tooltip": ""
-        },
-        {
             "name": "recipient_token_account",
             "type": "pubkey",
             "defaultValue": null,
@@ -58,6 +52,16 @@
             "required": true,
             "defaultValue": null,
             "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "decimals",
+            "type_bounds": [
+                "u8"
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "NFTs should have decimals = 0",
             "passthrough": false
         },
         {

@@ -78,3 +78,13 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     Ok(Output { signature })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_build() {
+        build().unwrap();
+    }
+}
