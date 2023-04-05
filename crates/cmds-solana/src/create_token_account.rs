@@ -8,8 +8,11 @@ const DEFINITION: &str = include_str!("../../../node-definitions/solana/create_t
 
 fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
     use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> =
-        Lazy::new(|| CmdBuilder::new(DEFINITION)?.check_name(SOLANA_CREATE_TOKEN_ACCOUNT));
+    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+        CmdBuilder::new(DEFINITION)?
+            .check_name(SOLANA_CREATE_TOKEN_ACCOUNT)?
+            .simple_instruction_info("signature")
+    });
     Ok(CACHE.clone()?.build(run))
 }
 
