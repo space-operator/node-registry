@@ -30,3 +30,6 @@ futures = "0.3"
 
 # space operator
 value = { path = "../value" , version = "0.0.1" }
+
+[dev-dependencies]
+walkdir = "2"

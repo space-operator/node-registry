@@ -87,6 +87,6 @@ impl CommandTrait for MigrateCollection {
     }
 }
 
-inventory::submit!(CommandDescription::new(MIGRATE_COLLECTION, |_| Box::new(
-    MigrateCollection
+inventory::submit!(CommandDescription::new(MIGRATE_COLLECTION, |_| Ok(
+    Box::new(MigrateCollection)
 )));

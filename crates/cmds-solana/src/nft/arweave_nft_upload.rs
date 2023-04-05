@@ -164,8 +164,8 @@ impl CommandTrait for ArweaveNftUpload {
     }
 }
 
-inventory::submit!(CommandDescription::new(ARWEAVE_NFT_UPLOAD, |_| Box::new(
-    ArweaveNftUpload
+inventory::submit!(CommandDescription::new(ARWEAVE_NFT_UPLOAD, |_| Ok(
+    Box::new(ArweaveNftUpload)
 )));
 
 pub(crate) struct Uploader {

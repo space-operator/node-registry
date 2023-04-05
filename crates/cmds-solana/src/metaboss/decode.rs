@@ -59,4 +59,4 @@ impl CommandTrait for Decode {
     }
 }
 
-inventory::submit!(CommandDescription::new(DECODE, |_| Box::new(Decode)));
+inventory::submit!(CommandDescription::new(DECODE, |_| Ok(Box::new(Decode))));

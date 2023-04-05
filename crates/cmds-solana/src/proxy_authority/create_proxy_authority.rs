@@ -128,5 +128,5 @@ impl CommandTrait for CreateProxyAuthority {
 }
 
 inventory::submit!(CommandDescription::new(CREATE_PROXY_AUTHORITY, |_| {
-    Box::new(CreateProxyAuthority)
+    Ok(Box::new(CreateProxyAuthority))
 }));

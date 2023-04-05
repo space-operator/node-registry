@@ -156,5 +156,5 @@ impl CommandTrait for ThreadDelete {
 }
 
 inventory::submit!(CommandDescription::new(THREAD_DELETE, |_| {
-    Box::new(ThreadDelete)
+    Ok(Box::new(ThreadDelete))
 }));

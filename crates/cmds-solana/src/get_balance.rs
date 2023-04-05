@@ -56,9 +56,9 @@ impl CommandTrait for GetBalance {
     }
 }
 
-inventory::submit!(CommandDescription::new(GET_BALANCE, |_| Box::new(
+inventory::submit!(CommandDescription::new(GET_BALANCE, |_| Ok(Box::new(
     GetBalance {}
-)));
+))));
 
 #[cfg(test)]
 mod tests {

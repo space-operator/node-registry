@@ -88,6 +88,6 @@ impl CommandTrait for UpdateSymbol {
     }
 }
 
-inventory::submit!(CommandDescription::new(UPDATE_SYMBOL, |_| Box::new(
+inventory::submit!(CommandDescription::new(UPDATE_SYMBOL, |_| Ok(Box::new(
     UpdateSymbol
-)));
+))));

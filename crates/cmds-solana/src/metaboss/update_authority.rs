@@ -101,6 +101,6 @@ impl CommandTrait for UpdateAuthority {
     }
 }
 
-inventory::submit!(CommandDescription::new(UPDATE_AUTHORITY, |_| Box::new(
+inventory::submit!(CommandDescription::new(UPDATE_AUTHORITY, |_| Ok(Box::new(
     UpdateAuthority
-)));
+))));

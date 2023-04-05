@@ -79,6 +79,6 @@ impl CommandTrait for SetImmutable {
     }
 }
 
-inventory::submit!(CommandDescription::new(SET_IMMUTABLE, |_| Box::new(
+inventory::submit!(CommandDescription::new(SET_IMMUTABLE, |_| Ok(Box::new(
     SetImmutable
-)));
+))));

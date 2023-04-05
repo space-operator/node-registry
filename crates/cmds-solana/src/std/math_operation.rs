@@ -171,9 +171,9 @@ impl CommandTrait for MathOperation {
     }
 }
 
-inventory::submit!(CommandDescription::new(MATH_OPERATION, |_| Box::new(
+inventory::submit!(CommandDescription::new(MATH_OPERATION, |_| Ok(Box::new(
     MathOperation {}
-)));
+))));
 
 // #[cfg(test)]
 // mod tests {

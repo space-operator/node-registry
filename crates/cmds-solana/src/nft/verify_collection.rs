@@ -150,8 +150,8 @@ impl CommandTrait for VerifyCollection {
     }
 }
 
-inventory::submit!(CommandDescription::new(VERIFY_COLLECTION, |_| Box::new(
-    VerifyCollection
+inventory::submit!(CommandDescription::new(VERIFY_COLLECTION, |_| Ok(
+    Box::new(VerifyCollection)
 )));
 
 impl VerifyCollection {

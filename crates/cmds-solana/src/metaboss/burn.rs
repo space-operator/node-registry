@@ -79,4 +79,4 @@ impl CommandTrait for Burn {
     }
 }
 
-inventory::submit!(CommandDescription::new(BURN, |_| Box::new(Burn)));
+inventory::submit!(CommandDescription::new(BURN, |_| Ok(Box::new(Burn))));

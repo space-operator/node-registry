@@ -254,9 +254,9 @@ impl CommandTrait for RequestHttp {
     }
 }
 
-inventory::submit!(CommandDescription::new(HTTP_REQUEST, |_| Box::new(
+inventory::submit!(CommandDescription::new(HTTP_REQUEST, |_| Ok(Box::new(
     RequestHttp
-)));
+))));
 
 #[cfg(test)]
 mod tests {

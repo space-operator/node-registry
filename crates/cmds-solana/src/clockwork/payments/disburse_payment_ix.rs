@@ -151,8 +151,8 @@ impl CommandTrait for DisbursePaymentIx {
     }
 }
 
-inventory::submit!(CommandDescription::new(DISBURSE_PAYMENT_IX, |_| Box::new(
-    DisbursePaymentIx {}
+inventory::submit!(CommandDescription::new(DISBURSE_PAYMENT_IX, |_| Ok(
+    Box::new(DisbursePaymentIx {})
 )));
 
 #[cfg(test)]

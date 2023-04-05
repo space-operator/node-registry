@@ -6,6 +6,8 @@ use crate::{
 use std::borrow::Cow;
 use value::Value;
 
+pub mod builder;
+
 pub type CommandError = anyhow::Error;
 
 #[async_trait::async_trait]
@@ -103,11 +105,14 @@ impl InstructionInfo {
 #[derive(Clone)]
 pub struct CommandDescription {
     pub name: Cow<'static, str>,
-    pub fn_new: fn(&NodeData) -> Box<dyn CommandTrait>,
+    pub fn_new: fn(&NodeData) -> Result<Box<dyn CommandTrait>, CommandError>,
 }
 
 impl CommandDescription {
-    pub const fn new(name: &'static str, fn_new: fn(&NodeData) -> Box<dyn CommandTrait>) -> Self {
+    pub const fn new(
+        name: &'static str,
+        fn_new: fn(&NodeData) -> Result<Box<dyn CommandTrait>, CommandError>,
+    ) -> Self {
         Self {
             name: Cow::Borrowed(name),
             fn_new,
