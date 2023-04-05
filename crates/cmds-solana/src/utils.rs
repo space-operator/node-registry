@@ -12,7 +12,7 @@ use solana_program::{
     hash::Hash, instruction::Instruction, message::Message, native_token::LAMPORTS_PER_SOL,
 };
 use solana_sdk::{signature::Presigner, transaction::Transaction};
-use std::time::Duration;
+use std::{collections::BTreeSet, time::Duration};
 use value::Error as ValueError;
 
 pub const SIGNATURE_TIMEOUT: Duration = Duration::from_secs(60 * 5);
@@ -80,16 +80,12 @@ pub async fn try_sign_wallet(
 
     let futs = keypairs
         .iter()
-        .filter_map(|k| {
-            if k.is_user_wallet() {
-                let pk = k.pubkey();
-                let task = ctx
-                    .request_signature(pk, msg.clone(), SIGNATURE_TIMEOUT)
-                    .map_ok(move |sig| (pk, sig));
-                Some(task)
-            } else {
-                None
-            }
+        .filter_map(|k| k.is_user_wallet().then(|| k.pubkey()))
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .map(|pk| {
+            ctx.request_signature(pk, msg.clone(), SIGNATURE_TIMEOUT)
+                .map_ok(move |sig| (pk, sig))
         })
         .collect::<FuturesUnordered<_>>();
 
