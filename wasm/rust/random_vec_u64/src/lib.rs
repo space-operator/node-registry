@@ -1,13 +1,16 @@
 use rand::Rng;
+use space_lib::space;
+use serde::Deserialize;
 
-#[no_mangle]
-fn main(min: u64, max: u64, len: u64) -> Box<String> {
+#[derive(Deserialize)]
+struct Input {
+    min: u64,
+    max: u64,
+    len: u64,
+}
+
+#[space]
+fn main(input: Input) -> Vec<u64> {
     let mut rng = rand::thread_rng();
-    let mut vec = Vec::new();
-
-    for _ in 0..len {
-        vec.push(rng.gen_range(min..max));
-    }
-
-    Box::new(serde_json::to_string(&vec).unwrap())
+    (0..input.len).map(|_| rng.gen_range(input.min..input.max)).collect()
 }

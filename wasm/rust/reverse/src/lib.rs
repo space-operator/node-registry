@@ -1,4 +1,6 @@
-#[no_mangle]
-fn main(input: &String) -> Box<String> {
-    Box::new(input.chars().rev().collect())
+use space_lib::space;
+
+#[space]
+fn main(input: String) -> String {
+    input.chars().rev().collect()
 }

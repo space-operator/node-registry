@@ -1,10 +1,16 @@
 use getrandom::getrandom;
+use serde::Deserialize;
+use space_lib::{space, Result};
 
-#[no_mangle]
-extern fn main(start: u64, end: u64) -> u64 {
+#[derive(Deserialize)]
+struct Input {
+    start: u64,
+    end: u64,
+}
+
+#[space]
+fn main(input: Input) -> Result<u64> {
     let mut buffer = [0; 8];
-    match getrandom(&mut buffer) {
-        Ok(_) => u64::from_le_bytes(buffer) % end.saturating_sub(start) + start,
-        Err(_) => start,
-    }
+    getrandom(&mut buffer)?;
+    Ok(u64::from_le_bytes(buffer) % input.end.saturating_sub(input.start) + input.start)
 }
