@@ -2,7 +2,7 @@
     "type": "WASM",
     "data": {
         "node_id": "random_vec_u64",
-        "version": "0.1",
+        "version": "0.3",
         "display_name": "Random Vec u64",
         "description": "Generates an array of random uint64 values with specified length and bounds.",
         "width": 200,
@@ -10,14 +10,30 @@
         "backgroundColor": "#ffd9b3"
     },
     "targets": [
-        {
-            "name": "input",
+             {
+            "name": "min",
             "type_bounds": [
-                "object": {
-                    "min": "u64",
-                    "max": "u64",
-                    "len": "u64"
-                }
+                "u64"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "max",
+            "type_bounds": [
+                "u64"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "len",
+            "type_bounds": [
+                "u64"
             ],
             "required": true,
             "defaultValue": "",

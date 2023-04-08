@@ -2,7 +2,7 @@
     "type": "WASM",
     "data": {
         "node_id": "sha256",
-        "version": "0.1",
+        "version": "0.2",
         "display_name": "SHA-256",
         "description": "Calculates sha256 hash",
         "width": 200,

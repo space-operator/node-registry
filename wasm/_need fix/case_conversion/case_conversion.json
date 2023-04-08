@@ -2,7 +2,7 @@
     "type": "WASM",
     "data": {
         "node_id": "case_conversion",
-        "version": "0.1",
+        "version": "0.4",
         "display_name": "Case Conversion",
         "description": "Node which allows conversion of strings to various cases",
         "width": 200,
@@ -11,12 +11,18 @@
     },
     "targets": [
         {
-            "name": "input",
+            "name": "value",
             "type_bounds": [
-                "object": {
-                    "value": "string",
-                    "case_type": "string"
-                }
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "passthrough": false
+        },
+        {
+            "name": "case_type",
+            "type_bounds": [
+                "string"
             ],
             "required": true,
             "defaultValue": "",
