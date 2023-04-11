@@ -5,6 +5,8 @@ use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
 use thiserror::Error as ThisError;
 
+pub type BuildResult = Result<Box<dyn CommandTrait>, CommandError>;
+
 #[derive(Clone)]
 pub struct CmdBuilder {
     def: Definition,
