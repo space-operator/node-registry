@@ -14,4 +14,4 @@ pub use config::{
     ValueSet, ValueType,
 };
 pub use context::{Context, User};
-pub use value::{Error as ValueError, Value};
+pub use value::{self, Error as ValueError, Value};
