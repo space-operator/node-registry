@@ -438,6 +438,8 @@ pub enum Error {
     InvalidLenght { need: usize, got: usize },
     #[error("expected a map")]
     ExpectedMap,
+    #[error("expected array")]
+    ExpectedArray,
 }
 
 impl serde::ser::Error for Error {
