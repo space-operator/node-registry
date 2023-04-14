@@ -603,10 +603,13 @@ mod tests {
             value: Value,
         }
 
-        let v = crate::to_map(&Output {
+        let mut v = crate::to_map(&Output {
             value: Vec::from([Value::U64(1)]).into(),
         })
         .unwrap();
-        dbg!(v);
+        assert_eq!(
+            v.remove("value").unwrap(),
+            Value::Array([1u64.into()].into())
+        )
     }
 }
