@@ -8,7 +8,7 @@ pub(self) mod tagged_bytes;
 pub(self) mod text_repr;
 
 use maps::{SerializeMap, SerializeStructVariant, SerializeTupleVariant};
-use seq::SerializeSeq;
+use seq::{SerializeSeq, SerializeSeqNoBytes};
 use tagged_bytes::TaggedBytes;
 
 impl serde::Serialize for Value {
@@ -232,6 +232,8 @@ impl serde::Serializer for Serializer {
                 6 => value.serialize(TaggedBytes::Decimal),
                 // Other bytes
                 9 | 10 | 11 => value.serialize(TaggedBytes::Bytes),
+                // Array
+                12 => value.serialize(SerializeSeqNoBytes::default()),
                 // Other variants can map directly to serde's data model
                 _ => value.serialize(Serializer),
             }

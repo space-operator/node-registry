@@ -438,6 +438,8 @@ pub enum Error {
     InvalidLenght { need: usize, got: usize },
     #[error("expected a map")]
     ExpectedMap,
+    #[error("expected array")]
+    ExpectedArray,
 }
 
 impl serde::ser::Error for Error {
@@ -592,5 +594,22 @@ mod tests {
             ])),
             r#"{"BY":"aGVsbG8gd29ybGQ="}"#,
         );
+    }
+
+    #[test]
+    fn test_array_ser() {
+        #[derive(serde::Serialize)]
+        struct Output {
+            value: Value,
+        }
+
+        let mut v = crate::to_map(&Output {
+            value: Vec::from([Value::U64(1)]).into(),
+        })
+        .unwrap();
+        assert_eq!(
+            v.remove("value").unwrap(),
+            Value::Array([1u64.into()].into())
+        )
     }
 }
