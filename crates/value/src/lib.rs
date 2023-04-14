@@ -593,4 +593,18 @@ mod tests {
             r#"{"BY":"aGVsbG8gd29ybGQ="}"#,
         );
     }
+
+    #[test]
+    fn test_array_ser() {
+        #[derive(serde::Serialize)]
+        struct Output {
+            value: Value,
+        }
+
+        let v = crate::to_map(&Output {
+            value: Vec::from([Value::U64(1)]).into(),
+        })
+        .unwrap();
+        dbg!(v);
+    }
 }
