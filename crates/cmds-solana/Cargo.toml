@@ -50,6 +50,7 @@ once_cell = "1.17"
 
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
+hyper = { version = "0.14.26", default-features = false, features = ["client"] }
 
 [dependencies.clockwork-utils]
 git = "https://github.com/space-operator/clockwork.git"
