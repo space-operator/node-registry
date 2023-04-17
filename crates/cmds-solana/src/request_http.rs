@@ -258,4 +258,25 @@ mod tests {
     fn test_build() {
         build().unwrap();
     }
+
+    #[tokio::test]
+    async fn test_local() {
+        async fn test(url: &str) {
+            let c = Context::default();
+            let e = run(
+                c.clone(),
+                value::from_map(value::map! {"url" => url}).unwrap(),
+            )
+            .await
+            .unwrap_err()
+            .to_string();
+            assert!(e.contains("IP address not allowed"));
+        }
+
+        // local networks are not allowed because of security reason
+        test("http://localhost").await;
+        test("http://127.0.0.1:8080").await;
+        test("http://169.254.169.254/latest/api/token").await;
+        test("http://255.255.255.255").await;
+    }
 }
