@@ -33,6 +33,7 @@ pub struct Input {
     #[serde(default)]
     pub headers: Vec<(String, String)>,
     pub basic_auth: Option<BasicAuth>,
+    #[serde(default)]
     pub query_params: Vec<(String, String)>,
     #[serde(default)]
     pub body: Option<serde_json::Value>,
