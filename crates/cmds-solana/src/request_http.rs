@@ -1,8 +1,7 @@
 use crate::prelude::*;
 use flow_lib::command::builder::{BuildResult, BuilderCache};
 use hyper::client::connect::dns::Name as DomainName;
-use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
-use std::{net::SocketAddr, str::FromStr};
+use std::net::SocketAddr;
 
 const HTTP_REQUEST: &str = "http_request";
 
@@ -26,9 +25,9 @@ pub struct Input {
     #[serde(default = "default_method")]
     pub method: String,
     #[serde(default)]
-    pub headers: HashMap<String, String>,
+    pub headers: Vec<(String, String)>,
     #[serde(default)]
-    pub query_params: HashMap<String, String>,
+    pub query_params: Vec<(String, String)>,
     #[serde(default)]
     pub body: Option<serde_json::Value>,
 }

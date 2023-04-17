@@ -47,7 +47,7 @@
         {
             "name": "headers",
             "type_bounds": [
-                "object"
+                "array"
             ],
             "required": false,
             "passthrough": false,
@@ -57,7 +57,7 @@
         {
             "name": "query_params",
             "type_bounds": [
-                "object"
+                "array"
             ],
             "required": false,
             "passthrough": false,
