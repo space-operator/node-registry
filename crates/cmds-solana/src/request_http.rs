@@ -65,17 +65,8 @@ async fn run(_: Context, input: Input) -> Result<Output, CommandError> {
         req = req.query(&input.query_params);
     }
 
-    if !input.headers.is_empty() {
-        let headers = input
-            .headers
-            .iter()
-            .map(|(k, v)| {
-                let name = HeaderName::from_str(&k)?;
-                let value = HeaderValue::from_str(&v)?;
-                Ok((name, value))
-            })
-            .collect::<Result<HeaderMap, CommandError>>()?;
-        req = req.headers(headers);
+    for (k, v) in &input.headers {
+        req = req.header(k, v);
     }
 
     if let Some(body) = input.body {
