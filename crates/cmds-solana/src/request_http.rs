@@ -20,13 +20,19 @@ fn default_method() -> String {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct BasicAuth {
+    pub user: String,
+    pub password: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
     pub url: String,
     #[serde(default = "default_method")]
     pub method: String,
     #[serde(default)]
     pub headers: Vec<(String, String)>,
-    #[serde(default)]
+    pub basic_auth: Option<BasicAuth>,
     pub query_params: Vec<(String, String)>,
     #[serde(default)]
     pub body: Option<serde_json::Value>,
@@ -66,6 +72,19 @@ async fn run(_: Context, input: Input) -> Result<Output, CommandError> {
 
     for (k, v) in &input.headers {
         req = req.header(k, v);
+    }
+
+    if let Some(basic) = &input.basic_auth {
+        let passwd = if let Some(p) = basic.password.as_ref() {
+            if p.is_empty() {
+                None
+            } else {
+                Some(p)
+            }
+        } else {
+            None
+        };
+        req = req.basic_auth(&basic.user, passwd);
     }
 
     if let Some(body) = input.body {

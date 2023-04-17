@@ -55,6 +55,17 @@
             "tooltip": ""
         },
         {
+            "name": "basic_auth",
+            "type_bounds": [
+                "object"
+            ],
+            "required": false,
+            "passthrough": false,
+            "defaultValue": null,
+            "tooltip": "e.g. {\"user\": \"<username>\", \"password\": \"<password>\"}"
+
+        },
+        {
             "name": "query_params",
             "type_bounds": [
                 "array"
