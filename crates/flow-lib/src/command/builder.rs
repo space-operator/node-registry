@@ -7,6 +7,8 @@ use thiserror::Error as ThisError;
 
 pub type BuildResult = Result<Box<dyn CommandTrait>, CommandError>;
 
+pub type BuilderCache = once_cell::sync::Lazy<Result<CmdBuilder, BuilderError>>;
+
 #[derive(Clone)]
 pub struct CmdBuilder {
     def: Definition,

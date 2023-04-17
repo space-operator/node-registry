@@ -12,67 +12,68 @@
     "sources": [
         {
             "name": "body",
-            "type": "json",
+            "type": "free",
             "defaultValue": "",
             "tooltip": ""
         },
         {
             "name": "headers",
-            "type": "json",
+            "type": "object",
             "defaultValue": "",
             "tooltip": ""
         }
     ],
     "targets": [
         {
-            "name": "method",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "GET",
-            "tooltip": "GET, POST, PATCH, etc.",
-            "passthrough": false
-        },
-        {
             "name": "url",
             "type_bounds": [
                 "string"
             ],
             "required": true,
-            "defaultValue": "https://postman-echo.com/get",
-            "tooltip": "see https://postman-echo.com/",
-            "passthrough": false
+            "passthrough": false,
+            "defaultValue": null,
+            "tooltip": "Request's URL"
         },
         {
-            "name": "auth",
+            "name": "method",
             "type_bounds": [
                 "string"
             ],
             "required": false,
-            "defaultValue": "",
-            "tooltip": "NoAuth",
-            "passthrough": false
+            "passthrough": false,
+            "defaultValue": "GET",
+            "tooltip": "GET, POST, PATCH, etc."
         },
         {
             "name": "headers",
             "type_bounds": [
-                "json"
+                "array"
             ],
             "required": false,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
+            "passthrough": false,
+            "defaultValue": null,
+            "tooltip": ""
+        },
+        {
+            "name": "basic_auth",
+            "type_bounds": [
+                "object"
+            ],
+            "required": false,
+            "passthrough": false,
+            "defaultValue": null,
+            "tooltip": "e.g. {\"user\": \"<username>\", \"password\": \"<password>\"}"
+
         },
         {
             "name": "query_params",
             "type_bounds": [
-                "json"
+                "array"
             ],
             "required": false,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
+            "passthrough": false,
+            "defaultValue": null,
+            "tooltip": ""
         },
         {
             "name": "body",
@@ -80,84 +81,11 @@
                 "json"
             ],
             "required": false,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
+            "passthrough": false,
+            "defaultValue": null,
+            "tooltip": "Request's JSON body"
         }
     ],
-    "targets_form.json_schema": {
-        "title": "HTTP Request",
-        "type": "object",
-        "properties": {
-            "method": {
-                "type": "string",
-                "title": "Method",
-                "default": "GET"
-            },
-            "url": {
-                "type": "string",
-                "title": "URL",
-                "default": "https://postman-echo.com/get"
-            },
-            "auth": {
-                "type": "string",
-                "title": "Auth",
-                "default": "NoAuth"
-            },
-            "headers": {
-                "type": "array",
-                "title": "Headers",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "title": {
-                            "type": "string",
-                            "title": "Key"
-                        },
-                        "details": {
-                            "type": "string",
-                            "title": "Value"
-                        }
-                    }
-                }
-            },
-            "query_params": {
-                "type": "array",
-                "title": "Query Params",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "title": {
-                            "type": "string",
-                            "title": "Key"
-                        },
-                        "details": {
-                            "type": "string",
-                            "title": "Value"
-                        }
-                    }
-                }
-            },
-            "body": {
-                "type": "string",
-                "title": "Body"
-            }
-        }
-    },
-    "targets_form.ui_schema": {
-        "ui:order": [
-            "method",
-            "url",
-            "auth",
-            "headers",
-            "query_params",
-            "body"
-        ],
-        "body_input": {
-            "ui:widget": "textarea"
-        },
-        "body_output": {
-            "ui:widget": "textarea"
-        }
-    }
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
 }
