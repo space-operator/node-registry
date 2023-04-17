@@ -177,7 +177,7 @@ async fn run(_: Context, input: Input) -> Result<Output, CommandError> {
                 return Err(anyhow::anyhow!("IP address not allowed: {}", ip));
             }
         }
-        None => return Err(CommandError::msg("URL has no host")),
+        None => return Err(anyhow::anyhow!("URL has no host")),
     }
 
     let client = reqwest::Client::builder()
