@@ -211,11 +211,16 @@ mod json {
                     .try_into()
                     .map(i64::into)
                     .unwrap_or_else(|_| (value as f64).into()),
-                Value::Decimal(d) => {
-                    if let Ok(n) = u64::try_from(d) {
-                        n.into()
-                    } else if let Ok(n) = i64::try_from(d) {
-                        n.into()
+                Value::Decimal(mut d) => {
+                    d.normalize_assign();
+                    if d.scale() == 0 {
+                        if let Ok(n) = u64::try_from(d) {
+                            n.into()
+                        } else if let Ok(n) = i64::try_from(d) {
+                            n.into()
+                        } else {
+                            f64::try_from(d).map_or(serde_json::Value::Null, Into::into)
+                        }
                     } else {
                         f64::try_from(d).map_or(serde_json::Value::Null, Into::into)
                     }
@@ -611,5 +616,12 @@ mod tests {
             v.remove("value").unwrap(),
             Value::Array([1u64.into()].into())
         )
+    }
+
+    #[cfg(feature = "json")]
+    #[test]
+    fn test_number_into_json() {
+        let json: serde_json::Value = Value::Decimal(dec!(15966.2)).into();
+        assert_eq!(json.as_f64().unwrap(), 15966.2);
     }
 }
