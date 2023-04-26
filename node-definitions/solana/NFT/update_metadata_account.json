@@ -18,7 +18,7 @@
         },
         {
             "name": "metadata_account",
-            "type": "string",
+            "type": "pubkey",
             "defaultValue": "",
             "tooltip": ""
         }
@@ -59,18 +59,18 @@
             "type_bounds": [
                 "pubkey"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
         {
             "name": "data",
             "type_bounds": [
-                "json"
+                "object"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -79,8 +79,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -89,18 +89,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "submit",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         }

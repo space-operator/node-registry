@@ -1,5 +1,5 @@
 use crate::prelude::Pubkey;
-use mpl_token_metadata::state::{Creator, UseMethod, Uses};
+use mpl_token_metadata::state::{Collection, Creator, DataV2, UseMethod, Uses};
 use serde::{Deserialize, Serialize};
 
 pub mod approve_collection_authority;
@@ -10,7 +10,49 @@ pub mod create_master_edition;
 pub mod create_metadata_account;
 pub mod get_left_uses;
 pub mod sign_metadata;
+pub mod update_metadata_account;
 pub mod verify_collection;
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct NftDataV2 {
+    pub name: String,
+    pub symbol: String,
+    pub uri: String,
+    pub seller_fee_basis_points: u16,
+    pub creators: Option<Vec<NftCreator>>,
+    pub collection: Option<NftCollection>,
+    pub uses: Option<NftUses>,
+}
+
+impl From<NftDataV2> for DataV2 {
+    fn from(v: NftDataV2) -> Self {
+        Self {
+            name: v.name,
+            symbol: v.symbol,
+            uri: v.uri,
+            seller_fee_basis_points: v.seller_fee_basis_points,
+            creators: v.creators.map(|v| v.into_iter().map(Into::into).collect()),
+            collection: v.collection.map(Into::into),
+            uses: v.uses.map(Into::into),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct NftCollection {
+    pub verified: bool,
+    #[serde(with = "value::pubkey")]
+    pub key: Pubkey,
+}
+
+impl From<NftCollection> for Collection {
+    fn from(v: NftCollection) -> Self {
+        Self {
+            verified: v.verified,
+            key: v.key,
+        }
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct NftMetadata {

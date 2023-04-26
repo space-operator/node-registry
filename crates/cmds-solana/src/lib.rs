@@ -25,7 +25,7 @@ pub mod prelude {
     pub use async_trait::async_trait;
     pub use flow_lib::{
         command::{
-            builder::{BuilderError, CmdBuilder},
+            builder::{BuildResult, BuilderCache, BuilderError, CmdBuilder},
             CommandDescription, CommandError, CommandTrait, InstructionInfo,
         },
         context::Context,
