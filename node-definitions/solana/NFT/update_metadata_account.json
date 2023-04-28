@@ -11,14 +11,14 @@
     },
     "sources": [
         {
-            "name": "signature",
-            "type": "signature",
+            "name": "metadata_account",
+            "type": "pubkey",
             "defaultValue": "",
             "tooltip": ""
         },
         {
-            "name": "metadata_account",
-            "type": "pubkey",
+            "name": "signature",
+            "type": "signature",
             "defaultValue": "",
             "tooltip": ""
         }
