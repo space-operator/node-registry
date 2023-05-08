@@ -138,6 +138,6 @@ impl CommandTrait for AddConfigLines {
 }
 
 inventory::submit!(CommandDescription::new(ADD_CONFIG_LINES, |_| {
-    Box::new(AddConfigLines)
+    Ok(Box::new(AddConfigLines))
 }));
 

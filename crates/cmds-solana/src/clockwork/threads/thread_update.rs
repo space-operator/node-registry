@@ -120,5 +120,5 @@ impl CommandTrait for ThreadUpdate {
 }
 
 inventory::submit!(CommandDescription::new(THREAD_UPDATE, |_| {
-    Box::new(ThreadUpdate)
+    Ok(Box::new(ThreadUpdate))
 }));

@@ -97,5 +97,5 @@ impl CommandTrait for ThreadResume {
 }
 
 inventory::submit!(CommandDescription::new(THREAD_RESUME, |_| {
-    Box::new(ThreadResume)
+    Ok(Box::new(ThreadResume))
 }));

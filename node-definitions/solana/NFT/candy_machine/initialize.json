@@ -65,7 +65,17 @@
       "defaultValue": "",
       "tooltip": "",
       "passthrough": true
-    }
+    },
+    {
+      "name": "submit",
+      "type_bounds": [
+          "bool"
+      ],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+  }
   ],
   "targets_form.json_schema": {},
   "targets_form.ui_schema": {}

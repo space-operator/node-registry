@@ -164,5 +164,5 @@ impl CommandTrait for ThreadCreate {
 }
 
 inventory::submit!(CommandDescription::new(THREAD_CREATE, |_| {
-    Box::new(ThreadCreate)
+    Ok(Box::new(ThreadCreate))
 }));

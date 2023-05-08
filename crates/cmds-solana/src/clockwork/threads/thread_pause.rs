@@ -97,5 +97,5 @@ impl CommandTrait for ThreadPause {
 }
 
 inventory::submit!(CommandDescription::new(THREAD_PAUSE, |_| {
-    Box::new(ThreadPause)
+    Ok(Box::new(ThreadPause))
 }));
