@@ -2,7 +2,7 @@
     "type": "WASM",
     "data": {
         "node_id": "math",
-        "version": "0.1",
+        "version": "0.2",
         "display_name": "Math",
         "description": "Node which executes math expression with variable values specified in a separate object",
         "width": 200,
@@ -11,7 +11,7 @@
     },
     "targets": [
         {
-            "name": "expression",
+            "name": "expr",
             "type_bounds": [
                 "string"
             ],
@@ -21,13 +21,13 @@
             "passthrough": false
         },
         {
-            "name": "variables",
+            "name": "vars",
             "type_bounds": [
-                "string"
+                "JSON"
             ],
             "required": true,
             "defaultValue": "",
-            "tooltip": "'{\"x\": 100, \"y\": 20}'",
+            "tooltip": "{'x': 100, 'y': 20}",
             "passthrough": false
         }
     ],

@@ -10,7 +10,7 @@ pub type Result<T> = StdResult<T, Error>;
 pub enum Error {
     #[error(transparent)]
     Any(#[from] anyhow::Error),
-    #[error(transparent)]
+    #[error("{}", flow_lib::solana::verbose_solana_error(.0))]
     SolanaClient(#[from] solana_client::client_error::ClientError),
     #[error(transparent)]
     SolanaProgram(#[from] solana_sdk::program_error::ProgramError),
@@ -53,7 +53,7 @@ pub enum Error {
     #[error("worker stopped")]
     WorkerStopped,
     #[error("time-out waiting for signature")]
-    SignatureTimedOut,
+    SignatureTimeout,
     #[error("an error occured while running rhai expression: {0}")]
     RhaiExecutionError(String),
     #[error("value not found in field \"{0}\"")]

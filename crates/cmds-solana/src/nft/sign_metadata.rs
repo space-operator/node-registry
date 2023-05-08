@@ -59,19 +59,19 @@ impl CommandTrait for SignMetadata {
         [
             CmdInput {
                 name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: CREATOR.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
@@ -132,6 +132,6 @@ impl CommandTrait for SignMetadata {
     }
 }
 
-inventory::submit!(CommandDescription::new(SIGN_METADATA, |_| Box::new(
+inventory::submit!(CommandDescription::new(SIGN_METADATA, |_| Ok(Box::new(
     SignMetadata
-)));
+))));

@@ -209,7 +209,7 @@ impl CommandTrait for ScriptCommand {
 }
 
 inventory::submit!(CommandDescription::new(SCRIPT_CMD, |_| {
-    Box::new(ScriptCommand {})
+    Ok(Box::new(ScriptCommand {}))
 }));
 
 #[cfg(test)]

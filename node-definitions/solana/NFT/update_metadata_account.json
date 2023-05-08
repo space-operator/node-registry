@@ -11,14 +11,14 @@
     },
     "sources": [
         {
-            "name": "signature",
-            "type": "string",
+            "name": "metadata_account",
+            "type": "pubkey",
             "defaultValue": "",
             "tooltip": ""
         },
         {
-            "name": "metadata_account",
-            "type": "string",
+            "name": "signature",
+            "type": "signature",
             "defaultValue": "",
             "tooltip": ""
         }
@@ -37,8 +37,7 @@
         {
             "name": "mint_account",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": "",
@@ -58,21 +57,20 @@
         {
             "name": "new_update_authority",
             "type_bounds": [
-                "pubkey",
-                "keypair"
+                "pubkey"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
         {
             "name": "data",
             "type_bounds": [
-                "metadata_account_data"
+                "object"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -81,8 +79,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         },
@@ -91,18 +89,8 @@
             "type_bounds": [
                 "bool"
             ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "submit",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": true,
-            "defaultValue": "",
+            "required": false,
+            "defaultValue": null,
             "tooltip": "",
             "passthrough": false
         }

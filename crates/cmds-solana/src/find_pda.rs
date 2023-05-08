@@ -133,4 +133,4 @@ impl CommandTrait for FindPDA {
     }
 }
 
-inventory::submit!(CommandDescription::new(FIND_PDA, |_| Box::new(FindPDA)));
+inventory::submit!(CommandDescription::new(FIND_PDA, |_| Ok(Box::new(FindPDA))));

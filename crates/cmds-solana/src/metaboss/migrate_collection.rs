@@ -36,19 +36,19 @@ impl CommandTrait for MigrateCollection {
         [
             CmdInput {
                 name: KEYPAIR.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: MINT_ADDRESS.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: CANDY_MACHINE_ID.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: false,
                 passthrough: false,
             },
@@ -87,6 +87,6 @@ impl CommandTrait for MigrateCollection {
     }
 }
 
-inventory::submit!(CommandDescription::new(MIGRATE_COLLECTION, |_| Box::new(
-    MigrateCollection
+inventory::submit!(CommandDescription::new(MIGRATE_COLLECTION, |_| Ok(
+    Box::new(MigrateCollection)
 )));

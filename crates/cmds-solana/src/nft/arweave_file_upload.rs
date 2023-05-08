@@ -38,7 +38,7 @@ impl CommandTrait for ArweaveFileUpload {
         [
             CmdInput {
                 name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
@@ -89,6 +89,6 @@ impl CommandTrait for ArweaveFileUpload {
     }
 }
 
-inventory::submit!(CommandDescription::new(ARWEAVE_FILE_UPLOAD, |_| Box::new(
-    ArweaveFileUpload
+inventory::submit!(CommandDescription::new(ARWEAVE_FILE_UPLOAD, |_| Ok(
+    Box::new(ArweaveFileUpload)
 )));

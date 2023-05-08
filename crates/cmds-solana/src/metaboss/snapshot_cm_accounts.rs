@@ -45,7 +45,7 @@ impl CommandTrait for SnapshotCMAccounts {
     fn inputs(&self) -> Vec<CmdInput> {
         [CmdInput {
             name: UPDATE_AUTHORITY.into(),
-            type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+            type_bounds: [ValueType::Pubkey].to_vec(),
             required: true,
             passthrough: false,
         }]
@@ -72,6 +72,6 @@ impl CommandTrait for SnapshotCMAccounts {
     }
 }
 
-inventory::submit!(CommandDescription::new(SNAPSHOT_CM_ACCOUNTS, |_| Box::new(
-    SnapshotCMAccounts
+inventory::submit!(CommandDescription::new(SNAPSHOT_CM_ACCOUNTS, |_| Ok(
+    Box::new(SnapshotCMAccounts)
 )));

@@ -5,8 +5,8 @@
         "version": "0.1",
         "display_name": "Print",
         "description": "Shows the result of an output",
-        "width": 200,
-        "height": 155,
+        "width": 250,
+        "height": 150,
         "backgroundColor": "#ffd9b3"
     },
     "targets": [

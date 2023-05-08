@@ -1,9 +1,12 @@
 use crate::{
     config::{client::NodeData, CmdInputDescription, CmdOutputDescription, Name, ValueSet},
     context::Context,
+    ValueType,
 };
 use std::borrow::Cow;
 use value::Value;
+
+pub mod builder;
 
 pub type CommandError = anyhow::Error;
 
@@ -33,7 +36,30 @@ pub trait CommandTrait: Send + Sync + 'static {
         for i in self.inputs() {
             if i.passthrough {
                 if let Some(value) = inputs.get(&i.name) {
-                    res.insert(i.name, value.clone());
+                    if !i.required && matches!(value, Value::Null) {
+                        continue;
+                    }
+
+                    let value = match i.type_bounds.first() {
+                        Some(ValueType::Pubkey) => {
+                            value::pubkey::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Keypair) => {
+                            value::keypair::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Signature) => {
+                            value::signature::deserialize(value.clone()).map(Into::into)
+                        }
+                        Some(ValueType::Decimal) => {
+                            value::decimal::deserialize(value.clone()).map(Into::into)
+                        }
+                        _ => Ok(value.clone()),
+                    }
+                    .unwrap_or_else(|error| {
+                        tracing::warn!("error reading passthrough: {}", error);
+                        value.clone()
+                    });
+                    res.insert(i.name, value);
                 }
             }
         }
@@ -79,11 +105,14 @@ impl InstructionInfo {
 #[derive(Clone)]
 pub struct CommandDescription {
     pub name: Cow<'static, str>,
-    pub fn_new: fn(&NodeData) -> Box<dyn CommandTrait>,
+    pub fn_new: fn(&NodeData) -> Result<Box<dyn CommandTrait>, CommandError>,
 }
 
 impl CommandDescription {
-    pub const fn new(name: &'static str, fn_new: fn(&NodeData) -> Box<dyn CommandTrait>) -> Self {
+    pub const fn new(
+        name: &'static str,
+        fn_new: fn(&NodeData) -> Result<Box<dyn CommandTrait>, CommandError>,
+    ) -> Self {
         Self {
             name: Cow::Borrowed(name),
             fn_new,

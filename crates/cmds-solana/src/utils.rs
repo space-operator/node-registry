@@ -12,33 +12,10 @@ use solana_program::{
     hash::Hash, instruction::Instruction, message::Message, native_token::LAMPORTS_PER_SOL,
 };
 use solana_sdk::{signature::Presigner, transaction::Transaction};
-use std::time::Duration;
+use std::{collections::BTreeSet, time::Duration};
 use value::Error as ValueError;
 
-pub mod bundlr_signer;
-pub use bundlr_signer::BundlrSigner;
-
 pub const SIGNATURE_TIMEOUT: Duration = Duration::from_secs(60 * 5);
-
-pub trait KeypairExt {
-    fn clone_keypair(&self) -> Self;
-    fn to_bundlr_signer(&self, ctx: Context) -> BundlrSigner;
-    fn is_user_wallet(&self) -> bool;
-}
-
-impl KeypairExt for Keypair {
-    fn clone_keypair(&self) -> Self {
-        Self::from_bytes(&self.to_bytes()).unwrap()
-    }
-
-    fn to_bundlr_signer(&self, ctx: Context) -> BundlrSigner {
-        BundlrSigner::new(self.clone_keypair(), ctx)
-    }
-
-    fn is_user_wallet(&self) -> bool {
-        self.secret().as_bytes().iter().all(|b| *b == 0)
-    }
-}
 
 pub async fn execute(
     client: &RpcClient,
@@ -103,22 +80,18 @@ pub async fn try_sign_wallet(
 
     let futs = keypairs
         .iter()
-        .filter_map(|k| {
-            if k.is_user_wallet() {
-                let pk = k.pubkey();
-                let task = ctx
-                    .request_signature(pk, msg.clone())
-                    .map_ok(move |sig| (pk, sig));
-                Some(task)
-            } else {
-                None
-            }
+        .filter_map(|k| k.is_user_wallet().then(|| k.pubkey()))
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .map(|pk| {
+            ctx.request_signature(pk, msg.clone(), SIGNATURE_TIMEOUT)
+                .map_ok(move |sig| (pk, sig))
         })
         .collect::<FuturesUnordered<_>>();
 
     let presigners = tokio::time::timeout(SIGNATURE_TIMEOUT, futs.try_collect::<Vec<_>>())
         .await
-        .map_err(|_| crate::Error::SignatureTimedOut)??
+        .map_err(|_| crate::Error::SignatureTimeout)??
         .into_iter()
         .map(|(pk, sig)| Presigner::new(&pk, &sig))
         .collect::<Vec<Presigner>>();

@@ -40,7 +40,7 @@ impl CommandTrait for RequestAirdrop {
         [
             CmdInput {
                 name: PUBKEY.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
@@ -75,7 +75,7 @@ impl CommandTrait for RequestAirdrop {
 }
 
 inventory::submit!(CommandDescription::new(SOLANA_REQUEST_AIRDROP, |_| {
-    Box::new(RequestAirdrop)
+    Ok(Box::new(RequestAirdrop))
 }));
 
 #[cfg(test)]

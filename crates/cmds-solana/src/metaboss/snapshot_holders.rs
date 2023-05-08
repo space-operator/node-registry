@@ -134,6 +134,6 @@ impl CommandTrait for SnapshotHolders {
     }
 }
 
-inventory::submit!(CommandDescription::new(SNAPSHOT_MINTS, |_| Box::new(
+inventory::submit!(CommandDescription::new(SNAPSHOT_MINTS, |_| Ok(Box::new(
     SnapshotHolders
-)));
+))));

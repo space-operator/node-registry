@@ -34,7 +34,7 @@ impl CommandTrait for GetLeftUses {
     fn inputs(&self) -> Vec<CmdInput> {
         [CmdInput {
             name: MINT_ACCOUNT.into(),
-            type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+            type_bounds: [ValueType::Pubkey].to_vec(),
             required: true,
             passthrough: false,
         }]
@@ -68,6 +68,6 @@ impl CommandTrait for GetLeftUses {
     }
 }
 
-inventory::submit!(CommandDescription::new(GET_LEFT_USES, |_| Box::new(
+inventory::submit!(CommandDescription::new(GET_LEFT_USES, |_| Ok(Box::new(
     GetLeftUses
-)));
+))));

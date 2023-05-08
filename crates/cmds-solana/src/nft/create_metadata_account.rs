@@ -144,8 +144,6 @@ pub struct Input {
 pub struct Output {
     #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
-    #[serde(with = "value::pubkey")]
-    metadata_account: Pubkey,
 }
 
 const CREATE_METADATA_ACCOUNT: &str = "create_metadata_account";
@@ -189,25 +187,25 @@ impl CommandTrait for CreateMetadataAccount {
             },
             CmdInput {
                 name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: MINT_AUTHORITY.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: true,
             },
             CmdInput {
                 name: UPDATE_AUTHORITY.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: false,
                 passthrough: false,
             },
@@ -231,7 +229,7 @@ impl CommandTrait for CreateMetadataAccount {
             },
             CmdInput {
                 name: COLLECTION_MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: true,
             },
@@ -277,7 +275,7 @@ impl CommandTrait for CreateMetadataAccount {
         .to_vec()
     }
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
+    async fn run(&self, mut ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let inputs: Input = value::from_map(inputs)?;
 
         let (metadata_account, _) =
@@ -299,7 +297,7 @@ impl CommandTrait for CreateMetadataAccount {
                     (
                         minimum_balance_for_rent_exemption,
                         instructions,
-                        [&inputs.fee_payer].to_vec(),
+                        vec![inputs.fee_payer.clone_keypair()],
                     )
                 }
                 UpdateAuthority::NoProxy { update_authority } => {
@@ -315,36 +313,41 @@ impl CommandTrait for CreateMetadataAccount {
                     (
                         minimum_balance_for_rent_exemption,
                         instructions,
-                        [update_authority, &inputs.fee_payer].to_vec(),
+                        vec![
+                            inputs.fee_payer.clone_keypair(),
+                            update_authority.clone_keypair(),
+                        ],
                     )
                 }
             };
 
-        let (mut transaction, recent_blockhash) = execute(
-            &ctx.solana_client,
-            &inputs.fee_payer.pubkey(),
-            &instructions,
-            minimum_balance_for_rent_exemption,
-        )
-        .await?;
-
-        try_sign_wallet(&ctx, &mut transaction, &signers, recent_blockhash).await?;
-
-        let signature = if inputs.submit {
-            Some(submit_transaction(&ctx.solana_client, transaction).await?)
+        let instructions = if inputs.submit {
+            Instructions {
+                fee_payer: inputs.fee_payer.pubkey(),
+                signers,
+                minimum_balance_for_rent_exemption,
+                instructions,
+            }
         } else {
-            None
+            Instructions::default()
         };
 
-        Ok(value::to_map(&Output {
-            metadata_account,
-            signature,
-        })?)
+        let signature = ctx
+            .execute(
+                instructions,
+                value::map! {
+                    METADATA_ACCOUNT => metadata_account,
+                },
+            )
+            .await?
+            .signature;
+
+        Ok(value::to_map(&Output { signature })?)
     }
 }
 
 inventory::submit!(CommandDescription::new(CREATE_METADATA_ACCOUNT, |_| {
-    Box::new(CreateMetadataAccount)
+    Ok(Box::new(CreateMetadataAccount))
 }));
 
 #[cfg(test)]

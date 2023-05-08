@@ -3,9 +3,14 @@ name = "blake2b512"
 version = "0.1.0"
 edition = "2021"
 
+[profile.release]
+lto = true
+strip = true
+
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-blake2 = "0.10.4"
-hex = "0.4.3"
+hex = "0.4"
+blake2 = "0.10"
+space-lib = "0.5"

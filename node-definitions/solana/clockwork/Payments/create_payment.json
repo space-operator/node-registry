@@ -18,7 +18,7 @@
         },
         {
             "name": "signature",
-            "type": "string",
+            "type": "signature",
             "defaultValue": null,
             "tooltip": ""
         }
@@ -57,7 +57,7 @@
         {
             "name": "monitor_account",
             "type_bounds": [
-                "string","pubkey", "keypair"
+                "pubkey"
             ],
             "required": false,
             "defaultValue": null,
@@ -67,7 +67,7 @@
         {
             "name": "payer",
             "type_bounds": [
-                "string","keypair"
+                "keypair"
             ],
             "required": true,
             "defaultValue": null,
@@ -77,7 +77,7 @@
         {
             "name": "recipient",
             "type_bounds": [
-                "string","keypair", "pubkey"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
@@ -87,18 +87,17 @@
         {
             "name": "token_mint",
             "type_bounds": [
-                "string","pubkey","keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
             "tooltip": "",
             "passthrough": true
         },
-        
         {
             "name": "token_account",
             "type_bounds": [
-                "string","pubkey","keypair"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,

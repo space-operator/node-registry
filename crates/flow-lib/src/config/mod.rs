@@ -5,6 +5,9 @@ use thiserror::Error as ThisError;
 use url::Url;
 use uuid::Uuid;
 
+pub mod client;
+pub mod node;
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ValueType {
     #[serde(rename = "bool")]
@@ -33,6 +36,7 @@ pub enum ValueType {
     F32,
     #[serde(rename = "f64")]
     F64,
+    #[serde(alias = "number")]
     #[serde(rename = "decimal")]
     Decimal,
     #[serde(rename = "pubkey")]
@@ -44,19 +48,16 @@ pub enum ValueType {
     #[serde(rename = "string")]
     String,
     #[serde(rename = "array")]
-    Array(Box<ValueType>),
+    Array,
     #[serde(rename = "object")]
-    Map(indexmap::IndexMap<value::Key, ValueType>),
+    Map,
     #[serde(rename = "json")]
     Json,
     #[serde(rename = "free")]
     Free,
-    #[serde(rename = "result")]
-    Result(Box<ValueType>),
-    Other(String),
+    #[serde(other)]
+    Other,
 }
-
-pub mod client;
 
 // ID types
 pub type FlowId = i32;
@@ -64,8 +65,6 @@ pub type NodeId = Uuid;
 pub type FlowRunId = Uuid;
 
 /// Command name and field name,
-/// all of them are `'static str` right now,
-/// but could be dynamic in the future.
 pub type Name = String;
 
 /// Inputs and outputs of commands
@@ -104,6 +103,8 @@ pub struct FlowConfig {
     pub ctx: ContextConfig,
     pub nodes: Vec<NodeConfig>,
     pub edges: Vec<(Gate, Gate)>,
+    #[serde(default)]
+    pub instructions_bundling: client::BundlingMode,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -256,6 +257,7 @@ impl FlowConfig {
             },
             nodes,
             edges,
+            instructions_bundling: config.instructions_bundling,
         }
     }
 

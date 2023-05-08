@@ -43,25 +43,25 @@ impl CommandTrait for UpdateAuthority {
         [
             CmdInput {
                 name: KEYPAIR.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: PAYER.into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Keypair].to_vec(),
                 required: false,
                 passthrough: false,
             },
             CmdInput {
                 name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: false,
             },
             CmdInput {
                 name: NEW_UPDATE_AUTHORITY.into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
+                type_bounds: [ValueType::Pubkey].to_vec(),
                 required: true,
                 passthrough: false,
             },
@@ -101,6 +101,6 @@ impl CommandTrait for UpdateAuthority {
     }
 }
 
-inventory::submit!(CommandDescription::new(UPDATE_AUTHORITY, |_| Box::new(
+inventory::submit!(CommandDescription::new(UPDATE_AUTHORITY, |_| Ok(Box::new(
     UpdateAuthority
-)));
+))));

@@ -81,6 +81,15 @@ pub struct ClientConfig {
     #[serde(default)]
     #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
     pub current_network: Network,
+    #[serde(default)]
+    pub instructions_bundling: BundlingMode,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum BundlingMode {
+    #[default]
+    Off,
+    Automatic,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
