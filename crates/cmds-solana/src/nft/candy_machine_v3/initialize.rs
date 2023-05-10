@@ -3,7 +3,8 @@ use anchor_lang::{InstructionData, ToAccountMetas};
 use solana_program::{instruction::Instruction, system_instruction, system_program};
 use solana_sdk::pubkey::Pubkey;
 
-use mpl_candy_machine_core::{instruction::Initialize, CandyMachineData};
+use mpl_candy_machine_core::{instruction::InitializeV2, CandyMachineData};
+use mpl_token_metadata::{state::TokenStandard, instruction::MetadataDelegateRole};
 
 // Command Name
 const INITIALIZE_CANDY_MACHINE: &str = "initialize_candy_machine";
@@ -41,8 +42,17 @@ pub struct Input {
     #[serde(with = "value::keypair")]
     pub collection_update_authority: Keypair,
     pub candy_machine_data: CandyMachineDataAlias,
+    pub token_standard: TokenStandard,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
+    // Optional
+        // use `#[serde(default = ...)]`
+    #[serde(with = "value::pubkey::opt")]
+    pub rule_set: Option<Pubkey>,
+    #[serde(with = "value::pubkey::opt")]
+    pub authorization_rules_program: Option<Pubkey>,
+    #[serde(with = "value::pubkey::opt")]
+    pub authorization_rules: Option<Pubkey>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -68,35 +78,45 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let collection_master_edition =
         mpl_token_metadata::pda::find_master_edition_account(&input.collection_mint).0;
 
-    // Collection Authority PDA
-    let collection_authority_record = mpl_token_metadata::pda::find_collection_authority_account(
+    // Collection Delegate Record PDA
+    let collection_delegate_record = mpl_token_metadata::pda::find_metadata_delegate_record_account(
         &input.collection_mint,
-        &input.authority, // or authority_pda??
-    )
-    .0;
+        MetadataDelegateRole::Collection,
+        &input.collection_update_authority.pubkey(),
+        &authority_pda,
+    ).0;
 
     let candy_machine_data = CandyMachineData::from(input.candy_machine_data);
 
-    let accounts = mpl_candy_machine_core::accounts::Initialize {
+    let accounts = mpl_candy_machine_core::accounts::InitializeV2 {
         candy_machine: candy_pubkey,
         authority_pda,
         authority: input.authority,
         payer: input.payer.pubkey(),
+        rule_set:input.rule_set,
         collection_metadata,
         collection_mint: input.collection_mint,
         collection_master_edition,
         collection_update_authority: input.collection_update_authority.pubkey(),
-        collection_authority_record,
+        collection_delegate_record,
         token_metadata_program,
         system_program: system_program::ID,
+        sysvar_instructions: solana_program::sysvar::instructions::id(),
+        authorization_rules_program: input.authorization_rules_program,
+        authorization_rules: input.authorization_rules,
     }
     .to_account_metas(None);
 
-    let data = Initialize {
+    let token_standard = input.token_standard as u8;
+
+
+    let data = InitializeV2 {
         data: candy_machine_data.clone(),
+        token_standard,
     }
     .data();
 
+    // TODO check size
     let candy_account_size = candy_machine_data.get_space_for_candy().unwrap_or(216);
 
     let lamports = ctx

@@ -20,7 +20,7 @@
   "targets": [
     {
       "name": "candy_machine",
-      "type_bounds": ["pubkey", "keypair", "string"],
+      "type_bounds": ["keypair"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",
@@ -28,7 +28,7 @@
     },
     {
       "name": "authority",
-      "type_bounds": ["pubkey", "keypair", "string"],
+      "type_bounds": ["pubkey"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",
@@ -43,8 +43,16 @@
       "passthrough": true
     },
     {
+      "name": "rule_set",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "eBJLFYPxJmMGKuFwpDWkzxZeUrad92kZRC5BJLpzyT9",
+      "tooltip": "Default is Metaplex Rule Set",
+      "passthrough": false
+    },
+    {
       "name": "collection_mint",
-      "type_bounds": ["pubkey", "keypair", "string"],
+      "type_bounds": ["pubkey"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",
@@ -52,7 +60,7 @@
     },
     {
       "name": "collection_update_authority",
-      "type_bounds": ["pubkey", "keypair", "string"],
+      "type_bounds": ["keypair"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",
@@ -65,6 +73,30 @@
       "defaultValue": "",
       "tooltip": "",
       "passthrough": true
+    },
+    {
+      "name": "authorization_rules_program",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "authorization_rules",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "token_standard",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
     },
     {
       "name": "submit",

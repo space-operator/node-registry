@@ -21,3 +21,4 @@ impl From<ConfigLine> for mpl_candy_machine_core::ConfigLine {
         }
     }
 }
+

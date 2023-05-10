@@ -1,6 +1,6 @@
-use crate::{ prelude::*};
+use crate::prelude::*;
 use anchor_lang::{InstructionData, ToAccountMetas};
-use solana_program::{instruction::Instruction};
+use solana_program::instruction::Instruction;
 use solana_sdk::pubkey::Pubkey;
 
 use mpl_candy_machine_core::instruction::AddConfigLines as MPLAddConfigLines;
@@ -9,6 +9,21 @@ use super::ConfigLine;
 
 // Command Name
 const ADD_CONFIG_LINES: &str = "add_config_lines";
+
+const DEFINITION: &str =
+    include_str!("../../../../../node-definitions/solana/NFT/candy_machine/add_config_lines.json");
+
+fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+    use once_cell::sync::Lazy;
+    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+        CmdBuilder::new(DEFINITION)?
+            .check_name(ADD_CONFIG_LINES)?
+            .simple_instruction_info("signature")
+    });
+    Ok(CACHE.clone()?.build(run))
+}
+
+inventory::submit!(CommandDescription::new(ADD_CONFIG_LINES, |_| { build() }));
 
 #[derive(Debug)]
 pub struct AddConfigLines;
@@ -21,123 +36,55 @@ pub struct Input {
     pub authority: Keypair,
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
-    pub index: u32,
     pub config_lines: Vec<ConfigLine>,
+    #[serde(default = "value::default::bool_true")]
+    submit: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature")]
-    signature: Signature,
+    #[serde(with = "value::signature::opt")]
+    signature: Option<Signature>,
 }
 
-#[async_trait]
-impl CommandTrait for AddConfigLines {
-    fn name(&self) -> Name {
-        ADD_CONFIG_LINES.into()
+async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+    let accounts = mpl_candy_machine_core::accounts::AddConfigLines {
+        candy_machine: input.candy_machine,
+        authority: input.authority.pubkey(),
     }
+    .to_account_metas(None);
 
-    fn inputs(&self) -> Vec<CmdInput> {
-        [
-            CmdInput {
-                name: "CANDY_MACHINE".into(),
-                type_bounds: [ValueType::Pubkey, ValueType::Keypair, ValueType::String].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: "AUTHORITY".into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: "PAYER".into(),
-                type_bounds: [ValueType::Keypair, ValueType::String].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: "INDEX".into(),
-                type_bounds: [ValueType::U32].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: "CONFIG_LINES".into(),
-                type_bounds: [ValueType::Free].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-        ]
-        .to_vec()
+    let index = input.config_lines.len() as u32;
+
+    let data = MPLAddConfigLines {
+        index,
+        config_lines: input.config_lines.into_iter().map(Into::into).collect(),
     }
+    .data();
 
-    fn outputs(&self) -> Vec<CmdOutput> {
-        [CmdOutput {
-            name: "SIGNATURE".into(),
-            r#type: ValueType::String,
-        }]
-        .to_vec()
-    }
+    let minimum_balance_for_rent_exemption = ctx
+        .solana_client
+        .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
+            mpl_candy_machine_core::accounts::AddConfigLines,
+        >())
+        .await?;
+    
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let Input {
-            candy_machine,
-            authority,
-            payer,
-            index,
-            config_lines,
-        } = value::from_map(inputs.clone())?;
-
-        let accounts = mpl_candy_machine_core::accounts::AddConfigLines {
-            candy_machine,
-            authority: authority.pubkey(),
-        }
-        .to_account_metas(None);
-
-        let data = MPLAddConfigLines {
-            index,
-            config_lines: config_lines.into_iter().map(Into::into).collect(),
-        }
-        .data();
-
-        let instructions = vec![Instruction {
+    let ins = Instructions {
+        fee_payer: input.payer.pubkey(),
+        signers: [input.authority.clone_keypair()].into(),
+        instructions: [Instruction {
             program_id: mpl_candy_machine_core::id(),
             accounts,
             data,
-        }];
+        }]
+        .into(),
+        minimum_balance_for_rent_exemption,
+    };
 
-        let minimum_balance_for_rent_exemption = ctx
-            .solana_client
-            .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
-                mpl_candy_machine_core::accounts::AddConfigLines,
-            >())
-            .await?;
+    let ins = input.submit.then_some(ins).unwrap_or_default();
 
-        let (mut transaction, recent_blockhash) = execute(
-            &ctx.solana_client,
-            &payer.pubkey(),
-            &instructions,
-            minimum_balance_for_rent_exemption,
-        )
-        .await?;
+    let signature = ctx.execute(ins, <_>::default()).await?.signature;
 
-        try_sign_wallet(
-            &ctx,
-            &mut transaction,
-            &[&payer, &authority],
-            recent_blockhash,
-        )
-        .await?;
-
-        let signature = submit_transaction(&ctx.solana_client, transaction).await?;
-
-        Ok(value::to_map(&Output { signature })?)
-    }
+    Ok(Output { signature })
 }
-
-inventory::submit!(CommandDescription::new(ADD_CONFIG_LINES, |_| {
-    Ok(Box::new(AddConfigLines))
-}));
-
