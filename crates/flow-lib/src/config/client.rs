@@ -136,7 +136,7 @@ pub struct Target {
     pub type_bounds: Vec<ValueType>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TargetsForm {
     pub form_data: JsonValue,
     #[serde(default)]
@@ -144,6 +144,15 @@ pub struct TargetsForm {
 
     #[serde(skip)]
     pub wasm_bytes: Option<bytes::Bytes>,
+}
+
+impl std::fmt::Debug for TargetsForm {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TargetsForm")
+            .field("form_data", &self.form_data)
+            .field("extra", &self.extra)
+            .finish_non_exhaustive()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
