@@ -7,7 +7,7 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 const HTTP_REQUEST: &str = "http_request";
 
 fn build() -> BuildResult {
-    const CACHE: BuilderCache = BuilderCache::new(|| {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(include_str!("../../../node-definitions/http.json"))?
             .check_name(HTTP_REQUEST)
     });
@@ -144,7 +144,7 @@ impl Ipv6Ext for Ipv6Addr {
                     // AS112-v6 (`2001:4:112::/48`)
                     || matches!(self.segments(), [0x2001, 4, 0x112, _, _, _, _, _])
                     // ORCHIDv2 (`2001:20::/28`)
-                    || matches!(self.segments(), [0x2001, b, _, _, _, _, _, _] if b >= 0x20 && b <= 0x2F)
+                    || matches!(self.segments(), [0x2001, b, _, _, _, _, _, _] if (0x20..=0x2F).contains(&b))
                 ))
             || Ipv6Ext::is_documentation(self)
             || Ipv6Ext::is_unique_local(self)
@@ -195,15 +195,7 @@ async fn run(_: Context, input: Input) -> Result<Output, CommandError> {
     }
 
     if let Some(basic) = &input.basic_auth {
-        let passwd = if let Some(p) = basic.password.as_ref() {
-            if p.is_empty() {
-                None
-            } else {
-                Some(p)
-            }
-        } else {
-            None
-        };
+        let passwd = basic.password.as_ref().filter(|p| !p.is_empty());
         req = req.basic_auth(&basic.user, passwd);
     }
 
