@@ -36,6 +36,7 @@ pub struct Input {
     pub authority: Keypair,
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
+    pub index: u32,
     pub config_lines: Vec<ConfigLine>,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
@@ -54,10 +55,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     }
     .to_account_metas(None);
 
-    let index = input.config_lines.len() as u32;
 
     let data = MPLAddConfigLines {
-        index,
+        index: input.index,
         config_lines: input.config_lines.into_iter().map(Into::into).collect(),
     }
     .data();
@@ -72,7 +72,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
-        signers: [input.authority.clone_keypair()].into(),
+        signers: [       
+        input.payer.clone_keypair(),
+        input.authority.clone_keypair()].into(),
         instructions: [Instruction {
             program_id: mpl_candy_machine_core::id(),
             accounts,

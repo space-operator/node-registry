@@ -4,7 +4,7 @@ use solana_program::{instruction::Instruction, system_instruction, system_progra
 use solana_sdk::pubkey::Pubkey;
 
 use mpl_candy_machine_core::{instruction::InitializeV2, CandyMachineData};
-use mpl_token_metadata::{state::TokenStandard, instruction::MetadataDelegateRole};
+use mpl_token_metadata::{instruction::MetadataDelegateRole, state::TokenStandard};
 
 // Command Name
 const INITIALIZE_CANDY_MACHINE: &str = "initialize_candy_machine";
@@ -43,16 +43,19 @@ pub struct Input {
     pub collection_update_authority: Keypair,
     pub candy_machine_data: CandyMachineDataAlias,
     pub token_standard: TokenStandard,
+    // Optional
     #[serde(default = "value::default::bool_true")]
     submit: bool,
-    // Optional
-        // use `#[serde(default = ...)]`
-    #[serde(with = "value::pubkey::opt")]
-    pub rule_set: Option<Pubkey>,
-    #[serde(with = "value::pubkey::opt")]
-    pub authorization_rules_program: Option<Pubkey>,
-    #[serde(with = "value::pubkey::opt")]
-    pub authorization_rules: Option<Pubkey>,
+    #[serde(default = "rule_set_default", with = "value::pubkey")]
+    pub rule_set: Pubkey,
+    #[serde(default = "rule_set_default", with = "value::pubkey")]
+    pub authorization_rules_program: Pubkey,
+    #[serde(default = "rule_set_default", with = "value::pubkey")]
+    pub authorization_rules: Pubkey,
+}
+
+fn rule_set_default() -> Pubkey {
+    mpl_candy_machine_core::id()
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -79,12 +82,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         mpl_token_metadata::pda::find_master_edition_account(&input.collection_mint).0;
 
     // Collection Delegate Record PDA
-    let collection_delegate_record = mpl_token_metadata::pda::find_metadata_delegate_record_account(
-        &input.collection_mint,
-        MetadataDelegateRole::Collection,
-        &input.collection_update_authority.pubkey(),
-        &authority_pda,
-    ).0;
+    let collection_delegate_record =
+        mpl_token_metadata::pda::find_metadata_delegate_record_account(
+            &input.collection_mint,
+            MetadataDelegateRole::Collection,
+            &input.collection_update_authority.pubkey(),
+            &authority_pda,
+        )
+        .0;
 
     let candy_machine_data = CandyMachineData::from(input.candy_machine_data);
 
@@ -93,7 +98,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         authority_pda,
         authority: input.authority,
         payer: input.payer.pubkey(),
-        rule_set:input.rule_set,
+        rule_set: Some(input.rule_set),
         collection_metadata,
         collection_mint: input.collection_mint,
         collection_master_edition,
@@ -102,13 +107,12 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         token_metadata_program,
         system_program: system_program::ID,
         sysvar_instructions: solana_program::sysvar::instructions::id(),
-        authorization_rules_program: input.authorization_rules_program,
-        authorization_rules: input.authorization_rules,
+        authorization_rules_program: Some(input.authorization_rules_program),
+        authorization_rules: Some(input.authorization_rules),
     }
     .to_account_metas(None);
 
     let token_standard = input.token_standard as u8;
-
 
     let data = InitializeV2 {
         data: candy_machine_data.clone(),

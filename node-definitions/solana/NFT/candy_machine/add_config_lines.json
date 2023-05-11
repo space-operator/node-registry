@@ -36,7 +36,15 @@
     },
     {
       "name": "payer",
-      "type_bounds": ["keypair", "string"],
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "index",
+      "type_bounds": ["u32"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",
