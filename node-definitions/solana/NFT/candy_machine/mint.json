@@ -93,7 +93,7 @@
     {
       "name": "group_label",
       "type_bounds": ["string"],
-      "required": true,
+      "required": false,
       "defaultValue": "",
       "tooltip": "",
       "passthrough": true
