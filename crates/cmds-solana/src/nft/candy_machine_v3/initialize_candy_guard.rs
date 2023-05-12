@@ -31,8 +31,6 @@ inventory::submit!(CommandDescription::new(INITIALIZE_CANDY_GUARD, |_| {
     build()
 }));
 
-#[derive(Debug)]
-pub struct InitializeCandyGuard;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -51,6 +49,8 @@ pub struct Input {
 pub struct Output {
     #[serde(with = "value::signature::opt")]
     signature: Option<Signature>,
+    #[serde(with = "value::pubkey")]
+    pub candy_guard: Pubkey,
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
@@ -104,6 +104,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let signature = ctx.execute(ins, <_>::default()).await?.signature;
 
-    Ok(Output { signature })
+    Ok(Output { signature, candy_guard })
 }
 

@@ -26,8 +26,6 @@ inventory::submit!(CommandDescription::new(INITIALIZE_CANDY_MACHINE, |_| {
     build()
 }));
 
-#[derive(Debug)]
-pub struct InitializeCandyMachine;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
