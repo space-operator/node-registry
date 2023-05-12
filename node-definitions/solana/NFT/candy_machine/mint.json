@@ -1,0 +1,137 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "mint",
+    "version": "0.1",
+    "display_name": "Mint from Candy Machine",
+    "description": "",
+    "width": 200,
+    "height": 290,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "candy_machine",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "authority",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "minter",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "mint_authority",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "mint_account",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "collection_mint",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "collection_update_authority",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "candy_guards",
+      "type_bounds": ["json"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "group_label",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "rule_set",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "eBJLFYPxJmMGKuFwpDWkzxZeUrad92kZRC5BJLpzyT9",
+      "tooltip": "Default is Metaplex Rule Set",
+      "passthrough": false
+    },
+    {
+      "name": "authorization_rules_program",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "authorization_rules",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+  
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

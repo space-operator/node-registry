@@ -3,7 +3,7 @@ use solana_sdk::pubkey::Pubkey;
 
 pub mod add_config_lines;
 pub mod initialize;
-// pub mod mint;
+pub mod mint;
 pub mod initialize_candy_guard;
 pub mod wrap;
 
