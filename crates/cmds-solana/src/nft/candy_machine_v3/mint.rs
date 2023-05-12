@@ -2,7 +2,7 @@ use crate::prelude::*;
 use anchor_lang::{InstructionData, ToAccountMetas};
 use mpl_candy_guard::instruction::MintV2;
 use solana_program::{instruction::Instruction, system_program, sysvar};
-use solana_sdk::pubkey::Pubkey;
+use solana_sdk::{compute_budget::ComputeBudgetInstruction, pubkey::Pubkey};
 
 use mpl_token_metadata::instruction::MetadataDelegateRole;
 
@@ -173,11 +173,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             input.mint_authority.clone_keypair(),
         ]
         .into(),
-        instructions: [Instruction {
-            program_id: mpl_candy_guard::id(),
-            accounts,
-            data,
-        }]
+        instructions: [
+            ComputeBudgetInstruction::set_compute_unit_limit(1_000_000u32),
+            Instruction {
+                program_id: mpl_candy_guard::id(),
+                accounts,
+                data,
+            },
+        ]
         .into(),
         minimum_balance_for_rent_exemption,
     };
@@ -188,4 +191,3 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     Ok(Output { signature })
 }
-
