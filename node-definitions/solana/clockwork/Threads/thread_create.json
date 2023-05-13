@@ -37,7 +37,6 @@
         {
             "name": "thread_authority",
             "type_bounds": [
-                "string",
                 "keypair"
             ],
             "required": true,
@@ -48,7 +47,6 @@
         {
             "name": "payer",
             "type_bounds": [
-                "string",
                 "keypair"
             ],
             "required": true,
@@ -59,8 +57,7 @@
         {
             "name": "instructions",
             "type_bounds": [
-                "instruction[]"
-
+                "array"
             ],
             "required": true,
             "defaultValue": null,

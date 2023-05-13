@@ -49,7 +49,7 @@
     },
     {
       "name": "candy_guards",
-      "type_bounds": ["JSON"],
+      "type_bounds": ["json"],
       "required": false,
       "defaultValue": "",
       "tooltip": "",
