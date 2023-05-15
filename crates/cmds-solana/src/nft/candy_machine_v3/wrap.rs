@@ -66,9 +66,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
         signers: [
+            input.payer.clone_keypair(),
             input.candy_guard_authority.clone_keypair(),
             input.candy_machine_authority.clone_keypair(),
-            input.payer.clone_keypair(),
         ]
         .into(),
         instructions: [Instruction {

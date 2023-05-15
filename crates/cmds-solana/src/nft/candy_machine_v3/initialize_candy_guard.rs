@@ -1,14 +1,8 @@
 use crate::prelude::*;
 use anchor_lang::{InstructionData, ToAccountMetas};
-use borsh::BorshDeserialize;
-use mpl_candy_guard::{
-    instruction::Initialize,
-    state::{CandyGuardData, GuardSet},
-};
-use serde_json::json;
+use mpl_candy_guard::instruction::Initialize;
 use solana_program::{instruction::Instruction, system_program};
 use solana_sdk::pubkey::Pubkey;
-use value::Map;
 
 // Command Name
 const INITIALIZE_CANDY_GUARD: &str = "initialize_candy_guard";
@@ -31,7 +25,6 @@ inventory::submit!(CommandDescription::new(INITIALIZE_CANDY_GUARD, |_| {
     build()
 }));
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
     #[serde(with = "value::keypair")]
@@ -49,8 +42,6 @@ pub struct Input {
 pub struct Output {
     #[serde(with = "value::signature::opt")]
     signature: Option<Signature>,
-    #[serde(with = "value::pubkey")]
-    pub candy_guard: Pubkey,
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
@@ -74,7 +65,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let data: mpl_candy_guard::state::CandyGuardData = input.candy_guards.into();
     let mut serialized_data = vec![0; data.size()];
     data.save(&mut serialized_data)?;
-
 
     let data = Initialize {
         data: serialized_data,
@@ -102,8 +92,15 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = input.submit.then_some(ins).unwrap_or_default();
 
-    let signature = ctx.execute(ins, <_>::default()).await?.signature;
+    let signature = ctx
+        .execute(
+            ins,
+            value::map! {
+                "candy_guard" => candy_guard,
+            },
+        )
+        .await?
+        .signature;
 
-    Ok(Output { signature, candy_guard })
+    Ok(Output { signature })
 }
-
