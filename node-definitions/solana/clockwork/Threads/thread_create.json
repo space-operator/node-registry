@@ -1,0 +1,91 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "thread_create",
+        "version": "0.1",
+        "display_name": "Thread Create",
+        "description": "",
+        "width": 200,
+        "height": 200,
+        "backgroundColor": "#fff"
+    },
+    "sources": [
+        {
+            "name": "thread",
+            "type": "pubkey",
+            "defaultValue": null,
+            "tooltip": ""
+        },
+        {
+            "name": "signature",
+            "type": "string",
+            "defaultValue": null,
+            "tooltip": ""
+        }
+    ],
+    "targets": [
+        {
+            "name": "id",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "thread_authority",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": true
+        },
+        {
+            "name": "payer",
+            "type_bounds": [
+                "keypair"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "instructions",
+            "type_bounds": [
+                "array"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "instruction array",
+            "passthrough": false
+        },
+        {
+            "name": "amount",
+            "type_bounds": [
+                "u64"
+
+            ],
+            "required": false,
+            "defaultValue": null,
+            "tooltip": "amount to fund the thread account with",
+            "passthrough": false
+        },
+        {
+            "name": "trigger",
+            "type_bounds": [
+                "json"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "trigger type, https://docs.clockwork.xyz/developers/threads/triggers",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

@@ -1,0 +1,74 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "add_config_lines",
+    "version": "0.1",
+    "display_name": "Add Config Lines",
+    "description": "",
+    "width": 200,
+    "height": 290,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "candy_machine",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "authority",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "index",
+      "type_bounds": ["u32"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "config_lines",
+      "type_bounds": ["free"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": [
+          "bool"
+      ],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+  }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}
