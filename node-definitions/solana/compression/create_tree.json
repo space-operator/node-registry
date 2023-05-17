@@ -1,0 +1,67 @@
+{
+    "type": "native",
+    "data": {
+      "node_id": "create_tree",
+      "version": "0.1",
+      "display_name": "Create Tree",
+      "description": "",
+      "width": 200,
+      "height": 290,
+      "backgroundColor": "#fff"
+    },
+    "sources": [
+      {
+        "name": "signature",
+        "type": "string",
+        "defaultValue": "",
+        "tooltip": ""
+      }
+    ],
+    "targets": [
+      {
+        "name": "base",
+        "type_bounds": ["keypair"],
+        "required": true,
+        "defaultValue": "",
+        "tooltip": "",
+        "passthrough": true
+      },
+      {
+        "name": "authority",
+        "type_bounds": ["pubkey"],
+        "required": true,
+        "defaultValue": "",
+        "tooltip": "",
+        "passthrough": false
+      },
+      {
+        "name": "payer",
+        "type_bounds": ["keypair"],
+        "required": true,
+        "defaultValue": "",
+        "tooltip": "",
+        "passthrough": true
+      },
+      {
+        "name": "candy_guards",
+        "type_bounds": ["json"],
+        "required": false,
+        "defaultValue": "",
+        "tooltip": "",
+        "passthrough": false
+      },
+      {
+        "name": "submit",
+        "type_bounds": [
+            "bool"
+        ],
+        "required": false,
+        "defaultValue": true,
+        "tooltip": "",
+        "passthrough": false
+    }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+  }
+  

@@ -17,6 +17,7 @@ pub mod transfer_sol;
 pub mod transfer_token;
 pub mod utils;
 pub mod wallet;
+pub mod compression;
 
 pub use error::{Error, Result};
 
