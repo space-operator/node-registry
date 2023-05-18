@@ -52,19 +52,37 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     // Allocate tree's account
 
+    /// Only the following permutations are valid:
+    ///
+    /// | max_depth | max_buffer_size       |
+    /// | --------- | --------------------- |
+    /// | 14        | (64, 256, 1024, 2048) |           
+    /// | 20        | (64, 256, 1024, 2048) |           
+    /// | 24        | (64, 256, 512, 1024, 2048) |           
+    /// | 26        | (64, 256, 512, 1024, 2048) |           
+    /// | 30        | (512, 1024, 2048) |     
     const MAX_DEPTH: usize = 14;
-    const MAX_BUFFER_SIZE: usize = 0;
+    const MAX_BUFFER_SIZE: usize = 64;
 
+    // To initialize a canopy on a ConcurrentMerkleTree account, you must initialize
+    // the ConcurrentMerkleTree account with additional bytes. The number of additional bytes
+    // needed is `(pow(2, N+1)-1) * 32`, where `N` is the number of levels of the merkle tree
+    // you want the canopy to cache.
+    //
+    //https://github.com/solana-labs/solana-program-library/blob/9610bed5349f7a198903140cf2b74a727477b818/account-compression/programs/account-compression/src/canopy.rs
+    //https://github.com/solana-labs/solana-program-library/blob/9610bed5349f7a198903140cf2b74a727477b818/account-compression/sdk/src/accounts/ConcurrentMerkleTreeAccount.ts#L209
     const merkle_tree_account_size: usize = CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1
         + size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>();
 
-    // let lamports = rent.minimum_balance(account_size);
+    let lamports = ctx
+        .solana_client
+        .get_minimum_balance_for_rent_exemption(account_size)
+        .await?;
 
     let ix = system_instruction::create_account(
         &input.payer.pubkey(),
         &input.tree,
         lamports,
-        // The `usize -> u64` conversion should never fail.
         u64::try_from(merkle_tree_account_size).unwrap(),
         &spl_account_compression::id(),
     );
