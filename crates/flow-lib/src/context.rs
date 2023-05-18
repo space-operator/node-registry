@@ -75,6 +75,8 @@ pub mod execute {
 
     #[derive(ThisError, Debug, Clone)]
     pub enum Error {
+        #[error("canceled")]
+        Canceled,
         #[error("not available on this Context")]
         NotAvailable,
         #[error("some node failed to provide instructions")]
