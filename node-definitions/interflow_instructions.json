@@ -1,0 +1,46 @@
+{
+    "type": "native",
+    "data": {
+        "node_id": "interflow_instructions",
+        "version": "0.1",
+        "display_name": "Interflow Instructions",
+        "description": "",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "sources": [
+        {
+            "name": "fee_payer",
+            "type": "keypair",
+            "defaultValue": "",
+            "tooltip": ""
+        },
+        {
+            "name": "signers",
+            "type": "array",
+            "defaultValue": "",
+            "tooltip": "an array of keypairs"
+        },
+        {
+            "name": "instructions",
+            "type": "array",
+            "defaultValue": "",
+            "tooltip": "an array of instructions"
+        }
+    ],
+    "targets": [
+        {
+            "name": "flow",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}

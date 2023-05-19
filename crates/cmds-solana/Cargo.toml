@@ -11,7 +11,8 @@ solana-client = "1.14.13"
 solana-program = "1.14.13"
 spl-token = { version = "3.2", features = ["no-entrypoint"] }
 spl-memo = { version = "3.0", features = ["no-entrypoint"] }
-spl-associated-token-account = { version = "1.1.2", features = ["no-entrypoint"] }
+# 1.1.3 compile errors
+spl-associated-token-account = { version = "=1.1.2", features = ["no-entrypoint"] }
 spl-account-compression = "0.1.10"
 spl-noop = "0.1.3"
 mpl-token-auth-rules = "1.2"
@@ -48,7 +49,7 @@ rhai = "1.10.1"
 indexmap = { version = "1.9.1", features = ["serde-1"] }
 bs58 = "0.4"
 anchor-lang ="0.27.0"
-anchor-spl = { version = "0.27.0", default-features = false }
+anchor-spl ="0.27.0"
 fasteval = "0.2.4"
 tracing = "0.1"
 once_cell = "1.17"
@@ -70,7 +71,13 @@ version="0.26.0"
 # [dependencies.clockwork-thread-program]
 # git = "https://github.com/space-operator/clockwork.git"
 # rev = "efd73675f670bfc0aab551d89c741e18c8cfed10"
+# [dependencies.clockwork-thread-program]
+# git = "https://github.com/space-operator/clockwork.git"
+# rev = "efd73675f670bfc0aab551d89c741e18c8cfed10"
 
+# [dependencies.payments]
+# git = "https://github.com/clockwork-xyz/examples.git"
+# rev = "1b65e8185796b4eac009750c0a0b8128576201ad"
 # [dependencies.payments]
 # git = "https://github.com/clockwork-xyz/examples.git"
 # rev = "1b65e8185796b4eac009750c0a0b8128576201ad"
@@ -81,6 +88,7 @@ rev = "5e0a4c9bcd16d2f062549e190e928bebb135537f"
 
 [dependencies.space-wrapper]
 git = "https://github.com/space-operator/space-wrapper"
+rev = "eb257a070de0545d9051d9b9bb530df3e8736570"
 rev = "eb257a070de0545d9051d9b9bb530df3e8736570"
 features = ["cpi"]
 
