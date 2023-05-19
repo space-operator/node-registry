@@ -1,9 +1,9 @@
 {
     "type": "native",
     "data": {
-      "node_id": "create_tree",
+      "node_id": "mint_compressed_NFT",
       "version": "0.1",
-      "display_name": "Create Tree",
+      "display_name": "Mint Compressed NFT",
       "description": "",
       "width": 200,
       "height": 290,
@@ -12,12 +12,6 @@
     "sources": [
       {
         "name": "signature",
-        "type": "string",
-        "defaultValue": "",
-        "tooltip": ""
-      },
-      {
-        "name": "tree_authority",
         "type": "string",
         "defaultValue": "",
         "tooltip": ""
@@ -33,7 +27,7 @@
         "passthrough": true
       },
       {
-        "name": "creator",
+        "name": "tree_delegate",
         "type_bounds": ["keypair"],
         "required": true,
         "defaultValue": "",
@@ -41,7 +35,7 @@
         "passthrough": false
       },
       {
-        "name": "merkle_tree",
+        "name": "tree_authority",
         "type_bounds": ["keypair"],
         "required": false,
         "defaultValue": "",
@@ -49,37 +43,27 @@
         "passthrough": false
       },
       {
-        "name": "max_depth",
-        "type_bounds": ["u32"],
+        "name": "merkle_tree",
+        "type_bounds": ["pubkey"],
         "required": false,
         "defaultValue": "",
         "tooltip": "",
         "passthrough": false
       },    {
-        "name": "max_buffer",
-        "type_bounds": ["u32"],
+        "name": "leaf_owner",
+        "type_bounds": ["pubkey"],
         "required": false,
         "defaultValue": "",
         "tooltip": "",
         "passthrough": false
       },     {
-        "name": "canopy_levels",
-        "type_bounds": ["u32"],
+        "name": "leaf_delegate",
+        "type_bounds": ["pubkey"],
         "required": false,
         "defaultValue": "",
         "tooltip": "",
         "passthrough": false
       },
-      {
-        "name": "is_public",
-        "type_bounds": [
-            "bool"
-        ],
-        "required": false,
-        "defaultValue": true,
-        "tooltip": "",
-        "passthrough": false
-    },
       {
         "name": "submit",
         "type_bounds": [

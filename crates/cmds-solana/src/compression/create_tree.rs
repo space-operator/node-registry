@@ -33,10 +33,12 @@ pub struct Input {
     pub payer: Keypair,
     #[serde(with = "value::keypair")]
     pub creator: Keypair,
-    #[serde(with = "value::pubkey")]
-    pub tree: Pubkey,
-    #[serde(with = "value::pubkey")]
-    pub merkle_tree: Pubkey,
+    #[serde(with = "value::keypair")]
+    pub merkle_tree: Keypair,
+    pub max_depth: u32,
+    pub max_buffer: u32,
+    pub canopy_levels: Option<u32>,
+    is_public: Option<bool>,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
 }
@@ -52,7 +54,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     // Allocate tree's account
 
-    /// Only the following permutations are valid:
+    /// Only the following pesrmutations are valid:
     ///
     /// | max_depth | max_buffer_size       |
     /// | --------- | --------------------- |
@@ -61,8 +63,144 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     /// | 24        | (64, 256, 512, 1024, 2048) |           
     /// | 26        | (64, 256, 512, 1024, 2048) |           
     /// | 30        | (512, 1024, 2048) |     
-    const MAX_DEPTH: usize = 14;
-    const MAX_BUFFER_SIZE: usize = 64;
+    // const MAX_DEPTH: usize = 14;
+    // const MAX_BUFFER_SIZE: usize = 64;
+    let merkle_tree_account_size: usize = match input.max_depth {
+        14 => match input.max_buffer {
+            64 => {
+                const MAX_DEPTH: usize = 14;
+                const MAX_BUFFER_SIZE: usize = 64;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            256 => {
+                const MAX_DEPTH: usize = 14;
+                const MAX_BUFFER_SIZE: usize = 256;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            1024 => {
+                const MAX_DEPTH: usize = 14;
+                const MAX_BUFFER_SIZE: usize = 1024;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            2048 => {
+                const MAX_DEPTH: usize = 14;
+                const MAX_BUFFER_SIZE: usize = 2048;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            _ => {
+                return Err(anyhow::anyhow!("invalid max_buffer_size"));
+            }
+        },
+        20 => match input.max_buffer {
+            64 => {
+                const MAX_DEPTH: usize = 20;
+                const MAX_BUFFER_SIZE: usize = 64;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            256 => {
+                const MAX_DEPTH: usize = 20;
+                const MAX_BUFFER_SIZE: usize = 256;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            1024 => {
+                const MAX_DEPTH: usize = 20;
+                const MAX_BUFFER_SIZE: usize = 1024;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            2048 => {
+                const MAX_DEPTH: usize = 20;
+                const MAX_BUFFER_SIZE: usize = 2048;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            _ => {
+                return Err(anyhow::anyhow!("invalid max_buffer_size"));
+            }
+        },
+        24 => match input.max_buffer {
+            64 => {
+                const MAX_DEPTH: usize = 24;
+                const MAX_BUFFER_SIZE: usize = 64;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            256 => {
+                const MAX_DEPTH: usize = 24;
+                const MAX_BUFFER_SIZE: usize = 256;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            512 => {
+                const MAX_DEPTH: usize = 24;
+                const MAX_BUFFER_SIZE: usize = 512;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            1024 => {
+                const MAX_DEPTH: usize = 24;
+                const MAX_BUFFER_SIZE: usize = 1024;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            2048 => {
+                const MAX_DEPTH: usize = 24;
+                const MAX_BUFFER_SIZE: usize = 2048;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            _ => {
+                return Err(anyhow::anyhow!("invalid max_buffer_size"));
+            }
+        },
+        26 => match input.max_buffer {
+            64 => {
+                const MAX_DEPTH: usize = 26;
+                const MAX_BUFFER_SIZE: usize = 64;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            256 => {
+                const MAX_DEPTH: usize = 26;
+                const MAX_BUFFER_SIZE: usize = 256;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            512 => {
+                const MAX_DEPTH: usize = 26;
+                const MAX_BUFFER_SIZE: usize = 512;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            1024 => {
+                const MAX_DEPTH: usize = 26;
+                const MAX_BUFFER_SIZE: usize = 1024;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            2048 => {
+                const MAX_DEPTH: usize = 26;
+                const MAX_BUFFER_SIZE: usize = 2048;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            _ => {
+                return Err(anyhow::anyhow!("invalid max_buffer_size"));
+            }
+        },
+        30 => match input.max_buffer {
+            512 => {
+                const MAX_DEPTH: usize = 30;
+                const MAX_BUFFER_SIZE: usize = 512;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            1024 => {
+                const MAX_DEPTH: usize = 30;
+                const MAX_BUFFER_SIZE: usize = 1024;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            2048 => {
+                const MAX_DEPTH: usize = 30;
+                const MAX_BUFFER_SIZE: usize = 2048;
+                size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>()
+            }
+            _ => {
+                return Err(anyhow::anyhow!("invalid max_buffer_size"));
+            }
+        },
+
+        _ => {
+            return Err(anyhow::anyhow!("invalid max_depth_size"));
+        }
+    };
 
     // To initialize a canopy on a ConcurrentMerkleTree account, you must initialize
     // the ConcurrentMerkleTree account with additional bytes. The number of additional bytes
@@ -71,17 +209,25 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     //
     //https://github.com/solana-labs/solana-program-library/blob/9610bed5349f7a198903140cf2b74a727477b818/account-compression/programs/account-compression/src/canopy.rs
     //https://github.com/solana-labs/solana-program-library/blob/9610bed5349f7a198903140cf2b74a727477b818/account-compression/sdk/src/accounts/ConcurrentMerkleTreeAccount.ts#L209
-    const merkle_tree_account_size: usize = CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1
-        + size_of::<ConcurrentMerkleTree<MAX_DEPTH, MAX_BUFFER_SIZE>>();
+
+    // FIXME keep getting CanopyLengthMismatch error
+    let canopy_size = if let Some(canopy_levels) = input.canopy_levels {
+        (2usize.pow(canopy_levels + 1) - 1) * 32
+    } else {
+        0
+    };
+
+    let merkle_tree_account_size: usize =
+        CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1 + merkle_tree_account_size + canopy_size;
 
     let lamports = ctx
         .solana_client
-        .get_minimum_balance_for_rent_exemption(account_size)
+        .get_minimum_balance_for_rent_exemption(merkle_tree_account_size)
         .await?;
 
-    let ix = system_instruction::create_account(
+    let create_account_tree_size = system_instruction::create_account(
         &input.payer.pubkey(),
-        &input.tree,
+        &input.merkle_tree.pubkey(),
         lamports,
         u64::try_from(merkle_tree_account_size).unwrap(),
         &spl_account_compression::id(),
@@ -89,13 +235,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     // Create Tree
 
-    let seeds = &[input.tree.as_ref()];
+    let pubkey = &input.merkle_tree.pubkey();
+    let seeds = &[pubkey.as_ref()];
     let tree_authority = Pubkey::find_program_address(seeds, &bubble_gum_program_id).0;
 
     let accounts = mpl_bubblegum::accounts::CreateTree {
         payer: input.payer.pubkey(),
         tree_authority,
-        merkle_tree: input.merkle_tree,
+        merkle_tree: input.merkle_tree.pubkey(),
         tree_creator: input.creator.pubkey(),
         log_wrapper: spl_noop::id(),
         system_program: system_program::id(),
@@ -104,9 +251,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     .to_account_metas(None);
 
     let data = mpl_bubblegum::instruction::CreateTree {
-        max_depth: todo!(),
-        max_buffer_size: todo!(),
-        public: todo!(),
+        max_depth: input.max_depth,
+        max_buffer_size: input.max_buffer,
+        public: input.is_public,
     }
     .data();
 
@@ -119,12 +266,20 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
-        signers: [input.payer.clone_keypair(), input.creator.clone_keypair()].into(),
-        instructions: [Instruction {
-            program_id: mpl_bubblegum::id(),
-            accounts,
-            data,
-        }]
+        signers: [
+            input.payer.clone_keypair(),
+            input.creator.clone_keypair(),
+            input.merkle_tree.clone_keypair(),
+        ]
+        .into(),
+        instructions: [
+            create_account_tree_size,
+            Instruction {
+                program_id: mpl_bubblegum::id(),
+                accounts,
+                data,
+            },
+        ]
         .into(),
         minimum_balance_for_rent_exemption,
     };
