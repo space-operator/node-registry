@@ -1,81 +1,88 @@
 {
-    "type": "native",
-    "data": {
-      "node_id": "mint_compressed_NFT",
-      "version": "0.1",
-      "display_name": "Mint Compressed NFT",
-      "description": "",
-      "width": 200,
-      "height": 290,
-      "backgroundColor": "#fff"
-    },
-    "sources": [
-      {
-        "name": "signature",
-        "type": "string",
-        "defaultValue": "",
-        "tooltip": ""
-      }
-    ],
-    "targets": [
-      {
-        "name": "payer",
-        "type_bounds": ["keypair"],
-        "required": true,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": true
-      },
-      {
-        "name": "tree_delegate",
-        "type_bounds": ["keypair"],
-        "required": true,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },
-      {
-        "name": "tree_authority",
-        "type_bounds": ["keypair"],
-        "required": false,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },
-      {
-        "name": "merkle_tree",
-        "type_bounds": ["pubkey"],
-        "required": false,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },    {
-        "name": "leaf_owner",
-        "type_bounds": ["pubkey"],
-        "required": false,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },     {
-        "name": "leaf_delegate",
-        "type_bounds": ["pubkey"],
-        "required": false,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },
-      {
-        "name": "submit",
-        "type_bounds": [
-            "bool"
-        ],
-        "required": false,
-        "defaultValue": true,
-        "tooltip": "",
-        "passthrough": false
+  "type": "native",
+  "data": {
+    "node_id": "mint_compressed_NFT",
+    "version": "0.1",
+    "display_name": "Mint Compressed NFT",
+    "description": "",
+    "width": 200,
+    "height": 290,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
     }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
-  }
-  
+  ],
+  "targets": [
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "tree_delegate",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "tree_authority",
+      "type_bounds": ["keypair"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "merkle_tree",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "leaf_owner",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "leaf_delegate",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "metadata",
+      "type_bounds": ["json"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

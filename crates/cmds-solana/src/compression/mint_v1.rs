@@ -2,12 +2,10 @@ use std::mem::size_of;
 
 use crate::prelude::*;
 use anchor26::{InstructionData, ToAccountMetas};
-use mpl_bubblegum::CreateTree;
-use solana_program::{instruction::Instruction, system_instruction, system_program};
+use solana_program::{instruction::Instruction, system_program};
 use solana_sdk::pubkey::Pubkey;
-use spl_account_compression::{
-    self, state::CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1, ConcurrentMerkleTree,
-};
+
+use super::MetadataBubblegum;
 
 // Command Name
 const MINT_COMPRESSED_NFT: &str = "mint_compressed_NFT";
@@ -43,6 +41,7 @@ pub struct Input {
     pub leaf_owner: Pubkey,
     #[serde(with = "value::pubkey")]
     pub leaf_delegate: Pubkey,
+    pub metadata: MetadataBubblegum,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
 }
@@ -55,8 +54,6 @@ pub struct Output {
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
-    let bubble_gum_program_id = mpl_bubblegum::id();
-
     let accounts = mpl_bubblegum::accounts::MintV1 {
         payer: input.payer.pubkey(),
         tree_authority: input.tree_authority,
@@ -70,9 +67,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     }
     .to_account_metas(None);
 
-    // TODO add the metadata
+    let metadata = input.metadata.into();
 
-    let data = mpl_bubblegum::instruction::MintV1 { message: todo!() }.data();
+    let data = mpl_bubblegum::instruction::MintV1 { message: metadata }.data();
 
     let minimum_balance_for_rent_exemption = ctx
         .solana_client
