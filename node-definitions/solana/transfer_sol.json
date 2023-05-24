@@ -17,8 +17,8 @@
             "tooltip": ""
         },
         {
-            "name": "tx",
-            "type": "string",
+            "name": "instructions",
+            "type": "instructions",
             "defaultValue": null,
             "tooltip": ""
         }

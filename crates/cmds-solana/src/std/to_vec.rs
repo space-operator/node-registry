@@ -13,7 +13,7 @@ const SECOND: &str = "second";
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
     pub first: Value,
-    pub second: Value,
+    pub second: Option<Value>,
 }
 
 // Outputs
@@ -59,7 +59,11 @@ impl CommandTrait for ToVec {
     async fn run(&self, _ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let Input { first, second } = value::from_map::<Input>(inputs)?;
 
-        let result = vec![first, second];
+        let result = if let Some(second) = second {
+            vec![first, second]
+        } else {
+            vec![first]
+        };
 
         Ok(value::to_map(&Output { result })?)
     }
