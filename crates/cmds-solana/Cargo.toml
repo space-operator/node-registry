@@ -19,7 +19,7 @@ mpl-token-auth-rules = "1.2"
 mpl-token-metadata = "1.8"
 mpl-candy-machine-core = {version="1.0.4", features = ["no-entrypoint"]}
 mpl-candy-guard = {version="1.0.3", features = ["no-entrypoint"]}
-mpl-bubblegum = "0.7.0"
+mpl-bubblegum = {version="0.7.0", features=["no-entrypoint"]}
 async-trait = "0.1"
 tiny-bip39 = "0.8"
 inventory = "0.3"
@@ -78,9 +78,10 @@ version="0.26.0"
 # [dependencies.payments]
 # git = "https://github.com/clockwork-xyz/examples.git"
 # rev = "1b65e8185796b4eac009750c0a0b8128576201ad"
-# [dependencies.payments]
-# git = "https://github.com/clockwork-xyz/examples.git"
-# rev = "1b65e8185796b4eac009750c0a0b8128576201ad"
+
+[dependencies.payments]
+git = "https://github.com/clockwork-xyz/examples.git"
+rev = "1b65e8185796b4eac009750c0a0b8128576201ad"
 
 [dependencies.metaboss_utils]
 git = "https://github.com/space-operator/metaboss_utils.git"

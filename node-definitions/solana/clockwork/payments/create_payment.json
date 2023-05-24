@@ -25,41 +25,11 @@
     ],
     "targets": [
         {
-            "name": "is_immediate",
+            "name": "trigger",
             "type_bounds": [
-                "bool"
+                "json"
             ],
-            "required": false,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "schedule",
-            "type_bounds": [
-                "string"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "is_skippable",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "monitor_account",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": false,
+            "required": true,
             "defaultValue": null,
             "tooltip": "",
             "passthrough": false
@@ -110,6 +80,16 @@
                 "u64"
             ],
             "required": true,
+            "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "submit",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": false,
             "defaultValue": null,
             "tooltip": "",
             "passthrough": false

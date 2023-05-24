@@ -6,7 +6,7 @@
         "display_name": "Update Payment",
         "description": "",
         "width": 200,
-        "height": 425,
+        "height": 200,
         "backgroundColor": "#fff"
     },
     "sources": [
