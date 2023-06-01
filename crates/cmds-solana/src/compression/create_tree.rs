@@ -210,15 +210,15 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     //https://github.com/solana-labs/solana-program-library/blob/9610bed5349f7a198903140cf2b74a727477b818/account-compression/programs/account-compression/src/canopy.rs
     //https://github.com/solana-labs/solana-program-library/blob/9610bed5349f7a198903140cf2b74a727477b818/account-compression/sdk/src/accounts/ConcurrentMerkleTreeAccount.ts#L209
 
-    // FIXME keep getting CanopyLengthMismatch error
     let canopy_size = if let Some(canopy_levels) = input.canopy_levels {
-        (2usize.pow(canopy_levels + 1) - 1) * 32
+        canopy_levels * 32
     } else {
         0
     };
 
     let merkle_tree_account_size: usize =
-        CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1 + merkle_tree_account_size + canopy_size;
+        CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1 + merkle_tree_account_size + canopy_size as usize;    
+
 
     let lamports = ctx
         .solana_client
