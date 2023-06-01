@@ -18,6 +18,7 @@ pub mod transfer_token;
 pub mod utils;
 pub mod wallet;
 pub mod compression;
+pub mod xnft;
 
 pub use error::{Error, Result};
 

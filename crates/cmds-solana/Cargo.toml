@@ -92,6 +92,10 @@ git = "https://github.com/space-operator/space-wrapper"
 rev = "eb257a070de0545d9051d9b9bb530df3e8736570"
 features = ["cpi"]
 
+[dependencies.xnft]
+git = "https://github.com/coral-xyz/xnft"
+rev = "6ff7a8e7b1bfa0024cdea8269df92bca681d68ec"
+
 
 [dev-dependencies]
 rust_decimal_macros = "1.26"
