@@ -8,6 +8,7 @@ pub mod create_install;
 pub mod create_permissioned_install;
 pub mod delete_install;
 pub mod grant_access;
+pub mod revoke_access;
 
 // #[derive(Deserialize, Serialize, Debug)]
 // pub enum Kind {

@@ -1,12 +1,7 @@
-use std::str::FromStr;
-
 use crate::prelude::*;
 use anchor_lang::{InstructionData, ToAccountMetas};
 use solana_program::{instruction::Instruction, system_program};
 use solana_sdk::pubkey::Pubkey;
-use spl_associated_token_account::get_associated_token_address;
-
-use super::CreateXnftParams;
 
 // Command Name
 const CREATE_PERMISSIONED_INSTALL: &str = "create_permissioned_install";
