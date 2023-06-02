@@ -1,10 +1,12 @@
 use std::str::FromStr;
 
 use crate::prelude::*;
-use anchor_lang::ToAccountMetas;
+use anchor_lang::{InstructionData, ToAccountMetas};
 use solana_program::{instruction::Instruction, system_program};
 use solana_sdk::pubkey::Pubkey;
 use spl_associated_token_account::get_associated_token_address;
+
+use super::CreateXnftParams;
 
 // Command Name
 const CREATE_XNFT: &str = "create_xnft";
@@ -27,8 +29,12 @@ inventory::submit!(CommandDescription::new(CREATE_XNFT, |_| { build() }));
 pub struct Input {
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
+    #[serde(with = "value::pubkey")]
+    pub authority: Pubkey,
     #[serde(with = "value::keypair")]
-    pub authority: Keypair,
+    pub publisher: Keypair,
+    pub name: String,
+    pub parameters: CreateXnftParams,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
 }
@@ -46,62 +52,64 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let metadata_program = Pubkey::from_str("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s").unwrap();
 
     // Master Mint PDA
-    let authority = &input.authority.pubkey();
-    let seeds = &["mint".as_ref(), authority.as_ref()];
+    let seeds = &["mint".as_ref(), input.authority.as_ref()];
     let master_mint = Pubkey::find_program_address(seeds, &xnft_program_id).0;
 
     // Master Token
-    let master_token = get_associated_token_address(&authority, &master_mint);
+    let master_token = get_associated_token_address(&input.authority, &master_mint);
 
     // xNFT PDA
     let seeds = &["xnft".as_ref(), master_mint.as_ref()];
-    let master_mint = Pubkey::find_program_address(seeds, &xnft_program_id).0;
+    let xnft = Pubkey::find_program_address(seeds, &xnft_program_id).0;
 
     // Master Metadata
-    let master_metadata = Pubkey::create_program_address(
+    let master_metadata = Pubkey::find_program_address(
         &[
             "metadata".as_ref(),
             metadata_program.to_bytes().as_ref(),
             master_mint.as_ref(),
         ],
         &metadata_program,
-    );
+    )
+    .0;
 
     let accounts = xnft::accounts::CreateAppXnft {
-        master_mint: todo!(),
-        master_token: todo!(),
-        master_metadata: todo!(),
-        xnft: todo!(),
-        payer: todo!(),
-        publisher: todo!(),
-        system_program: todo!(),
-        token_program: todo!(),
-        associated_token_program: todo!(),
-        metadata_program: todo!(),
-        rent: todo!(),
+        master_mint,
+        master_token,
+        master_metadata,
+        xnft,
+        payer: input.payer.pubkey(),
+        publisher: input.publisher.pubkey(),
+        system_program: system_program::id(),
+        token_program: spl_token::id(),
+        associated_token_program: spl_associated_token_account::id(),
+        metadata_program,
+        rent: solana_sdk::sysvar::rent::id(),
     }
     .to_account_metas(None);
 
-    let metadata = input.metadata.into();
+    let params: xnft::state::CreateXnftParams = input.parameters.into();
 
-    let data = mpl_bubblegum::instruction::MintV1 { message: metadata }.data();
+    let params = xnft::state::CreateXnftParams::from(params);
 
-    let minimum_balance_for_rent_exemption = ctx
-        .solana_client
-        .get_minimum_balance_for_rent_exemption(
-            std::mem::size_of::<mpl_bubblegum::accounts::MintV1>(),
-        )
-        .await?;
+    let data = xnft::instruction::CreateAppXnft {
+        name: input.name,
+        params,
+    }
+    .data();
+
+    let minimum_balance_for_rent_exemption =
+        ctx.solana_client
+            .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
+                xnft::accounts::CreateAppXnft,
+            >())
+            .await?;
 
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
-        signers: [
-            input.payer.clone_keypair(),
-            input.tree_delegate.clone_keypair(),
-        ]
-        .into(),
+        signers: [input.payer.clone_keypair(), input.publisher.clone_keypair()].into(),
         instructions: [Instruction {
-            program_id: mpl_bubblegum::id(),
+            program_id: xnft_program_id,
             accounts,
             data,
         }]
