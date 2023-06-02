@@ -1,0 +1,64 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "delete_install",
+    "version": "0.1",
+    "display_name": "Delete xNFT Install",
+    "description": "",
+    "width": 200,
+    "height": 290,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "authority",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "receiver",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "install",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

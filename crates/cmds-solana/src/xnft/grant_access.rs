@@ -9,22 +9,24 @@ use spl_associated_token_account::get_associated_token_address;
 use super::CreateXnftParams;
 
 // Command Name
-const CREATE_INSTALL: &str = "create_install";
+const GRANT_ACCESS: &str = "grant_access";
 
 const DEFINITION: &str =
-    include_str!("../../../../node-definitions/solana/xnft/create_install.json");
+    include_str!("../../../../node-definitions/solana/xnft/grant_access.json");
 
 fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?
-            .check_name(CREATE_INSTALL)?
+            .check_name(GRANT_ACCESS)?
             .simple_instruction_info("signature")
     });
     Ok(CACHE.clone()?.build(run))
 }
 
-inventory::submit!(CommandDescription::new(CREATE_INSTALL, |_| { build() }));
+inventory::submit!(CommandDescription::new(GRANT_ACCESS, |_| {
+    build()
+}));
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -34,10 +36,8 @@ pub struct Input {
     pub authority: Keypair,
     #[serde(with = "value::pubkey")]
     pub xnft: Pubkey,
-    #[serde(with = "value::keypair")]
-    pub target: Keypair,
     #[serde(with = "value::pubkey")]
-    pub install_vault: Pubkey,
+    pub wallet: Pubkey,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
 }
@@ -46,44 +46,36 @@ pub struct Input {
 pub struct Output {
     #[serde(with = "value::signature::opt")]
     signature: Option<Signature>,
-    //TODO
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let xnft_program_id = xnft::id();
+    
+    // Access PDA
+    let seeds = &["access".as_ref(), input.wallet.as_ref(), input.xnft.as_ref()];
+    let access = Pubkey::find_program_address(seeds, &xnft_program_id).0;
 
-    let target = &input.target.pubkey();
-    let seeds = &["install".as_ref(), target.as_ref(), input.xnft.as_ref()];
-
-    // Install PDA
-    let install = Pubkey::find_program_address(seeds, &xnft_program_id).0;
-
-    let accounts = xnft::accounts::CreateInstall {
+    let accounts = xnft::accounts::GrantAccess {
         xnft: input.xnft,
-        install_vault: input.install_vault,
-        install,
         authority: input.authority.pubkey(),
-        target: input.target.pubkey(),
+        access,
+        wallet: input.wallet,
         system_program: system_program::id(),
     }
     .to_account_metas(None);
 
-    let data = xnft::instruction::CreateInstall {}.data();
+    let data = xnft::instruction::CreatePermissionedInstall {}.data();
 
-    let minimum_balance_for_rent_exemption =
-        ctx.solana_client
-            .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
-                xnft::accounts::CreateInstall,
-            >())
-            .await?;
+    let minimum_balance_for_rent_exemption = ctx
+        .solana_client
+        .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
+            xnft::accounts::CreatePermissionedInstall,
+        >())
+        .await?;
 
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
-        signers: [
-            input.authority.clone_keypair(),
-            input.target.clone_keypair(),
-        ]
-        .into(),
+        signers: [input.payer.clone_keypair(), input.authority.clone_keypair()].into(),
         instructions: [Instruction {
             program_id: xnft_program_id,
             accounts,
@@ -99,7 +91,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         .execute(
             ins,
             value::map! {
-                "install"=>install,
+                "access"=>access,
             },
         )
         .await?
