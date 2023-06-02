@@ -43,16 +43,14 @@ pub struct Input {
 pub struct Output {
     #[serde(with = "value::signature::opt")]
     signature: Option<Signature>,
-    //TODO
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let xnft_program_id = xnft::id();
-    //https://github.com/coral-xyz/xnft/blob/master/tests/common.ts
-    let metadata_program = Pubkey::from_str("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s").unwrap();
+    let metadata_program = mpl_token_metadata::ID;
 
     // Master Mint PDA
-    let seeds = &["mint".as_ref(), input.authority.as_ref()];
+    let seeds = &["mint".as_ref(), input.authority.as_ref(), input.name.as_ref()];
     let master_mint = Pubkey::find_program_address(seeds, &xnft_program_id).0;
 
     // Master Token
@@ -119,7 +117,18 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = input.submit.then_some(ins).unwrap_or_default();
 
-    let signature = ctx.execute(ins, <_>::default()).await?.signature;
+    let signature = ctx
+        .execute(
+            ins,
+            value::map! {
+                "master_mint"=>master_mint,
+                "master_token"=>master_token,
+                "master_metadata"=>master_metadata,
+                "xnft"=>xnft,
+            },
+        )
+        .await?
+        .signature;
 
     Ok(Output { signature })
 }

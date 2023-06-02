@@ -95,6 +95,7 @@ features = ["cpi"]
 [dependencies.xnft]
 git = "https://github.com/coral-xyz/xnft"
 rev = "6ff7a8e7b1bfa0024cdea8269df92bca681d68ec"
+features=["no-entrypoint"]
 
 
 [dev-dependencies]

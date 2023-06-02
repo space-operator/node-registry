@@ -1,7 +1,10 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 use solana_program::pubkey::Pubkey;
 
 pub mod create_xnft;
+pub mod create_install;
 
 // #[derive(Deserialize, Serialize, Debug)]
 // pub enum Kind {
@@ -44,14 +47,14 @@ pub struct CuratorStatus {
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct CreatorsParam {
-    pub address: Pubkey,
+    pub address: String,
     pub share: u8,
 }
 
 impl From<CreatorsParam> for xnft::state::CreatorsParam {
     fn from(param: CreatorsParam) -> Self {
         Self {
-            address: param.address,
+            address: Pubkey::from_str(&param.address).unwrap(),
             share: param.share,
         }
     }
@@ -60,16 +63,17 @@ impl From<CreatorsParam> for xnft::state::CreatorsParam {
 #[derive(Deserialize, Serialize, Debug)]
 pub struct CreateXnftParams {
     pub creators: Vec<CreatorsParam>,
-    pub curator: Option<Pubkey>, // Some("...") values are only relevant for Kind::App xNFTs
-    pub install_authority: Option<Pubkey>, // Some("...") values are only relevant for Kind::App xNFTs
+    pub curator: Option<String>, // Some("...") values are only relevant for Kind::App xNFTs
+    pub install_authority: Option<String>, // Some("...") values are only relevant for Kind::App xNFTs
     pub install_price: u64,
-    pub install_vault: Pubkey,
+    pub install_vault: String,
     pub seller_fee_basis_points: u16,
     pub supply: Option<u64>, // Some("...") values are only relevant for Kind::App xNFTs
     pub symbol: String,
     pub tag: Tag,
     pub uri: String,
 }
+
 
 impl From<CreateXnftParams> for xnft::state::CreateXnftParams {
     fn from(params: CreateXnftParams) -> Self {
@@ -79,10 +83,10 @@ impl From<CreateXnftParams> for xnft::state::CreateXnftParams {
                 .into_iter()
                 .map(|param| param.into())
                 .collect(),
-            curator: params.curator,
-            install_authority: params.install_authority,
+            curator: params.curator.map(|curator| Pubkey::from_str(&curator).unwrap()),
+            install_authority: params.install_authority.map(|install_authority| Pubkey::from_str(&install_authority).unwrap()),
             install_price: params.install_price,
-            install_vault: params.install_vault,
+            install_vault: Pubkey::from_str(&params.install_vault).unwrap(),
             seller_fee_basis_points: params.seller_fee_basis_points,
             supply: params.supply,
             symbol: params.symbol,
