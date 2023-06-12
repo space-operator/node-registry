@@ -26,7 +26,6 @@ inventory::submit!(CommandDescription::new(INITIALIZE_CANDY_MACHINE, |_| {
     build()
 }));
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
     #[serde(with = "value::keypair")]
