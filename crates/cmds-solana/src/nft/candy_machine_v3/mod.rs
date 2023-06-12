@@ -3,8 +3,8 @@ use solana_sdk::pubkey::Pubkey;
 
 pub mod add_config_lines;
 pub mod initialize;
-pub mod mint;
 pub mod initialize_candy_guard;
+pub mod mint;
 pub mod wrap;
 
 /// Config line struct for storing asset (NFT) data pre-mint.
@@ -51,7 +51,6 @@ pub struct Group {
     pub guards: GuardSet,
 }
 
-
 impl From<Group> for mpl_candy_guard::state::Group {
     fn from(group: Group) -> Self {
         Self {
@@ -60,7 +59,6 @@ impl From<Group> for mpl_candy_guard::state::Group {
         }
     }
 }
-
 
 /// The set of guards available.
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -124,7 +122,7 @@ impl From<GuardSet> for mpl_candy_guard::state::GuardSet {
             end_date: guard_set.end_date.map(|end_date| end_date.into()),
             allow_list: guard_set.allow_list.map(|allow_list| allow_list.into()),
             mint_limit: guard_set.mint_limit.map(|mint_limit| mint_limit.into()),
-            nft_payment:    guard_set.nft_payment.map(|nft_payment| nft_payment.into()),
+            nft_payment: guard_set.nft_payment.map(|nft_payment| nft_payment.into()),
             redeemed_amount: guard_set
                 .redeemed_amount
                 .map(|redeemed_amount| redeemed_amount.into()),
@@ -140,12 +138,13 @@ impl From<GuardSet> for mpl_candy_guard::state::GuardSet {
             freeze_token_payment: guard_set
                 .freeze_token_payment
                 .map(|freeze_token_payment| freeze_token_payment.into()),
-            program_gate: guard_set.program_gate.map(|program_gate| program_gate.into()),
+            program_gate: guard_set
+                .program_gate
+                .map(|program_gate| program_gate.into()),
             allocation: guard_set.allocation.map(|allocation| allocation.into()),
         }
     }
 }
-
 
 /// Guard that restricts access to a specific address.
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -175,7 +174,6 @@ pub struct Allocation {
     /// The size of the allocation.
     pub size: u32,
 }
-
 
 impl From<Allocation> for mpl_candy_guard::guards::Allocation {
     fn from(allocation: Allocation) -> Self {
@@ -367,9 +365,6 @@ impl From<NftBurn> for mpl_candy_guard::guards::NftBurn {
         }
     }
 }
-
-
-
 
 /// Guard that restricts the transaction to holders of a specified collection.
 ///
