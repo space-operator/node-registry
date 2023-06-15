@@ -185,7 +185,7 @@ impl Default for Context {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct User {
     pub id: UserId,
 }
