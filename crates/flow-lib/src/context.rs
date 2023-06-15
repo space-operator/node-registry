@@ -188,11 +188,17 @@ impl Default for Context {
 #[derive(Clone)]
 pub struct User {
     pub id: UserId,
+    pub jwt: Option<String>,
+    pub api_key: Option<String>,
 }
 
 impl User {
     pub fn new(id: UserId) -> Self {
-        Self { id }
+        Self {
+            id,
+            jwt: None,
+            api_key: None,
+        }
     }
 }
 
@@ -201,6 +207,8 @@ impl Default for User {
     fn default() -> Self {
         User {
             id: uuid::uuid!("00000000-0000-0000-0000-000000000000"),
+            jwt: None,
+            api_key: None,
         }
     }
 }
