@@ -165,6 +165,7 @@ pub struct Context {
     pub solana_client: Arc<SolanaClient>,
     pub environment: HashMap<String, String>,
     pub user: User,
+    pub endpoints: Endpoints,
     pub signer: signer::Svc,
     pub extensions: Arc<Extensions>,
     pub command: Option<CommandContext>,
@@ -175,6 +176,7 @@ impl Default for Context {
         let mut ctx = Context::from_cfg(
             &ContextConfig::default(),
             User::default(),
+            Endpoints::default(),
             signer::unimplemented_svc(),
             Extensions::default(),
         );
@@ -182,6 +184,19 @@ impl Default for Context {
             svc: execute::simple(&ctx, 1),
         });
         ctx
+    }
+}
+
+#[derive(Clone)]
+pub struct Endpoints {
+    pub flow_server: String,
+}
+
+impl Default for Endpoints {
+    fn default() -> Self {
+        Self {
+            flow_server: "http://localhost:8080".to_owned(),
+        }
     }
 }
 
@@ -218,6 +233,7 @@ impl Context {
         // TODO: pass by value
         cfg: &ContextConfig,
         user: User,
+        endpoints: Endpoints,
         sig_svc: signer::Svc,
         extensions: Extensions,
     ) -> Self {
@@ -228,6 +244,7 @@ impl Context {
             solana_client: Arc::new(solana_client),
             environment: cfg.environment.clone(),
             user,
+            endpoints,
             extensions: Arc::new(extensions),
             signer: sig_svc,
             command: None,
