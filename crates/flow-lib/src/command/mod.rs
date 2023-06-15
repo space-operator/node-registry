@@ -1,5 +1,8 @@
 use crate::{
-    config::{client::NodeData, CmdInputDescription, CmdOutputDescription, Name, ValueSet},
+    config::{
+        client::NodeData, node::Permissions, CmdInputDescription, CmdOutputDescription, Name,
+        ValueSet,
+    },
     context::Context,
     ValueType,
 };
@@ -68,6 +71,10 @@ pub trait CommandTrait: Send + Sync + 'static {
 
     fn instruction_info(&self) -> Option<InstructionInfo> {
         None
+    }
+
+    fn permissions(&self) -> Permissions {
+        Permissions::default()
     }
 }
 
