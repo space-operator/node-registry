@@ -31,7 +31,7 @@ pub mod signer {
 
     pub type Svc = TowerClient<SignatureRequest, SignatureResponse, Error>;
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub struct SignatureRequest {
         pub user_id: UserId,
         pub pubkey: Pubkey,
