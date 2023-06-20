@@ -52,6 +52,11 @@ impl CmdBuilder {
         }
     }
 
+    pub fn permissions(mut self, p: Permissions) -> Self {
+        self.def.permissions = p;
+        self
+    }
+
     pub fn simple_instruction_info(mut self, signature_name: &str) -> Result<Self, BuilderError> {
         if self.def.sources.iter().any(|x| x.name == signature_name) {
             self.signature_name = Some(signature_name.to_owned());
