@@ -16,16 +16,10 @@ pub struct Definition {
     pub permissions: Permissions,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Permissions {
     #[serde(default)]
     pub user_tokens: bool,
-}
-
-impl Default for Permissions {
-    fn default() -> Self {
-        Self { user_tokens: false }
-    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
