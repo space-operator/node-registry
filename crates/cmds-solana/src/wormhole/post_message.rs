@@ -2,14 +2,13 @@ use std::str::FromStr;
 
 use crate::{prelude::*, wormhole::WormholeInstructions};
 
-use borsh::BorshSerialize;
+use borsh::{BorshDeserialize, BorshSerialize};
 use rand::Rng;
 use solana_program::{instruction::AccountMeta, system_instruction, sysvar};
 use solana_sdk::pubkey::Pubkey;
 
-use super::PostMessageData;
+use super::{BridgeData, PostMessageData};
 
-// use wormhole_anchor_sdk::wormhole;
 
 // Command Name
 const POST_MESSAGE: &str = "post_message";
@@ -92,7 +91,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
                 consistency_level: super::ConsistencyLevel::Confirmed,
             },
         )
-            .try_to_vec()?, 
+            .try_to_vec()?,
     };
 
     let minimum_balance_for_rent_exemption = ctx
@@ -101,6 +100,11 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             mpl_bubblegum::accounts::CreateTree,
         >())
         .await?;
+
+    // Get message fee
+    let bridge_config_account = ctx.solana_client.get_account(&bridge).await?;
+    let bridge_config = BridgeData::try_from_slice(bridge_config_account.data.as_slice())?;
+    let fee = bridge_config.config.fee;
 
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
@@ -111,8 +115,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         ]
         .into(),
         instructions: [
-            // TODO calculate the fee
-            system_instruction::transfer(&input.payer.pubkey(), &fee_collector, 10000),
+            system_instruction::transfer(&input.payer.pubkey(), &fee_collector, fee),
             ix,
         ]
         .into(),
