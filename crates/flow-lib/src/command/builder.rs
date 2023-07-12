@@ -1,5 +1,9 @@
 use super::{CommandError, CommandTrait};
-use crate::{command::InstructionInfo, config::node::Definition, Context, Name};
+use crate::{
+    command::InstructionInfo,
+    config::node::{Definition, Permissions},
+    Context, Name,
+};
 use futures::future::BoxFuture;
 use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
@@ -48,6 +52,11 @@ impl CmdBuilder {
         }
     }
 
+    pub fn permissions(mut self, p: Permissions) -> Self {
+        self.def.permissions = p;
+        self
+    }
+
     pub fn simple_instruction_info(mut self, signature_name: &str) -> Result<Self, BuilderError> {
         if self.def.sources.iter().any(|x| x.name == signature_name) {
             self.signature_name = Some(signature_name.to_owned());
@@ -69,6 +78,7 @@ impl CmdBuilder {
             inputs: Vec<crate::CmdInputDescription>,
             outputs: Vec<crate::CmdOutputDescription>,
             instruction_info: Option<InstructionInfo>,
+            permissions: Permissions,
             run: Box<dyn Fn(Context, T) -> Fut + Send + Sync + 'static>,
         }
 
@@ -107,6 +117,10 @@ impl CmdBuilder {
                     Err(error) => Box::pin(async move { Err(error.into()) }),
                 }
             }
+
+            fn permissions(&self) -> Permissions {
+                self.permissions.clone()
+            }
         }
 
         let mut cmd = Command {
@@ -133,6 +147,7 @@ impl CmdBuilder {
                 })
                 .collect(),
             instruction_info: None,
+            permissions: self.def.permissions,
         };
 
         if let Some(name) = self.signature_name {

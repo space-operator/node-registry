@@ -12,6 +12,14 @@ pub struct Definition {
     pub json_schema: serde_json::Map<String, JsonValue>,
     #[serde(rename = "targets_form.ui_schema")]
     pub ui_schema: serde_json::Map<String, JsonValue>,
+    #[serde(default)]
+    pub permissions: Permissions,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct Permissions {
+    #[serde(default)]
+    pub user_tokens: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

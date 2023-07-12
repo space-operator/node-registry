@@ -25,7 +25,6 @@ fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
 
 inventory::submit!(CommandDescription::new(ADD_CONFIG_LINES, |_| { build() }));
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
     #[serde(with = "value::pubkey")]
@@ -53,7 +52,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     }
     .to_account_metas(None);
 
-
     let data = MPLAddConfigLines {
         index: input.index,
         config_lines: input.config_lines.into_iter().map(Into::into).collect(),
@@ -66,13 +64,10 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             mpl_candy_machine_core::accounts::AddConfigLines,
         >())
         .await?;
-    
 
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
-        signers: [       
-        input.payer.clone_keypair(),
-        input.authority.clone_keypair()].into(),
+        signers: [input.payer.clone_keypair(), input.authority.clone_keypair()].into(),
         instructions: [Instruction {
             program_id: mpl_candy_machine_core::id(),
             accounts,

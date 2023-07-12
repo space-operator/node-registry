@@ -21,7 +21,6 @@ fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
 
 inventory::submit!(CommandDescription::new(WRAP, |_| { build() }));
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
     #[serde(with = "value::pubkey")]

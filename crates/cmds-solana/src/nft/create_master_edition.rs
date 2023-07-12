@@ -9,6 +9,7 @@ use space_wrapper::instruction::ProxyCreateMasterEditionV3;
 #[derive(Debug, Clone)]
 pub struct CreateMasterEdition;
 
+#[allow(clippy::too_many_arguments)]
 pub fn create_proxy_create_master_edition_instruction(
     authority: &Pubkey,
     proxy_authority: &Pubkey,
@@ -20,7 +21,6 @@ pub fn create_proxy_create_master_edition_instruction(
     token_program: &Pubkey,
     max_supply: u64,
 ) -> Instruction {
-    
     Instruction {
         program_id: space_wrapper::ID,
         accounts: [
