@@ -60,27 +60,24 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::request_airdrop as airdrop;
+
+    #[test]
+    fn test_build() {
+        build().unwrap();
+    }
 
     #[tokio::test]
     async fn test_valid() {
         let ctx = Context::default();
 
         let sender = Keypair::from_base58_string("4rQanLxTFvdgtLsGirizXejgYXACawB5ShoZgvz4wwXi4jnii7XHSyUFJbvAk4ojRiEAHvzK6Qnjq7UyJFNbydeQ");
-        let recipient: Pubkey = solana_sdk::pubkey!("GQZRKDqVzM4DXGGMEUNdnBD3CC4TTywh3PwgjYPBm8W9");
+        let recipient = solana_sdk::pubkey!("GQZRKDqVzM4DXGGMEUNdnBD3CC4TTywh3PwgjYPBm8W9");
 
         // airdrop if necessary
-        let airdrop_output = airdrop::RequestAirdrop
-            .run(
-                ctx.clone(),
-                value::to_map(&airdrop::Input {
-                    pubkey: sender.pubkey(),
-                    amount: 1_000_000_000,
-                })
-                .unwrap(),
-            )
+        let _ = ctx
+            .solana_client
+            .request_airdrop(&sender.pubkey(), 1_000_000_000)
             .await;
-        let _ = dbg!(airdrop_output);
 
         // Transfer
         let output = run(
