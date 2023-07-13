@@ -1,64 +1,31 @@
 use crate::prelude::*;
 
-#[derive(Debug, Clone)]
-pub struct GetBalance;
+const NAME: &str = "get_balance";
 
-#[derive(Serialize, Deserialize, Debug)]
+inventory::submit!(CommandDescription::new(NAME, |_| build()));
+
+fn build() -> BuildResult {
+    const DEFINITION: &str = include_str!("../../../node-definitions/solana/get_balance.json");
+    static CACHE: BuilderCache =
+        BuilderCache::new(|| CmdBuilder::new(DEFINITION)?.check_name(NAME));
+    Ok(CACHE.clone()?.build(run))
+}
+
+#[derive(Deserialize, Debug)]
 pub struct Input {
     #[serde(with = "value::pubkey")]
     pubkey: Pubkey,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Debug)]
 pub struct Output {
     balance: u64,
 }
 
-// Name
-const GET_BALANCE: &str = "get_balance";
-
-// Inputs
-const PUBKEY: &str = "pubkey";
-
-// Outputs
-const BALANCE: &str = "balance";
-
-#[async_trait]
-impl CommandTrait for GetBalance {
-    fn name(&self) -> Name {
-        GET_BALANCE.into()
-    }
-
-    fn inputs(&self) -> Vec<CmdInput> {
-        [CmdInput {
-            name: PUBKEY.into(),
-            type_bounds: [ValueType::Pubkey].to_vec(),
-            required: true,
-            passthrough: false,
-        }]
-        .to_vec()
-    }
-
-    fn outputs(&self) -> Vec<CmdOutput> {
-        [CmdOutput {
-            name: BALANCE.into(),
-            r#type: ValueType::U64,
-        }]
-        .to_vec()
-    }
-
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let pubkey = value::from_map::<Input>(inputs)?.pubkey;
-
-        let balance = ctx.solana_client.get_balance(&pubkey).await?;
-
-        Ok(value::to_map(&Output { balance })?)
-    }
+async fn run(ctx: Context, input: Input) -> Result<Output, CommandError> {
+    let balance = ctx.solana_client.get_balance(&input.pubkey).await?;
+    Ok(Output { balance })
 }
-
-inventory::submit!(CommandDescription::new(GET_BALANCE, |_| Ok(Box::new(
-    GetBalance {}
-))));
 
 #[cfg(test)]
 mod tests {
@@ -66,12 +33,14 @@ mod tests {
 
     #[tokio::test]
     async fn test_valid() {
-        let input = value::to_map(&Input {
-            pubkey: Pubkey::new_from_array([1; 32]),
-        })
-        .unwrap();
-        let output = GetBalance.run(Context::default(), input).await.unwrap();
-        let balance = value::from_map::<Output>(output).unwrap().balance;
-        dbg!(balance);
+        let cmd = build().unwrap();
+        let output = cmd
+            .run(
+                Context::default(),
+                value::map! { "pubkey" => Pubkey::new_from_array([1;32]) },
+            )
+            .await
+            .unwrap();
+        dbg!(output);
     }
 }
