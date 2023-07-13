@@ -1,7 +1,18 @@
 use crate::{prelude::*, utils::sol_to_lamports};
 
-#[derive(Debug, Clone)]
-pub struct TransferSol;
+const NAME: &str = "transfer_sol";
+
+inventory::submit!(CommandDescription::new(NAME, |_| build()));
+
+fn build() -> BuildResult {
+    const DEFINITION: &str = include_str!("../../../node-definitions/solana/transfer_sol.json");
+    static CACHE: BuilderCache = BuilderCache::new(|| {
+        CmdBuilder::new(DEFINITION)?
+            .check_name(NAME)?
+            .simple_instruction_info("signature")
+    });
+    Ok(CACHE.clone()?.build(run))
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -19,128 +30,44 @@ pub struct Input {
 pub struct Output {
     #[serde(default, with = "value::signature::opt")]
     pub signature: Option<Signature>,
-    pub tx: String,
 }
 
-const SOLANA_TRANSFER_SOL: &str = "transfer_sol";
+async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+    let amount = sol_to_lamports(input.amount)?;
 
-// Inputs
-const SENDER: &str = "sender";
-const RECIPIENT: &str = "recipient";
-const AMOUNT: &str = "amount";
-const SUBMIT: &str = "submit";
+    let instruction =
+        solana_sdk::system_instruction::transfer(&input.sender.pubkey(), &input.recipient, amount);
 
-// Outputs
-const TX: &str = "tx";
-const SIGNATURE: &str = "signature";
+    let instructions = if input.submit {
+        Instructions {
+            fee_payer: input.sender.pubkey(),
+            signers: vec![input.sender.clone_keypair()],
+            minimum_balance_for_rent_exemption: 0,
+            instructions: [instruction].into(),
+        }
+    } else {
+        Instructions::default()
+    };
 
-#[async_trait]
-impl CommandTrait for TransferSol {
-    fn instruction_info(&self) -> Option<InstructionInfo> {
-        Some(InstructionInfo::simple(self, SIGNATURE))
-    }
+    let signature = ctx
+        .execute(instructions, Default::default())
+        .await?
+        .signature;
 
-    fn name(&self) -> Name {
-        SOLANA_TRANSFER_SOL.into()
-    }
-
-    fn inputs(&self) -> Vec<CmdInput> {
-        [
-            CmdInput {
-                name: SENDER.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: RECIPIENT.into(),
-                type_bounds: [ValueType::Pubkey].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: AMOUNT.into(),
-                type_bounds: [ValueType::F64].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: SUBMIT.into(),
-                type_bounds: [ValueType::Bool].to_vec(),
-                required: false,
-                passthrough: false,
-            },
-        ]
-        .to_vec()
-    }
-
-    fn outputs(&self) -> Vec<CmdOutput> {
-        [
-            CmdOutput {
-                name: SIGNATURE.into(),
-                r#type: ValueType::String,
-            },
-            CmdOutput {
-                name: TX.into(),
-                r#type: ValueType::String,
-            },
-        ]
-        .to_vec()
-    }
-
-    async fn run(&self, mut ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let Input {
-            sender,
-            recipient,
-            amount,
-            submit,
-        } = value::from_map(inputs)?;
-        let amount = sol_to_lamports(amount)?;
-
-        let instruction =
-            solana_sdk::system_instruction::transfer(&sender.pubkey(), &recipient, amount);
-
-        let instructions = if submit {
-            Instructions {
-                fee_payer: sender.pubkey(),
-                signers: vec![sender.clone_keypair()],
-                minimum_balance_for_rent_exemption: 0,
-                instructions: vec![instruction],
-            }
-        } else {
-            Instructions::default()
-        };
-
-        let signature = ctx
-            .execute(instructions, Default::default())
-            .await?
-            .signature;
-
-        Ok(value::to_map(&Output {
-            signature,
-            tx: String::new(), // TODO
-        })?)
-    }
+    Ok(Output { signature })
 }
-
-inventory::submit!(CommandDescription::new(SOLANA_TRANSFER_SOL, |_| Ok(
-    Box::new(TransferSol)
-)));
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::request_airdrop as airdrop;
-    use rust_decimal_macros::dec;
 
     #[tokio::test]
     async fn test_valid() {
         let ctx = Context::default();
 
         let sender = Keypair::from_base58_string("4rQanLxTFvdgtLsGirizXejgYXACawB5ShoZgvz4wwXi4jnii7XHSyUFJbvAk4ojRiEAHvzK6Qnjq7UyJFNbydeQ");
-        let recipient: Pubkey = "GQZRKDqVzM4DXGGMEUNdnBD3CC4TTywh3PwgjYPBm8W9"
-            .parse()
-            .unwrap();
+        let recipient: Pubkey = solana_sdk::pubkey!("GQZRKDqVzM4DXGGMEUNdnBD3CC4TTywh3PwgjYPBm8W9");
 
         // airdrop if necessary
         let airdrop_output = airdrop::RequestAirdrop
@@ -156,19 +83,17 @@ mod tests {
         let _ = dbg!(airdrop_output);
 
         // Transfer
-        let output = TransferSol
-            .run(
-                ctx,
-                value::to_map(&Input {
-                    sender,
-                    recipient,
-                    amount: dec!(0.1),
-                    submit: true,
-                })
-                .unwrap(),
-            )
-            .await
-            .unwrap();
-        dbg!(output);
+        let output = run(
+            ctx,
+            Input {
+                sender,
+                recipient,
+                amount: rust_decimal_macros::dec!(0.1),
+                submit: true,
+            },
+        )
+        .await
+        .unwrap();
+        dbg!(output.signature.unwrap());
     }
 }
