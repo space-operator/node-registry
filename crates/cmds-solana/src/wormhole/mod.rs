@@ -1,7 +1,8 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use serde::{Deserialize, Serialize};
 
-// pub mod get_vaa;
+pub mod get_vaa;
+// pub mod parse_vaa;
 pub mod post_message;
 
 use anchor_lang::prelude::*;
@@ -60,4 +61,31 @@ pub struct BridgeConfig {
 
     /// Amount of lamports that needs to be paid to the protocol to post a message
     pub fee: u64,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct WormholeResponse {
+    data: Vec<WormholeData>,
+    pagination: WormholePagination,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct WormholeData {
+    sequence: u64,
+    id: String,
+    version: u64,
+    emitter_chain: u64,
+    emitter_addr: String,
+    emitter_native_addr: String,
+    guardian_set_index: u64,
+    vaa: String,
+    timestamp: String,
+    updated_at: String,
+    indexed_at: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct WormholePagination {
+    next: String,
 }

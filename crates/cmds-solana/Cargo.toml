@@ -98,6 +98,10 @@ git = "https://github.com/coral-xyz/xnft"
 rev = "6ff7a8e7b1bfa0024cdea8269df92bca681d68ec"
 features=["no-entrypoint"]
 
+[dependencies.wormhole-sdk]
+git = "https://github.com/space-operator/wormhole"
+rev = "b209022b85d8e6cbf4e37b059bfe3ce7fa11c6e1"
+
 # [dependencies.wormhole-anchor-sdk]
 # git = "https://github.com/wormhole-foundation/wormhole-scaffolding.git"
 # rev = "7756f517fd63abae4be9b41ed82723def22bad09"

@@ -9,9 +9,8 @@ use solana_sdk::pubkey::Pubkey;
 
 use super::{BridgeData, PostMessageData};
 
-
 // Command Name
-const POST_MESSAGE: &str = "post_message";
+const NAME: &str = "post_message";
 
 const DEFINITION: &str =
     include_str!("../../../../node-definitions/solana/wormhole/post_message.json");
@@ -20,13 +19,13 @@ fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?
-            .check_name(POST_MESSAGE)?
+            .check_name(NAME)?
             .simple_instruction_info("signature")
     });
     Ok(CACHE.clone()?.build(run))
 }
 
-inventory::submit!(CommandDescription::new(POST_MESSAGE, |_| { build() }));
+inventory::submit!(CommandDescription::new(NAME, |_| { build() }));
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
