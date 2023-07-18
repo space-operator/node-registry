@@ -1,6 +1,9 @@
 use crate::prelude::*;
 use base64::decode;
-use wormhole_sdk::{Address, Chain, Vaa};
+use wormhole_sdk::{
+    vaa::{Body, Digest, Header},
+    Address, Chain, Vaa,
+};
 
 // Command Name
 const NAME: &str = "parse_vaa";
@@ -26,6 +29,12 @@ pub struct Input {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
     parsed_vaa: Vaa<Vec<u8>>,
+    vaa_bytes: bytes::Bytes,
+    signatures: Vec<wormhole_sdk::vaa::Signature>,
+    body: bytes::Bytes,
+    vaa_hash: bytes::Bytes,
+    vaa_secp256k_hash: bytes::Bytes,
+    guardian_set_index: u32,
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
@@ -50,7 +59,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     }
 
     let body = &vaa_bytes[sig_start + sig_length * num_signers..];
-
+    // Check this https://github.com/wormhole-foundation/wormhole/blob/14a1251c06b3d837dcbd2b7bed5b1abae6eb7d02/solana/bridge/program/src/vaa.rs#L176
     let parsed_vaa: Vaa<Vec<u8>> = Vaa {
         version: vaa_bytes[0],
         guardian_set_index: u32::from_be_bytes(
@@ -58,7 +67,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
                 .try_into()
                 .map_err(|_| anyhow::anyhow!("Failed to convert guardian_set_index"))?,
         ),
-        signatures: guardian_signatures,
+        signatures: guardian_signatures.clone(),
         timestamp: u32::from_be_bytes(
             body[0..4]
                 .try_into()
@@ -89,7 +98,22 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         payload: body[51..].to_vec(),
     };
 
-    Ok(Output { parsed_vaa })
+    // let (_, body): (Header, Body<Vec<u8>>) = parsed_vaa.into();
+
+    let Digest {
+        hash: vaa_hash,
+        secp256k_hash: vaa_secp256k_hash,
+    } = wormhole_sdk::vaa::digest(body).map_err(|_| anyhow::anyhow!("Failed to digest VAA"))?;
+
+    Ok(Output {
+        parsed_vaa: parsed_vaa.clone(),
+        vaa_bytes: bytes::Bytes::copy_from_slice(&vaa_bytes),
+        signatures: guardian_signatures,
+        body: bytes::Bytes::copy_from_slice(&body),
+        vaa_hash: bytes::Bytes::copy_from_slice(&vaa_hash),
+        vaa_secp256k_hash: bytes::Bytes::copy_from_slice(&vaa_secp256k_hash),
+        guardian_set_index: parsed_vaa.guardian_set_index,
+    })
 }
 
 #[test]

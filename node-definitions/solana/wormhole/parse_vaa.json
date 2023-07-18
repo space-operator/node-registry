@@ -15,6 +15,42 @@
       "type": "json",
       "defaultValue": null,
       "tooltip": ""
+    },
+    {
+      "name": "vaa_bytes",
+      "type": "bytes",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "signatures",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "guardian_set_index",
+      "type": "u32",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "body",
+      "type": "bytes",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "vaa_hash",
+      "type": "bytes",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "vaa_secp256k_hash",
+      "type": "bytes",
+      "defaultValue": null,
+      "tooltip": ""
     }
   ],
   "targets": [

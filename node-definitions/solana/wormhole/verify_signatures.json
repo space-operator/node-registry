@@ -1,9 +1,9 @@
 {
   "type": "native",
   "data": {
-    "node_id": "post_message",
+    "node_id": "verify_signatures",
     "version": "0.1",
-    "display_name": "Post Message",
+    "display_name": "Verify Signatures",
     "description": "",
     "width": 200,
     "height": 235,
@@ -13,12 +13,6 @@
     {
       "name": "signature",
       "type": "signature",
-      "defaultValue": null,
-      "tooltip": ""
-    },
-    {
-      "name": "sequence",
-      "type": "u32",
       "defaultValue": null,
       "tooltip": ""
     }
@@ -33,7 +27,7 @@
       "passthrough": true
     },
     {
-      "name": "emitter",
+      "name": "signature_set",
       "type_bounds": ["keypair"],
       "required": true,
       "defaultValue": null,
@@ -41,20 +35,36 @@
       "passthrough": true
     },
     {
-      "name": "message",
-      "type_bounds": ["keypair"],
+      "name": "guardian_set_index",
+      "type_bounds": ["u32"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",
-      "passthrough": false
+      "passthrough": true
     },
     {
-      "name": "submit",
-      "type_bounds": ["bool"],
+      "name": "signatures",
+      "type_bounds": ["vec<signature>"],
       "required": false,
       "defaultValue": true,
       "tooltip": "",
       "passthrough": false
+    },
+    {
+      "name": "vaa_body",
+      "type_bounds": ["bytes"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "vaa_hash",
+      "type_bounds": ["bytes"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": true
     }
   ],
   "targets_form.json_schema": {},

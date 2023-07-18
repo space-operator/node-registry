@@ -1,10 +1,15 @@
+use std::io::{Cursor, Read};
+
 use anchor_lang::AnchorSerialize;
 use borsh::{BorshDeserialize, BorshSerialize};
+use byteorder::{BigEndian, ReadBytesExt};
 use serde::{Deserialize, Serialize};
 
 pub mod get_vaa;
 pub mod parse_vaa;
 pub mod post_message;
+pub mod post_vaa;
+pub mod verify_signatures;
 
 #[repr(u8)]
 #[derive(BorshSerialize, BorshDeserialize)]
@@ -110,3 +115,142 @@ struct WormholePagination {
 //     payload: Vec<u8>,
 // }
 
+
+/// Type representing an Ethereum style public key for Guardians.
+pub type GuardianPublicKey = [u8; 20];
+
+#[derive(Default, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
+pub struct GuardianSetData {
+    /// Index representing an incrementing version number for this guardian set.
+    pub index: u32,
+
+    /// ETH style public keys
+    pub keys: Vec<GuardianPublicKey>,
+
+    /// Timestamp representing the time this guardian became active.
+    pub creation_time: u32,
+
+    /// Expiration time when VAAs issued by this set are no longer valid.
+    pub expiration_time: u32,
+}
+
+pub struct SignatureItem {
+    pub signature: Vec<u8>,
+    pub key: [u8; 20],
+    pub index: u8,
+}
+
+const MAX_LEN_GUARDIAN_KEYS: usize = 19;
+
+#[derive(Default, BorshSerialize, BorshDeserialize)]
+pub struct VerifySignaturesData {
+    /// instruction indices of signers (-1 for missing)
+    pub signers: [i8; MAX_LEN_GUARDIAN_KEYS],
+}
+
+pub type ForeignAddress = [u8; 32];
+
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct VAASignature {
+    pub signature: Vec<u8>,
+    pub guardian_index: u8,
+}
+
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct VAA {
+    // Header part
+    pub version: u8,
+    pub guardian_set_index: u32,
+    pub signatures: Vec<VAASignature>,
+    // Body part
+    pub timestamp: u32,
+    pub nonce: u32,
+    pub emitter_chain: u16,
+    pub emitter_address: ForeignAddress,
+    pub sequence: u64,
+    pub consistency_level: u8,
+    pub payload: Vec<u8>,
+}
+
+impl VAA {
+    pub const HEADER_LEN: usize = 6;
+    pub const SIGNATURE_LEN: usize = 66;
+
+    pub fn deserialize(data: &[u8]) -> std::result::Result<VAA, std::io::Error> {
+        let mut rdr = Cursor::new(data);
+
+        let version = rdr.read_u8()?;
+        let guardian_set_index = rdr.read_u32::<BigEndian>()?;
+
+        let len_sig = rdr.read_u8()?;
+        let mut signatures: Vec<VAASignature> = Vec::with_capacity(len_sig as usize);
+        for _i in 0..len_sig {
+            let guardian_index = rdr.read_u8()?;
+            let mut signature_data = [0u8; 65];
+            rdr.read_exact(&mut signature_data)?;
+            let signature = signature_data.to_vec();
+
+            signatures.push(VAASignature {
+                guardian_index,
+                signature,
+            });
+        }
+
+        let timestamp = rdr.read_u32::<BigEndian>()?;
+        let nonce = rdr.read_u32::<BigEndian>()?;
+        let emitter_chain = rdr.read_u16::<BigEndian>()?;
+
+        let mut emitter_address = [0u8; 32];
+        rdr.read_exact(&mut emitter_address)?;
+
+        let sequence = rdr.read_u64::<BigEndian>()?;
+        let consistency_level = rdr.read_u8()?;
+
+        let mut payload = Vec::new();
+        rdr.read_to_end(&mut payload)?;
+
+        Ok(VAA {
+            version,
+            guardian_set_index,
+            signatures,
+            timestamp,
+            nonce,
+            emitter_chain,
+            emitter_address,
+            sequence,
+            consistency_level,
+            payload,
+        })
+    }
+}
+
+#[derive(Default, BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize)]
+pub struct PostVAAData {
+    // Header part
+    pub version: u8,
+    pub guardian_set_index: u32,
+
+    // Body part
+    pub timestamp: u32,
+    pub nonce: u32,
+    pub emitter_chain: u16,
+    pub emitter_address: ForeignAddress,
+    pub sequence: u64,
+    pub consistency_level: u8,
+    pub payload: Vec<u8>,
+}
+impl From<VAA> for PostVAAData {
+    fn from(vaa: VAA) -> Self {
+        PostVAAData {
+            version: vaa.version,
+            guardian_set_index: vaa.guardian_set_index,
+            timestamp: vaa.timestamp,
+            nonce: vaa.nonce,
+            emitter_chain: vaa.emitter_chain,
+            emitter_address: vaa.emitter_address,
+            sequence: vaa.sequence,
+            consistency_level: vaa.consistency_level,
+            payload: vaa.payload,
+        }
+    }
+}
