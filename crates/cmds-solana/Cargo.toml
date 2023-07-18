@@ -54,6 +54,7 @@ fasteval = "0.2.4"
 tracing = "0.1"
 once_cell = "1.17"
 rand = "0.7.3"
+hex = "0.4.3"
 
 value = { path = "../value", version = "0.0.1" }
 flow-lib = { path = "../flow-lib", version = "0.0.1" }
@@ -99,6 +100,10 @@ rev = "6ff7a8e7b1bfa0024cdea8269df92bca681d68ec"
 features=["no-entrypoint"]
 
 [dependencies.wormhole-sdk]
+git = "https://github.com/space-operator/wormhole"
+rev = "b209022b85d8e6cbf4e37b059bfe3ce7fa11c6e1"
+
+[dependencies.serde_wormhole]
 git = "https://github.com/space-operator/wormhole"
 rev = "b209022b85d8e6cbf4e37b059bfe3ce7fa11c6e1"
 

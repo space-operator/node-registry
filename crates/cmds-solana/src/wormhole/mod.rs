@@ -63,13 +63,13 @@ pub struct BridgeConfig {
     pub fee: u64,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 struct WormholeResponse {
     data: Vec<WormholeData>,
     pagination: WormholePagination,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct WormholeData {
     sequence: u64,
@@ -85,7 +85,7 @@ struct WormholeData {
     indexed_at: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 struct WormholePagination {
     next: String,
 }

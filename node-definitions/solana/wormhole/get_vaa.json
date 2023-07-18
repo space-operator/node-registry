@@ -15,6 +15,12 @@
       "type": "json",
       "defaultValue": null,
       "tooltip": ""
+    },
+    {
+      "name": "vaa",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
     }
   ],
   "targets": [
