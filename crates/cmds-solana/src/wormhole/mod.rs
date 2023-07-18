@@ -1,11 +1,10 @@
+use anchor_lang::AnchorSerialize;
 use borsh::{BorshDeserialize, BorshSerialize};
 use serde::{Deserialize, Serialize};
 
 pub mod get_vaa;
-// pub mod parse_vaa;
+pub mod parse_vaa;
 pub mod post_message;
-
-use anchor_lang::prelude::*;
 
 #[repr(u8)]
 #[derive(BorshSerialize, BorshDeserialize)]
@@ -89,3 +88,25 @@ struct WormholeData {
 struct WormholePagination {
     next: String,
 }
+
+// // Structs for API VAA parsing
+// #[derive(Serialize, Deserialize, Debug)]
+// struct GuardianSignature {
+//     index: u8,
+//     signature: Vec<u8>,
+// }
+
+// #[derive(Serialize, Deserialize, Debug)]
+// struct ParsedVaa {
+//     version: u8,
+//     guardian_set_index: u32,
+//     guardian_signatures: Vec<GuardianSignature>,
+//     timestamp: u32,
+//     nonce: u32,
+//     emitter_chain: u16,
+//     emitter_address: [u8; 32],
+//     sequence: u64,
+//     consistency_level: u8,
+//     payload: Vec<u8>,
+// }
+

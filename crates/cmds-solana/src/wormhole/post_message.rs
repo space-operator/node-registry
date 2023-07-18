@@ -68,6 +68,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     // TODO test payload
     let payload = [0u8; 32].to_vec();
+    let payload = "Hello World!".as_bytes().to_vec();
 
     let ix = solana_program::instruction::Instruction {
         program_id: wormhole_core_program_id,

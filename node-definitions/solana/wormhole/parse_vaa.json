@@ -1,9 +1,9 @@
 {
   "type": "native",
   "data": {
-    "node_id": "get_vaa",
+    "node_id": "parse_vaa",
     "version": "0.1",
-    "display_name": "Get VAA",
+    "display_name": "Parse VAA",
     "description": "",
     "width": 200,
     "height": 235,
@@ -11,22 +11,16 @@
   },
   "sources": [
     {
-      "name": "response",
+      "name": "parsed_vaa",
       "type": "json",
-      "defaultValue": null,
-      "tooltip": ""
-    },
-    {
-      "name": "vaa",
-      "type": "string",
       "defaultValue": null,
       "tooltip": ""
     }
   ],
   "targets": [
     {
-      "name": "emitter",
-      "type_bounds": ["pubkey"],
+      "name": "vaa",
+      "type_bounds": ["json"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",
