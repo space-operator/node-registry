@@ -46,7 +46,7 @@ impl CreateMetadataAccount {
                 verified: false,
                 key,
             }),
-            Some(inputs.uses.clone().into()),
+            inputs.uses.clone().map(Into::into),
             inputs
                 .collection_details
                 .map(|size| CollectionDetails::V1 { size }),
@@ -131,7 +131,7 @@ pub struct Input {
     pub fee_payer: Keypair,
     pub metadata: NftMetadata,
     pub metadata_uri: String,
-    pub uses: NftUses,
+    pub uses: Option<NftUses>,
     #[serde(default, with = "value::pubkey::opt")]
     pub collection_mint_account: Option<Pubkey>,
     pub creators: Vec<NftCreator>,
