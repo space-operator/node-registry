@@ -103,6 +103,7 @@ pub struct GuardSet {
     pub program_gate: Option<ProgramGate>,
     /// Allocation guard (specify the maximum number of mints in a group).
     pub allocation: Option<Allocation>,
+    pub token2022_payment: Option<Token2022Payment>,
 }
 
 impl From<GuardSet> for mpl_candy_guard::state::GuardSet {
@@ -142,6 +143,34 @@ impl From<GuardSet> for mpl_candy_guard::state::GuardSet {
                 .program_gate
                 .map(|program_gate| program_gate.into()),
             allocation: guard_set.allocation.map(|allocation| allocation.into()),
+            token2022_payment: guard_set
+                .token2022_payment
+                .map(|token2022_payment| token2022_payment.into()),
+        }
+    }
+}
+
+/// Guard that charges an amount in a specified spl-token as payment for the mint.
+///
+/// List of accounts required:
+///
+///   0. `[writable]` Token account holding the required amount.
+///   1. `[writable]` Address of the ATA to receive the tokens.
+///   2. `[]` Mint account.
+///   3. `[]` SPL Token-2022 program account.
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Token2022Payment {
+    pub amount: u64,
+    pub mint: Pubkey,
+    pub destination_ata: Pubkey,
+}
+
+impl From<Token2022Payment> for mpl_candy_guard::guards::Token2022Payment {
+    fn from(token2022_payment: Token2022Payment) -> Self {
+        Self {
+            amount: token2022_payment.amount,
+            mint: token2022_payment.mint,
+            destination_ata: token2022_payment.destination_ata,
         }
     }
 }
@@ -179,7 +208,7 @@ impl From<Allocation> for mpl_candy_guard::guards::Allocation {
     fn from(allocation: Allocation) -> Self {
         Self {
             id: allocation.id,
-            size: allocation.size,
+            limit: allocation.size,
         }
     }
 }
