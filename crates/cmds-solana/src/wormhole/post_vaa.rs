@@ -28,7 +28,7 @@ pub struct Input {
     pub payer: Keypair,
     pub guardian_set_index: u32,
     pub vaa_hash: bytes::Bytes,
-    pub vaa: Vec<u8>,
+    pub vaa: bytes::Bytes,
     #[serde(with = "value::keypair")]
     pub signature_set: Keypair,
     #[serde(default = "value::default::bool_true")]

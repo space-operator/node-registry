@@ -71,7 +71,7 @@ pub struct BridgeConfig {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct WormholeResponse {
-    data: Vec<WormholeData>,
+    data: WormholeData,
     pagination: WormholePagination,
 }
 
@@ -83,12 +83,23 @@ struct WormholeData {
     version: u64,
     emitter_chain: u64,
     emitter_addr: String,
-    emitter_native_addr: String,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "::serde_with::rust::unwrap_or_skip"
+    )]
+    emitter_native_addr: Option<String>,
     guardian_set_index: u64,
     vaa: String,
     timestamp: String,
     updated_at: String,
     indexed_at: String,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "::serde_with::rust::unwrap_or_skip"
+    )]
+    tx_hash: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -225,7 +236,7 @@ impl VAA {
     }
 }
 
-#[derive(Default, BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize)]
+#[derive(Default, BorshSerialize, BorshDeserialize, Clone, Serialize, Deserialize, Debug)]
 pub struct PostVAAData {
     // Header part
     pub version: u8,

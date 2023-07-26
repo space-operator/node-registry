@@ -74,10 +74,18 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let response_text = response.text().await?;
     let response: WormholeResponse = serde_json::from_str(&response_text)?;
 
-    let vaa = &response.data[0].vaa;
+    let vaa = &response.data.vaa;
 
     Ok(Output {
         response: Some(response.clone()),
         vaa: Some(vaa.to_owned()),
     })
+}
+
+#[test]
+fn test() {
+    // const res:&str = "{\"data\":{\"sequence\":420,\"id\":\"10002/000000000000000000000000db5492265f6038831e89f495670ff909ade94bd9/420\",\"version\":1,\"emitterChain\":10002,\"emitterAddr\":\"000000000000000000000000db5492265f6038831e89f495670ff909ade94bd9\",\"guardianSetIndex\":0,\"vaa\":\"AQAAAAABAIGVMaxqz2cou11lb1AVxzNNzPAV9ooflmTPSmcQmChxEfwlzHd+osaDIilfFlxNW7g5IMQPqQDhkgTyU/46qDwAZMBlwLQtAQAnEgAAAAAAAAAAAAAAANtUkiZfYDiDHon0lWcP+Qmt6UvZAAAAAAAAAaQBAgAAAAAAAAAAAAAAAEEKixUC8B8oh/CwWyLMk01FpiinJxISRVJDX1NZTUJPTAAAAAAAAAAAAAAAAAAAAAAAAAAAAABNeUVSQzIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\"timestamp\":\"2023-07-26T00:16:00Z\",\"updatedAt\":\"2023-07-26T00:33:35.942Z\",\"indexedAt\":\"2023-07-26T00:33:35.942Z\",\"txHash\":\"0eacb8738102df585cb5dbbd7664f8e2fd9e04c02bcb7080cdc62b9bfcf09d9d\"},\"pagination\":{\"next\":\"\"}}";
+    // let response: WormholeResponse = ron::de::from_str(&res).unwrap();
+
+    // dbg!(response.clone());
 }

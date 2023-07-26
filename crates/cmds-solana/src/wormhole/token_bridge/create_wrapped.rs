@@ -34,7 +34,7 @@ inventory::submit!(CommandDescription::new(NAME, |_| { build() }));
 pub struct Input {
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
-    pub vaa: Vec<u8>,
+    pub vaa: bytes::Bytes,
     pub payload: wormhole_sdk::token::Message,
     pub vaa_hash: bytes::Bytes,
     #[serde(default = "value::default::bool_true")]
@@ -68,9 +68,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         VAA::deserialize(&input.vaa).map_err(|_| anyhow::anyhow!("Failed to deserialize VAA"))?;
     let vaa: PostVAAData = vaa.into();
 
-    let emitter = Pubkey::find_program_address(&[b"emitter"], &token_bridge_program_id).0;
-
-    // get payload
     let payload: PayloadAssetMeta = match input.payload {
         Message::AssetMeta {
             token_address,
@@ -85,14 +82,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             symbol: symbol.to_string(),
             name: name.to_string(),
         },
-        // ingnore other arms
+        // ignore other arms
         _ => {
             return Err(anyhow::anyhow!("Payload content not supported"));
         }
     };
 
     let message =
-        Pubkey::find_program_address(&[b"PostedVaa", &input.vaa_hash], &wormhole_core_program_id).0;
+        Pubkey::find_program_address(&[b"PostedVAA", &input.vaa_hash], &wormhole_core_program_id).0;
 
     let claim_key = Pubkey::find_program_address(
         &[
@@ -100,14 +97,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             vaa.emitter_chain.to_be_bytes().as_ref(),
             vaa.sequence.to_be_bytes().as_ref(),
         ],
-        &emitter,
+        &token_bridge_program_id,
     )
     .0;
 
     let endpoint = Pubkey::find_program_address(
         &[
-            vaa.emitter_address.as_ref(),
             vaa.emitter_chain.to_be_bytes().as_ref(),
+            vaa.emitter_address.as_ref(),
         ],
         &token_bridge_program_id,
     )
@@ -144,19 +141,19 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         program_id: token_bridge_program_id,
         accounts: vec![
             AccountMeta::new(input.payer.pubkey(), true),
-            AccountMeta::new(config_key, false),
+            AccountMeta::new_readonly(config_key, false),
             AccountMeta::new_readonly(endpoint, false),
             AccountMeta::new_readonly(message, false),
             AccountMeta::new(claim_key, false),
-            AccountMeta::new_readonly(mint, false),
-            AccountMeta::new_readonly(mint_meta, false),
-            AccountMeta::new_readonly(spl_metadata, false),
+            AccountMeta::new(mint, false),
+            AccountMeta::new(mint_meta, false),
+            AccountMeta::new(spl_metadata, false),
             AccountMeta::new_readonly(mint_authority, false),
             // Dependencies
-            AccountMeta::new(sysvar::rent::id(), false),
-            AccountMeta::new(system_program::id(), false),
+            AccountMeta::new_readonly(sysvar::rent::id(), false),
+            AccountMeta::new_readonly(system_program::id(), false),
             // Program
-            AccountMeta::new(wormhole_core_program_id, false),
+            AccountMeta::new_readonly(wormhole_core_program_id, false),
             AccountMeta::new_readonly(spl_token::id(), false),
             AccountMeta::new_readonly(mpl_token_metadata::id(), false),
         ],
