@@ -1,9 +1,9 @@
 {
   "type": "native",
   "data": {
-    "node_id": "get_vaa",
+    "node_id": "attest_from_eth",
     "version": "0.1",
-    "display_name": "Get VAA",
+    "display_name": "Attest From ETH",
     "description": "",
     "width": 200,
     "height": 235,
@@ -17,15 +17,29 @@
       "tooltip": ""
     },
     {
-      "name": "vaa",
-      "type": "string",
+      "name": "emitter",
+      "type": "address",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "sequence",
+      "type": "u32",
       "defaultValue": null,
       "tooltip": ""
     }
   ],
   "targets": [
     {
-      "name": "emitter",
+      "name": "keypair",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "network_name",
       "type_bounds": ["string"],
       "required": true,
       "defaultValue": null,
@@ -33,16 +47,8 @@
       "passthrough": false
     },
     {
-      "name": "sequence",
-      "type_bounds": ["string"],
-      "required": true,
-      "defaultValue": null,
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
-      "name": "chain_id",
-      "type_bounds": ["string"],
+      "name": "token",
+      "type_bounds": ["address"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",

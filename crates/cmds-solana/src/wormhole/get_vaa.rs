@@ -20,8 +20,9 @@ inventory::submit!(CommandDescription::new(NAME, |_| { build() }));
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
-    #[serde(with = "value::pubkey")]
-    pub emitter: Pubkey,
+    pub emitter: String,
+    pub chain_id: String,
+    pub sequence: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -40,14 +41,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let wormhole_path: &str = "/api/v1/vaas";
 
-    let chain_id = "1";
-
     let wormhole_url = wormhole_endpoint
         + wormhole_path
         + "/"
-        + chain_id
+        + input.chain_id.as_str()
         + "/"
-        + input.emitter.to_string().as_str();
+        + input.emitter.as_str()
+        + "/"
+        + input.sequence.as_str();
 
     let client = reqwest::Client::new();
 
@@ -66,7 +67,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     while response.status() != 200 {
         println!("Waiting for VAA to be generated...");
-        sleep(Duration::from_secs(5)).await;
+        sleep(Duration::from_secs(60)).await;
         response = send_wormhole_request(&client, &wormhole_url, timeout).await?;
     }
 

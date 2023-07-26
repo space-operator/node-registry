@@ -1,7 +1,10 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 
 pub mod attest;
+pub mod create_wrapped;
 pub mod initialize;
+
+pub mod eth;
 
 #[repr(u8)]
 #[derive(BorshSerialize, BorshDeserialize)]
@@ -25,3 +28,6 @@ enum TokenBridgeInstructions {
 pub struct AttestTokenData {
     pub nonce: u32,
 }
+
+#[derive(BorshDeserialize, BorshSerialize, Default)]
+pub struct CreateWrappedData {}

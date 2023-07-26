@@ -51,6 +51,12 @@
       "type": "bytes",
       "defaultValue": null,
       "tooltip": ""
+    },
+    {
+      "name": "payload",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
     }
   ],
   "targets": [
