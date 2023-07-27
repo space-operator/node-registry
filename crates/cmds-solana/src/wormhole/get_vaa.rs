@@ -67,7 +67,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     while response.status() != 200 {
         println!("Waiting for VAA to be generated...");
-        sleep(Duration::from_secs(60)).await;
+        sleep(Duration::from_secs(45)).await;
         response = send_wormhole_request(&client, &wormhole_url, timeout).await?;
     }
 

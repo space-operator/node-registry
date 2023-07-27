@@ -1,0 +1,124 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "transfer_wrapped",
+    "version": "0.1",
+    "display_name": "Transfer Wrapped",
+    "description": "",
+    "width": 200,
+    "height": 235,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "wrapped_mint_key",
+      "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "wrapped_meta_key",
+      "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "token_chain",
+      "type_bounds": ["u16"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "token_address",
+      "type_bounds": ["address"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "amount",
+      "type_bounds": ["u64"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "fee",
+      "type_bounds": ["u64"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "target_address",
+      "type_bounds": ["address"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "target_chain",
+      "type_bounds": ["u16"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "message",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "from",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "from_owner",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

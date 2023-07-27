@@ -9,13 +9,16 @@ use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::token::Message;
 
-use super::{AttestTokenData, CreateWrappedData, PayloadAssetMeta, TokenBridgeInstructions};
+use super::{
+    AttestTokenData, CompleteWrappedData, CompleteWrappedWithPayloadData, CreateWrappedData,
+    PayloadTransfer, PayloadTransferWithPayload, TokenBridgeInstructions,
+};
 
 // Command Name
-const NAME: &str = "create_wrapped";
+const NAME: &str = "complete_transfer_wrapped";
 
 const DEFINITION: &str = include_str!(
-    "../../../../../node-definitions/solana/wormhole/token_bridge/create_wrapped.json"
+    "../../../../../node-definitions/solana/wormhole/token_bridge/complete_transfer_wrapped.json"
 );
 
 fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
@@ -37,6 +40,12 @@ pub struct Input {
     pub vaa: bytes::Bytes,
     pub payload: wormhole_sdk::token::Message,
     pub vaa_hash: bytes::Bytes,
+    #[serde(with = "value::pubkey")]
+    pub to: Pubkey,
+    #[serde(with = "value::pubkey")]
+    pub to_owner: Pubkey,
+    #[serde(with = "value::pubkey::opt")]
+    pub fee_recipient: Option<Pubkey>,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
 }
@@ -68,19 +77,21 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         VAA::deserialize(&input.vaa).map_err(|_| anyhow::anyhow!("Failed to deserialize VAA"))?;
     let vaa: PostVAAData = vaa.into();
 
-    let payload: PayloadAssetMeta = match input.payload {
-        Message::AssetMeta {
+    let payload: PayloadTransfer = match input.payload {
+        Message::Transfer {
+            amount,
             token_address,
             token_chain,
-            decimals,
-            symbol,
-            name,
-        } => PayloadAssetMeta {
+            recipient,
+            recipient_chain,
+            fee,
+        } => PayloadTransfer {
+            amount: amount,
             token_address: token_address.0,
             token_chain: token_chain.into(),
-            decimals: decimals,
-            symbol: symbol.to_string(),
-            name: name.to_string(),
+            to: recipient.0,
+            to_chain: recipient_chain.into(),
+            fee: fee,
         },
         // ignore other arms
         _ => {
@@ -126,28 +137,22 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let mint_authority =
         Pubkey::find_program_address(&[b"mint_signer"], &token_bridge_program_id).0;
 
-    // SPL Metadata
-    let spl_metadata = Pubkey::find_program_address(
-        &[
-            b"metadata".as_ref(),
-            mpl_token_metadata::id().as_ref(),
-            mint.as_ref(),
-        ],
-        &mpl_token_metadata::id(),
-    )
-    .0;
-
     let ix = solana_program::instruction::Instruction {
         program_id: token_bridge_program_id,
         accounts: vec![
             AccountMeta::new(input.payer.pubkey(), true),
             AccountMeta::new_readonly(config_key, false),
-            AccountMeta::new_readonly(endpoint, false),
             AccountMeta::new_readonly(message, false),
             AccountMeta::new(claim_key, false),
+            AccountMeta::new_readonly(endpoint, false),
+            AccountMeta::new(input.to, false),
+            if let Some(fee_r) = input.fee_recipient {
+                AccountMeta::new(fee_r, false)
+            } else {
+                AccountMeta::new(input.to, false)
+            },
             AccountMeta::new(mint, false),
-            AccountMeta::new(mint_meta, false),
-            AccountMeta::new(spl_metadata, false),
+            AccountMeta::new_readonly(mint_meta, false),
             AccountMeta::new_readonly(mint_authority, false),
             // Dependencies
             AccountMeta::new_readonly(sysvar::rent::id(), false),
@@ -155,9 +160,12 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             // Program
             AccountMeta::new_readonly(wormhole_core_program_id, false),
             AccountMeta::new_readonly(spl_token::id(), false),
-            AccountMeta::new_readonly(mpl_token_metadata::id(), false),
         ],
-        data: (TokenBridgeInstructions::CreateWrapped, CreateWrappedData {}).try_to_vec()?,
+        data: (
+            TokenBridgeInstructions::CompleteWrapped,
+            CompleteWrappedData {},
+        )
+            .try_to_vec()?,
     };
 
     let minimum_balance_for_rent_exemption = ctx
@@ -180,7 +188,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         .execute(
             ins,
             value::map! {
-                "SPL_metadata" => spl_metadata,
                 "mint_metadata" => mint_meta,
                 "mint" => mint,
             },

@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::wormhole::ForeignAddress;
 
 pub mod attest_from_eth;
 
@@ -77,18 +76,3 @@ struct Response {
     output: Output,
 }
 
-#[derive(PartialEq, Debug)]
-pub struct PayloadAssetMeta {
-    /// Address of the token. Left-zero-padded if shorter than 32 bytes
-    pub token_address: ForeignAddress,
-    /// Chain ID of the token
-    pub token_chain: ChainID,
-    /// Number of decimals of the token
-    pub decimals: u8,
-    /// Symbol of the token
-    pub symbol: String,
-    /// Name of the token
-    pub name: String,
-}
-
-pub type ChainID = u16;

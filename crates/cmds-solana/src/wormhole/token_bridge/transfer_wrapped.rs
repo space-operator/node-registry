@@ -1,4 +1,4 @@
-use crate::wormhole::{PostVAAData, VAA};
+use crate::wormhole::{ForeignAddress, PostVAAData, VAA};
 use std::str::FromStr;
 
 use crate::prelude::*;
@@ -7,15 +7,18 @@ use borsh::BorshSerialize;
 use rand::Rng;
 use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
-use wormhole_sdk::token::Message;
+use wormhole_sdk::{token::Message, Address};
 
-use super::{AttestTokenData, CreateWrappedData, PayloadAssetMeta, TokenBridgeInstructions};
+use super::{
+    AttestTokenData, CompleteWrappedData, CompleteWrappedWithPayloadData, CreateWrappedData,
+    PayloadTransfer, PayloadTransferWithPayload, TokenBridgeInstructions, TransferWrappedData,
+};
 
 // Command Name
-const NAME: &str = "create_wrapped";
+const NAME: &str = "transfer_wrapped";
 
 const DEFINITION: &str = include_str!(
-    "../../../../../node-definitions/solana/wormhole/token_bridge/create_wrapped.json"
+    "../../../../../node-definitions/solana/wormhole/token_bridge/transfer_wrapped.json"
 );
 
 fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
@@ -34,9 +37,18 @@ inventory::submit!(CommandDescription::new(NAME, |_| { build() }));
 pub struct Input {
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
-    pub vaa: bytes::Bytes,
-    pub payload: wormhole_sdk::token::Message,
-    pub vaa_hash: bytes::Bytes,
+    pub token_chain: u16,
+    pub token_address: ForeignAddress,
+    pub amount: u64,
+    pub fee: u64,
+    pub target_address: Address,
+    pub target_chain: u16,
+    #[serde(with = "value::keypair")]
+    pub message: Keypair,
+    #[serde(with = "value::pubkey")]
+    pub from: Pubkey,
+    #[serde(with = "value::keypair")]
+    pub from_owner: Keypair,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
 }
@@ -64,100 +76,71 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let config_key = Pubkey::find_program_address(&[b"config"], &token_bridge_program_id).0;
 
-    let vaa =
-        VAA::deserialize(&input.vaa).map_err(|_| anyhow::anyhow!("Failed to deserialize VAA"))?;
-    let vaa: PostVAAData = vaa.into();
-
-    let payload: PayloadAssetMeta = match input.payload {
-        Message::AssetMeta {
-            token_address,
-            token_chain,
-            decimals,
-            symbol,
-            name,
-        } => PayloadAssetMeta {
-            token_address: token_address.0,
-            token_chain: token_chain.into(),
-            decimals: decimals,
-            symbol: symbol.to_string(),
-            name: name.to_string(),
-        },
-        // ignore other arms
-        _ => {
-            return Err(anyhow::anyhow!("Payload content not supported"));
-        }
-    };
-
-    let message =
-        Pubkey::find_program_address(&[b"PostedVAA", &input.vaa_hash], &wormhole_core_program_id).0;
-
-    let claim_key = Pubkey::find_program_address(
-        &[
-            vaa.emitter_address.as_ref(),
-            vaa.emitter_chain.to_be_bytes().as_ref(),
-            vaa.sequence.to_be_bytes().as_ref(),
-        ],
-        &token_bridge_program_id,
-    )
-    .0;
-
-    let endpoint = Pubkey::find_program_address(
-        &[
-            vaa.emitter_chain.to_be_bytes().as_ref(),
-            vaa.emitter_address.as_ref(),
-        ],
-        &token_bridge_program_id,
-    )
-    .0;
-
-    let mint = Pubkey::find_program_address(
+    let wrapped_mint_key = Pubkey::find_program_address(
         &[
             b"wrapped",
-            payload.token_chain.to_be_bytes().as_ref(),
-            payload.token_address.as_ref(),
+            input.token_chain.to_be_bytes().as_ref(),
+            &input.token_address,
         ],
         &token_bridge_program_id,
     )
     .0;
 
-    let mint_meta =
-        Pubkey::find_program_address(&[b"meta", mint.as_ref()], &token_bridge_program_id).0;
-
-    let mint_authority =
-        Pubkey::find_program_address(&[b"mint_signer"], &token_bridge_program_id).0;
-
-    // SPL Metadata
-    let spl_metadata = Pubkey::find_program_address(
-        &[
-            b"metadata".as_ref(),
-            mpl_token_metadata::id().as_ref(),
-            mint.as_ref(),
-        ],
-        &mpl_token_metadata::id(),
+    let wrapped_meta_key = Pubkey::find_program_address(
+        &[b"meta", wrapped_mint_key.as_ref()],
+        &token_bridge_program_id,
     )
     .0;
+    dbg!(&wrapped_meta_key);
+
+    let authority_signer =
+        Pubkey::find_program_address(&[b"authority_signer"], &token_bridge_program_id).0;
+
+    let emitter = Pubkey::find_program_address(&[b"emitter"], &token_bridge_program_id).0;
+
+    let bridge_config = Pubkey::find_program_address(&[b"Bridge"], &wormhole_core_program_id).0;
+
+    let sequence =
+        Pubkey::find_program_address(&[b"Sequence", emitter.as_ref()], &wormhole_core_program_id).0;
+
+    let fee_collector =
+        Pubkey::find_program_address(&[b"fee_collector"], &wormhole_core_program_id).0;
+
+    // TODO: use a real nonce
+    let nonce = rand::thread_rng().gen();
+
+    let wrapped_data = TransferWrappedData {
+        nonce,
+        amount: input.amount,
+        fee: input.fee,
+        target_address: input.target_address.0,
+        target_chain: input.target_chain,
+    };
 
     let ix = solana_program::instruction::Instruction {
         program_id: token_bridge_program_id,
         accounts: vec![
             AccountMeta::new(input.payer.pubkey(), true),
             AccountMeta::new_readonly(config_key, false),
-            AccountMeta::new_readonly(endpoint, false),
-            AccountMeta::new_readonly(message, false),
-            AccountMeta::new(claim_key, false),
-            AccountMeta::new(mint, false),
-            AccountMeta::new(mint_meta, false),
-            AccountMeta::new(spl_metadata, false),
-            AccountMeta::new_readonly(mint_authority, false),
+            AccountMeta::new(input.from, false),
+            AccountMeta::new_readonly(input.from_owner.pubkey(), true),
+            AccountMeta::new(wrapped_mint_key, false),
+            AccountMeta::new_readonly(wrapped_meta_key, false),
+            AccountMeta::new_readonly(authority_signer, false),
+            AccountMeta::new(bridge_config, false),
+            AccountMeta::new(input.message.pubkey(), true),
+            AccountMeta::new_readonly(emitter, false),
+            AccountMeta::new(sequence, false),
+            AccountMeta::new(fee_collector, false),
+            AccountMeta::new_readonly(solana_program::sysvar::clock::id(), false),
             // Dependencies
-            AccountMeta::new_readonly(sysvar::rent::id(), false),
-            AccountMeta::new_readonly(system_program::id(), false),
+            AccountMeta::new_readonly(solana_program::sysvar::rent::id(), false),
+            AccountMeta::new_readonly(solana_program::system_program::id(), false),
             // Program
             AccountMeta::new_readonly(wormhole_core_program_id, false),
             AccountMeta::new_readonly(spl_token::id(), false),
-            AccountMeta::new_readonly(mpl_token_metadata::id(), false),
         ],
-        data: (TokenBridgeInstructions::CreateWrapped, CreateWrappedData {}).try_to_vec()?,
+        data: (TokenBridgeInstructions::TransferWrapped, wrapped_data).try_to_vec()?,
     };
 
     let minimum_balance_for_rent_exemption = ctx
@@ -169,7 +152,12 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
-        signers: [input.payer.clone_keypair()].into(),
+        signers: [
+            input.payer.clone_keypair(),
+            input.from_owner.clone_keypair(),
+            input.message.clone_keypair(),
+        ]
+        .into(),
         instructions: [ix].into(),
         minimum_balance_for_rent_exemption,
     };
@@ -180,9 +168,8 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         .execute(
             ins,
             value::map! {
-                "SPL_metadata" => spl_metadata,
-                "mint_metadata" => mint_meta,
-                "mint" => mint,
+                "wrapped_mint_key" => wrapped_mint_key,
+                "wrapped_meta_key" => wrapped_meta_key,
             },
         )
         .await?
