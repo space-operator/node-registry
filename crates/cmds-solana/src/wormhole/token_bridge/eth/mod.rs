@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-
 pub mod attest_from_eth;
+pub mod transfer_from_eth;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct GasUsed {
@@ -75,4 +75,3 @@ struct Output {
 struct Response {
     output: Output,
 }
-

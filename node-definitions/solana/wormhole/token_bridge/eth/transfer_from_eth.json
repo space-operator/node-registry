@@ -1,9 +1,9 @@
 {
   "type": "native",
   "data": {
-    "node_id": "attest_token",
+    "node_id": "tranfer_from_eth",
     "version": "0.1",
-    "display_name": "Attest Token",
+    "display_name": "Transfer From ETH",
     "description": "",
     "width": 200,
     "height": 235,
@@ -11,39 +11,27 @@
   },
   "sources": [
     {
-      "name": "spl_metadata",
-      "type": "pubkey",
-      "defaultValue": null,
-      "tooltip": ""
-    },
-    {
-      "name": "mint_metadata",
-      "type": "pubkey",
+      "name": "response",
+      "type": "json",
       "defaultValue": null,
       "tooltip": ""
     },
     {
       "name": "emitter",
-      "type": "string",
+      "type": "address",
       "defaultValue": null,
       "tooltip": ""
     },
     {
       "name": "sequence",
-      "type": "pubkey",
-      "defaultValue": null,
-      "tooltip": ""
-    },
-    {
-      "name": "signature",
-      "type": "signature",
+      "type": "u32",
       "defaultValue": null,
       "tooltip": ""
     }
   ],
   "targets": [
     {
-      "name": "payer",
+      "name": "keypair",
       "type_bounds": ["keypair"],
       "required": true,
       "defaultValue": null,
@@ -51,15 +39,23 @@
       "passthrough": true
     },
     {
-      "name": "message",
-      "type_bounds": ["keypair"],
+      "name": "network_name",
+      "type_bounds": ["string"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",
       "passthrough": false
     },
     {
-      "name": "mint",
+      "name": "token",
+      "type_bounds": ["address"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "recipient",
       "type_bounds": ["pubkey"],
       "required": true,
       "defaultValue": null,
@@ -67,10 +63,10 @@
       "passthrough": false
     },
     {
-      "name": "submit",
-      "type_bounds": ["bool"],
-      "required": false,
-      "defaultValue": true,
+      "name": "amount",
+      "type_bounds": ["u64"],
+      "required": true,
+      "defaultValue": null,
       "tooltip": "",
       "passthrough": false
     }

@@ -59,7 +59,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     )
     .0;
 
-    let account = ctx.solana_client.get_account(&guardian_set).await.unwrap();
+    let account: solana_sdk::account::Account = ctx.solana_client.get_account(&guardian_set).await.unwrap();
     let guardian_set_data: GuardianSetData =
         GuardianSetData::try_from_slice(&account.data).unwrap();
 

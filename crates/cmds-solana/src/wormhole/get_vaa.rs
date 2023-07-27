@@ -39,16 +39,12 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     }
     .to_owned();
 
-    let wormhole_path: &str = "/api/v1/vaas";
+    let wormhole_path: &str = "api/v1/vaas";
 
-    let wormhole_url = wormhole_endpoint
-        + wormhole_path
-        + "/"
-        + input.chain_id.as_str()
-        + "/"
-        + input.emitter.as_str()
-        + "/"
-        + input.sequence.as_str();
+    let wormhole_url = format!(
+        "{}/{}/{}/{}/{}",
+        wormhole_endpoint, wormhole_path, input.chain_id, input.emitter, input.sequence
+    );
 
     let client = reqwest::Client::new();
 
@@ -67,7 +63,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     while response.status() != 200 {
         println!("Waiting for VAA to be generated...");
-        sleep(Duration::from_secs(45)).await;
+        // Solana
+        if input.chain_id == "1" {
+            sleep(Duration::from_secs(5)).await;
+        }
+        // Eth Sepolia about 20m
+        if input.chain_id == "10002" {
+            sleep(Duration::from_secs(45)).await;
+        }
         response = send_wormhole_request(&client, &wormhole_url, timeout).await?;
     }
 

@@ -2,12 +2,12 @@ use std::str::FromStr;
 
 use crate::prelude::*;
 
-use borsh::BorshSerialize;
+use borsh::{BorshDeserialize, BorshSerialize};
 use rand::Rng;
 use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 
-use super::{AttestTokenData, TokenBridgeInstructions};
+use super::{AttestTokenData, SequenceTracker, TokenBridgeInstructions};
 
 // Command Name
 const NAME: &str = "attest_token";
@@ -128,17 +128,17 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
-        signers: [
-            input.payer.clone_keypair(),
-            // input.emitter.clone_keypair(),
-            input.message.clone_keypair(),
-        ]
-        .into(),
+        signers: [input.payer.clone_keypair(), input.message.clone_keypair()].into(),
         instructions: [ix].into(),
         minimum_balance_for_rent_exemption,
     };
 
     let ins = input.submit.then_some(ins).unwrap_or_default();
+
+    let sequence_account: solana_sdk::account::Account =
+        ctx.solana_client.get_account(&sequence).await.unwrap();
+    let sequence_data: SequenceTracker =
+        SequenceTracker::try_from_slice(&sequence_account.data).unwrap();
 
     let signature = ctx
         .execute(
@@ -146,6 +146,8 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             value::map! {
                 "SPL_metadata" => spl_metadata,
                 "mint_metadata" => mint_meta,
+                "emitter"=>emitter.to_string(),
+                "sequence"=>sequence_data.sequence.to_string(),
             },
         )
         .await?

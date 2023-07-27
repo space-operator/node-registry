@@ -1,6 +1,7 @@
 use crate::wormhole::ForeignAddress;
 use borsh::{BorshDeserialize, BorshSerialize};
 use primitive_types::U256;
+use serde::{Deserialize, Serialize};
 use wormhole_sdk::Amount;
 
 pub mod attest;
@@ -101,4 +102,9 @@ pub struct TransferWrappedData {
     pub fee: u64,
     pub target_address: Address,
     pub target_chain: ChainID,
+}
+
+#[derive(Default, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
+pub struct SequenceTracker {
+    pub sequence: u64,
 }
