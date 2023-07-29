@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 pub mod attest_from_eth;
+pub mod create_wrapped_on_eth;
 pub mod transfer_from_eth;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -74,4 +75,14 @@ struct Output {
 #[derive(Serialize, Deserialize, Debug)]
 struct Response {
     output: Output,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct CreateWrappedOutput {
+    receipt: Receipt,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct CreateWrappedResponse {
+    output: CreateWrappedOutput,
 }
