@@ -85,17 +85,21 @@ mod tests {
 
     #[tokio::test]
     async fn test_local() {
-        async fn test(payload: Payload) -> Result<(CreateWrappedResponse), reqwest::Error> {
+        async fn test(payload: Payload) -> Result<CreateWrappedResponse, reqwest::Error> {
             let client = reqwest::Client::new();
-            let response = client
+            let json = client
                 .post(
                     "https://gygvoikm3c.execute-api.us-east-1.amazonaws.com/create_wrapped_on_eth",
                 )
                 .json(&payload)
                 .send()
                 .await?
-                .json::<CreateWrappedResponse>()
+                .json::<serde_json::Value>()
                 .await?;
+
+            dbg!(&json);
+
+            let response = serde_json::from_value(json).unwrap();
 
             Ok(response)
         }
