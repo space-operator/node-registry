@@ -1,5 +1,7 @@
-use std::io::{Cursor, Read};
+// TODO: remove before merging to main
+#![allow(unused_imports, unused_mut, unused_variables)]
 
+use std::io::{Cursor, Read};
 use anchor_lang::AnchorSerialize;
 use borsh::{BorshDeserialize, BorshSerialize};
 use byteorder::{BigEndian, ReadBytesExt};

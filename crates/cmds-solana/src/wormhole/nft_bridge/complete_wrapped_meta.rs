@@ -88,10 +88,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             token_id: primitive_types::U256::from(token_id.0).into(),
             uri: uri.to_string(),
         },
-        // ignore other arms
-        _ => {
-            return Err(anyhow::anyhow!("Payload content not supported"));
-        }
     };
 
     // Convert token id

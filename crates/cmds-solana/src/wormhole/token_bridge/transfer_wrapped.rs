@@ -91,7 +91,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         &token_bridge_program_id,
     )
     .0;
-    dbg!(&wrapped_meta_key);
 
     let authority_signer =
         Pubkey::find_program_address(&[b"authority_signer"], &token_bridge_program_id).0;

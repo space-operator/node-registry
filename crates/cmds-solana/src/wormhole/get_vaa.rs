@@ -62,7 +62,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let mut response = send_wormhole_request(&client, &wormhole_url, timeout).await?;
 
     while response.status() != 200 {
-        println!("Waiting for VAA to be generated...");
         // Solana
         if input.chain_id == "1" {
             sleep(Duration::from_secs(5)).await;

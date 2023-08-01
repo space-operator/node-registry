@@ -52,15 +52,15 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     // Allocate tree's account
 
-    /// Only the following pesrmutations are valid:
-    ///
-    /// | max_depth | max_buffer_size       |
-    /// | --------- | --------------------- |
-    /// | 14        | (64, 256, 1024, 2048) |           
-    /// | 20        | (64, 256, 1024, 2048) |           
-    /// | 24        | (64, 256, 512, 1024, 2048) |           
-    /// | 26        | (64, 256, 512, 1024, 2048) |           
-    /// | 30        | (512, 1024, 2048) |     
+    // Only the following pesrmutations are valid:
+    //
+    // | max_depth | max_buffer_size       |
+    // | --------- | --------------------- |
+    // | 14        | (64, 256, 1024, 2048) |
+    // | 20        | (64, 256, 1024, 2048) |
+    // | 24        | (64, 256, 512, 1024, 2048) |
+    // | 26        | (64, 256, 512, 1024, 2048) |
+    // | 30        | (512, 1024, 2048) |
     // const MAX_DEPTH: usize = 14;
     // const MAX_BUFFER_SIZE: usize = 64;
     let merkle_tree_account_size: usize = match input.max_depth {

@@ -1,5 +1,3 @@
-use bytes::Bytes;
-
 use crate::{prelude::*, utils::sol_to_lamports};
 
 const NAME: &str = "transfer_sol";

@@ -1,13 +1,10 @@
 use super::Trigger;
 use crate::prelude::*;
-
 use clockwork_client::thread::instruction::thread_create;
 use clockwork_client::thread::state::Thread;
 use clockwork_utils::thread::SerializableInstruction as ClockWorkInstruction;
 use clockwork_utils::thread::Trigger as ClockWorkTrigger;
-
 use solana_program::instruction::Instruction;
-use solana_sdk::pubkey::Pubkey;
 
 // Command Name
 const THREAD_CREATE: &str = "thread_create";

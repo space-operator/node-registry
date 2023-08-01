@@ -101,12 +101,12 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
         // Write signatures and addresses
         for s in chunk.iter() {
-            secp_payload.write(&s.signature)?;
-            secp_payload.write(&s.key)?;
+            secp_payload.write_all(&s.signature)?;
+            secp_payload.write_all(&s.key)?;
         }
 
         // Write body
-        secp_payload.write(&input.vaa_hash)?;
+        secp_payload.write_all(&input.vaa_hash)?;
 
         let secp_ix = Instruction {
             program_id: solana_program::secp256k1_program::id(),
