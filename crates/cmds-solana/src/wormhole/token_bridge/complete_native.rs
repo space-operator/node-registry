@@ -4,18 +4,17 @@ use std::str::FromStr;
 use crate::prelude::*;
 
 use borsh::BorshSerialize;
-use rand::Rng;
 use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::token::Message;
 
-use super::{CompleteWrappedData, PayloadTransfer, TokenBridgeInstructions};
+use super::{CompleteNativeData, PayloadTransfer, TokenBridgeInstructions};
 
 // Command Name
-const NAME: &str = "complete_transfer_wrapped";
+const NAME: &str = "complete_native";
 
 const DEFINITION: &str = include_str!(
-    "../../../../../node-definitions/solana/wormhole/token_bridge/complete_transfer_wrapped.json"
+    "../../../../../node-definitions/solana/wormhole/token_bridge/complete_native.json"
 );
 
 fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
@@ -65,11 +64,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     };
 
     let config_key = Pubkey::find_program_address(&[b"config"], &token_bridge_program_id).0;
-
-    let vaa =
-        VAA::deserialize(&input.vaa).map_err(|_| anyhow::anyhow!("Failed to deserialize VAA"))?;
-    let vaa: PostVAAData = vaa.into();
-
+    
     let payload: PayloadTransfer = match input.payload {
         Message::Transfer {
             amount,
@@ -93,6 +88,15 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     };
 
     let to = Pubkey::from(payload.to);
+    let mint = Pubkey::from(payload.token_address);
+
+    let custody_key = Pubkey::find_program_address(&[mint.as_ref()], &token_bridge_program_id).0;
+    let custody_signer =
+        Pubkey::find_program_address(&[b"custody_signer"], &token_bridge_program_id).0;
+
+    let vaa =
+        VAA::deserialize(&input.vaa).map_err(|_| anyhow::anyhow!("Failed to deserialize VAA"))?;
+    let vaa: PostVAAData = vaa.into();
 
     let message =
         Pubkey::find_program_address(&[b"PostedVAA", &input.vaa_hash], &wormhole_core_program_id).0;
@@ -116,22 +120,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     )
     .0;
 
-    let mint = Pubkey::find_program_address(
-        &[
-            b"wrapped",
-            payload.token_chain.to_be_bytes().as_ref(),
-            payload.token_address.as_ref(),
-        ],
-        &token_bridge_program_id,
-    )
-    .0;
-
-    let mint_meta =
-        Pubkey::find_program_address(&[b"meta", mint.as_ref()], &token_bridge_program_id).0;
-
-    let mint_authority =
-        Pubkey::find_program_address(&[b"mint_signer"], &token_bridge_program_id).0;
-
     let ix = solana_program::instruction::Instruction {
         program_id: token_bridge_program_id,
         accounts: vec![
@@ -146,9 +134,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             } else {
                 AccountMeta::new(to, false)
             },
+            AccountMeta::new(custody_key, false),
             AccountMeta::new(mint, false),
-            AccountMeta::new_readonly(mint_meta, false),
-            AccountMeta::new_readonly(mint_authority, false),
+            AccountMeta::new_readonly(custody_signer, false),
             // Dependencies
             AccountMeta::new_readonly(sysvar::rent::id(), false),
             AccountMeta::new_readonly(system_program::id(), false),
@@ -157,8 +145,8 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
         data: (
-            TokenBridgeInstructions::CompleteWrapped,
-            CompleteWrappedData {},
+            TokenBridgeInstructions::CompleteNative,
+            CompleteNativeData {},
         )
             .try_to_vec()?,
     };
@@ -183,7 +171,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         .execute(
             ins,
             value::map! {
-                "mint_metadata" => mint_meta,
                 "mint" => mint,
             },
         )

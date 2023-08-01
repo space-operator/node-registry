@@ -11,12 +11,6 @@
   },
   "sources": [
     {
-      "name": "mint_metadata",
-      "type": "pubkey",
-      "defaultValue": null,
-      "tooltip": ""
-    },
-    {
       "name": "mint",
       "type": "pubkey",
       "defaultValue": null,

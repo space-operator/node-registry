@@ -1,9 +1,9 @@
 {
   "type": "native",
   "data": {
-    "node_id": "complete_transfer_wrapped",
+    "node_id": "nft_complete_wrapped_meta",
     "version": "0.1",
-    "display_name": "Complete Transfer Wrapped",
+    "display_name": "NFT Complete Wrapped Meta",
     "description": "",
     "width": 200,
     "height": 235,
@@ -11,13 +11,19 @@
   },
   "sources": [
     {
+      "name": "mint",
+      "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
       "name": "mint_metadata",
       "type": "pubkey",
       "defaultValue": null,
       "tooltip": ""
     },
     {
-      "name": "mint",
+      "name": "spl_metadata",
       "type": "pubkey",
       "defaultValue": null,
       "tooltip": ""
@@ -40,7 +46,7 @@
     },
     {
       "name": "vaa",
-      "type_bounds": ["Vec<u8>"],
+      "type_bounds": ["bytes"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",
@@ -58,14 +64,6 @@
       "name": "vaa_hash",
       "type_bounds": ["bytes"],
       "required": true,
-      "defaultValue": null,
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
-      "name": "fee_recipient",
-      "type_bounds": ["pubkey"],
-      "required": false,
       "defaultValue": null,
       "tooltip": "",
       "passthrough": false

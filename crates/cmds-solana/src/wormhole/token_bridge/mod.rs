@@ -9,6 +9,8 @@ pub mod complete_transfer_wrapped;
 pub mod create_wrapped;
 pub mod initialize;
 pub mod transfer_wrapped;
+pub mod transfer_native;
+pub mod complete_native;
 
 pub mod eth;
 
@@ -108,3 +110,16 @@ pub struct TransferWrappedData {
 pub struct SequenceTracker {
     pub sequence: u64,
 }
+
+
+#[derive(BorshDeserialize, BorshSerialize, Default)]
+pub struct TransferNativeData {
+    pub nonce: u32,
+    pub amount: u64,
+    pub fee: u64,
+    pub target_address: Address,
+    pub target_chain: ChainID,
+}
+
+#[derive(BorshDeserialize, BorshSerialize, Default)]
+pub struct CompleteNativeData {}

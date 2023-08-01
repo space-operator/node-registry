@@ -4,18 +4,19 @@ use std::str::FromStr;
 use crate::prelude::*;
 
 use borsh::BorshSerialize;
+use primitive_types::U256;
 use rand::Rng;
 use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
-use wormhole_sdk::token::Message;
+use wormhole_sdk::nft::{Message, TokenId};
 
-use super::{CompleteWrappedData, PayloadTransfer, TokenBridgeInstructions};
+use super::{Address, CompleteWrappedData, NFTBridgeInstructions, PayloadTransfer};
 
 // Command Name
-const NAME: &str = "complete_transfer_wrapped";
+const NAME: &str = "nft_complete_wrapped";
 
 const DEFINITION: &str = include_str!(
-    "../../../../../node-definitions/solana/wormhole/token_bridge/complete_transfer_wrapped.json"
+    "../../../../../node-definitions/solana/wormhole/nft_bridge/nft_complete_wrapped.json"
 );
 
 fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
@@ -35,10 +36,10 @@ pub struct Input {
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
     pub vaa: bytes::Bytes,
-    pub payload: wormhole_sdk::token::Message,
+    pub payload: wormhole_sdk::nft::Message,
     pub vaa_hash: bytes::Bytes,
-    #[serde(with = "value::pubkey::opt")]
-    pub fee_recipient: Option<Pubkey>,
+    #[serde(with = "value::pubkey")]
+    pub to_authority: Pubkey,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
 }
@@ -57,14 +58,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         SolanaNet::Devnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
     };
 
-    let token_bridge_program_id = match ctx.cfg.solana_client.cluster {
-        SolanaNet::Mainnet => Pubkey::from_str("wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb")?,
+    let nft_bridge_program_id = match ctx.cfg.solana_client.cluster {
+        SolanaNet::Mainnet => Pubkey::from_str("WnFt12ZrnzZrFZkt2xsNsaNWoQribnuQ5B5FrDbwDhD")?,
         // TODO testnet not deployed yet
-        SolanaNet::Testnet => Pubkey::from_str("DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe")?,
-        SolanaNet::Devnet => Pubkey::from_str("DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe")?,
+        SolanaNet::Testnet => Pubkey::from_str("0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78")?,
+        SolanaNet::Devnet => Pubkey::from_str("0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78")?,
     };
 
-    let config_key = Pubkey::find_program_address(&[b"config"], &token_bridge_program_id).0;
+    let config_key = Pubkey::find_program_address(&[b"config"], &nft_bridge_program_id).0;
 
     let vaa =
         VAA::deserialize(&input.vaa).map_err(|_| anyhow::anyhow!("Failed to deserialize VAA"))?;
@@ -72,19 +73,23 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let payload: PayloadTransfer = match input.payload {
         Message::Transfer {
-            amount,
-            token_address,
-            token_chain,
-            recipient,
-            recipient_chain,
-            fee,
+            nft_address,
+            nft_chain,
+            symbol,
+            name,
+            token_id,
+            uri,
+            to,
+            to_chain,
         } => PayloadTransfer {
-            amount: amount,
-            token_address: token_address.0,
-            token_chain: token_chain.into(),
-            to: recipient.0,
-            to_chain: recipient_chain.into(),
-            fee: fee,
+            token_address: wormhole_sdk::Address::from(nft_address).0,
+            token_chain: wormhole_sdk::Chain::from(nft_chain).into(),
+            to: wormhole_sdk::Address::from(to).0,
+            to_chain: wormhole_sdk::Chain::from(to_chain).into(),
+            symbol: symbol.to_string(),
+            name: name.to_string(),
+            token_id: primitive_types::U256::from(token_id.0).into(),
+            uri: uri.to_string(),
         },
         // ignore other arms
         _ => {
@@ -92,7 +97,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         }
     };
 
-    let to = Pubkey::from(payload.to);
+    // Convert token id
+    let mut token_id = vec![0u8; 32];
+    payload.token_id.to_big_endian(&mut token_id);
 
     let message =
         Pubkey::find_program_address(&[b"PostedVAA", &input.vaa_hash], &wormhole_core_program_id).0;
@@ -103,7 +110,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             vaa.emitter_chain.to_be_bytes().as_ref(),
             vaa.sequence.to_be_bytes().as_ref(),
         ],
-        &token_bridge_program_id,
+        &nft_bridge_program_id,
     )
     .0;
 
@@ -112,7 +119,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             vaa.emitter_chain.to_be_bytes().as_ref(),
             vaa.emitter_address.as_ref(),
         ],
-        &token_bridge_program_id,
+        &nft_bridge_program_id,
     )
     .0;
 
@@ -121,33 +128,32 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             b"wrapped",
             payload.token_chain.to_be_bytes().as_ref(),
             payload.token_address.as_ref(),
+            &token_id,
         ],
-        &token_bridge_program_id,
+        &nft_bridge_program_id,
     )
     .0;
 
     let mint_meta =
-        Pubkey::find_program_address(&[b"meta", mint.as_ref()], &token_bridge_program_id).0;
+        Pubkey::find_program_address(&[b"meta", mint.as_ref()], &nft_bridge_program_id).0;
 
-    let mint_authority =
-        Pubkey::find_program_address(&[b"mint_signer"], &token_bridge_program_id).0;
+    let mint_authority = Pubkey::find_program_address(&[b"mint_signer"], &nft_bridge_program_id).0;
+
+    let token_account =
+        spl_associated_token_account::get_associated_token_address(&input.to_authority, &mint);
 
     let ix = solana_program::instruction::Instruction {
-        program_id: token_bridge_program_id,
+        program_id: nft_bridge_program_id,
         accounts: vec![
             AccountMeta::new(input.payer.pubkey(), true),
             AccountMeta::new_readonly(config_key, false),
             AccountMeta::new_readonly(message, false),
             AccountMeta::new(claim_key, false),
             AccountMeta::new_readonly(endpoint, false),
-            AccountMeta::new(to, false),
-            if let Some(fee_r) = input.fee_recipient {
-                AccountMeta::new(fee_r, false)
-            } else {
-                AccountMeta::new(to, false)
-            },
+            AccountMeta::new(token_account, false),
             AccountMeta::new(mint, false),
             AccountMeta::new_readonly(mint_meta, false),
+            AccountMeta::new(input.to_authority, false),
             AccountMeta::new_readonly(mint_authority, false),
             // Dependencies
             AccountMeta::new_readonly(sysvar::rent::id(), false),
@@ -155,9 +161,11 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             // Program
             AccountMeta::new_readonly(wormhole_core_program_id, false),
             AccountMeta::new_readonly(spl_token::id(), false),
+            AccountMeta::new_readonly(spl_associated_token_account::id(), false),
+            AccountMeta::new_readonly(mpl_token_metadata::id(), false),
         ],
         data: (
-            TokenBridgeInstructions::CompleteWrapped,
+            NFTBridgeInstructions::CompleteWrapped,
             CompleteWrappedData {},
         )
             .try_to_vec()?,
@@ -185,6 +193,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             value::map! {
                 "mint_metadata" => mint_meta,
                 "mint" => mint,
+                "token_account"=> token_account
             },
         )
         .await?

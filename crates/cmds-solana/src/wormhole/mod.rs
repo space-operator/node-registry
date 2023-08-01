@@ -5,6 +5,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 use byteorder::{BigEndian, ReadBytesExt};
 use serde::{Deserialize, Serialize};
 
+pub mod nft_bridge;
 pub mod token_bridge;
 
 pub mod get_vaa;
