@@ -33,6 +33,7 @@ pub struct Input {
     pub keypair: String,
     pub network_name: String,
     pub signed_vaa: String,
+    pub token: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -48,12 +49,14 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         keypair: String,
         #[serde(rename = "signedVAA")]
         signed_vaa: String,
+        token: String,
     }
 
     let payload = Payload {
         network_name: input.network_name,
         keypair: input.keypair,
         signed_vaa: input.signed_vaa,
+        token: input.token,
     };
 
     let client = reqwest::Client::new();
@@ -81,6 +84,7 @@ mod tests {
         keypair: String,
         #[serde(rename = "signedVAA")]
         signed_vaa: String,
+        token: String,
     }
 
     #[tokio::test]
@@ -107,7 +111,8 @@ mod tests {
         let payload = Payload {
             network_name: "devnet".into(),
             keypair: "".into(),
-            signed_vaa: "AQAAAAABAJPkhCixeVXr6yMcKz4/hluOf83C/4BHXuoh6W3mRyDGIvu4GwK+DJdJQHY6cE46jjmf+v9d+VNqu52ulPD8pgQAZMVdrZLz3t4AATsmQJ+Kre0/XdyhhGlapqD6gpsMhcr4SFYySJbSFMqYAAAAAAAAX5IgAvQVOLqeyHpRDdfAUyds9KyUv/H98zOrT0lmk+QHuvJCAAEJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".into(),
+            signed_vaa: "AQAAAAABACTH+5e/0/FZYU/YqK3hYxfoR0vdBK5O4yAveiILfgbQDrhVmE1r6jFD9tNzLmC4npm2iBMs8yWEkYiw4QyCTVEBZMlzE++C5sQAATsmQJ+Kre0/XdyhhGlapqD6gpsMhcr4SFYySJbSFMqYAAAAAAAAX9kgApi7fW9jhJ4tQJVc/RdjCHlBXnAU+DA652cYv7j3QvzCAAEJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".into(),
+       token:"".into()
         };
 
         let res = test(payload).await.unwrap();

@@ -85,4 +85,5 @@ struct CreateWrappedOutput {
 #[derive(Serialize, Deserialize, Debug)]
 struct CreateWrappedResponse {
     output: CreateWrappedOutput,
+    address: String,
 }

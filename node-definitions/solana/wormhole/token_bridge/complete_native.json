@@ -1,9 +1,9 @@
 {
   "type": "native",
   "data": {
-    "node_id": "complete_transfer_wrapped",
+    "node_id": "complete_native",
     "version": "0.1",
-    "display_name": "Complete Transfer Wrapped",
+    "display_name": "Complete Native",
     "description": "",
     "width": 200,
     "height": 235,
