@@ -1,7 +1,5 @@
-use std::mem::size_of;
-
 use crate::prelude::*;
-use anchor26::{InstructionData, ToAccountMetas};
+use anchor_lang_26::{InstructionData, ToAccountMetas};
 use solana_program::{instruction::Instruction, system_program};
 use solana_sdk::pubkey::Pubkey;
 
@@ -50,7 +48,6 @@ pub struct Input {
 pub struct Output {
     #[serde(with = "value::signature::opt")]
     signature: Option<Signature>,
-    //TODO
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {

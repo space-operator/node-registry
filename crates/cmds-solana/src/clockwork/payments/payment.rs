@@ -1,8 +1,6 @@
-use std::str::FromStr;
-
 use crate::prelude::*;
-use anchor_lang::{solana_program::sysvar, InstructionData, ToAccountMetas};
-use anchor_spl::{associated_token, token};
+use anchor_lang_26::{solana_program::sysvar, InstructionData, ToAccountMetas};
+use anchor_spl_26::{associated_token, token};
 use clockwork_client::thread::{
     instruction::thread_create,
     state::{Thread, Trigger},

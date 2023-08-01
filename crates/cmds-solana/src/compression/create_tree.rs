@@ -1,13 +1,11 @@
-use std::mem::size_of;
-
 use crate::prelude::*;
-use anchor26::{InstructionData, ToAccountMetas};
-use mpl_bubblegum::CreateTree;
+use anchor_lang_26::{InstructionData, ToAccountMetas};
 use solana_program::{instruction::Instruction, system_instruction, system_program};
 use solana_sdk::pubkey::Pubkey;
 use spl_account_compression::{
     self, state::CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1, ConcurrentMerkleTree,
 };
+use std::mem::size_of;
 
 // Command Name
 const CREATE_TREE: &str = "create_tree";
@@ -217,8 +215,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     };
 
     let merkle_tree_account_size: usize =
-        CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1 + merkle_tree_account_size + canopy_size as usize;    
-
+        CONCURRENT_MERKLE_TREE_HEADER_SIZE_V1 + merkle_tree_account_size + canopy_size as usize;
 
     let lamports = ctx
         .solana_client

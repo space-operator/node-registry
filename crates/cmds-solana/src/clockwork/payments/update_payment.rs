@@ -1,10 +1,8 @@
 use crate::prelude::*;
+use anchor_lang_26::InstructionData;
+use payments::state::Payment as ClockworkPayment;
 use solana_program::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
-
-use anchor_lang::InstructionData;
-
-use payments::state::Payment as ClockworkPayment;
 
 #[derive(Debug)]
 pub struct UpdatePayment;
