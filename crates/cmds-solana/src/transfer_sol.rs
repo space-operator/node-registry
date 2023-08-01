@@ -2,21 +2,19 @@ use bytes::Bytes;
 
 use crate::{prelude::*, utils::sol_to_lamports};
 
-const TRANSFER_SOL: &str = "transfer_sol";
+const NAME: &str = "transfer_sol";
 
-const DEFINITION: &str = include_str!("../../../node-definitions/solana/transfer_sol.json");
+inventory::submit!(CommandDescription::new(NAME, |_| build()));
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
-    use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+fn build() -> BuildResult {
+    const DEFINITION: &str = include_str!("../../../node-definitions/solana/transfer_sol.json");
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
-            .check_name(TRANSFER_SOL)?
+            .check_name(NAME)?
             .simple_instruction_info("signature")
     });
     Ok(CACHE.clone()?.build(run))
 }
-
-inventory::submit!(CommandDescription::new(TRANSFER_SOL, |_| { build() }));
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -42,41 +40,21 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let instruction =
         solana_sdk::system_instruction::transfer(&input.sender.pubkey(), &input.recipient, amount);
 
-    let minimum_balance_for_rent_exemption = ctx
-        .solana_client
-        .get_minimum_balance_for_rent_exemption(24)
-        .await?;
-
-    // Bundle it all up
-    let ins = Instructions {
-        fee_payer: input.sender.pubkey(),
-        signers: [input.sender.clone_keypair()].into(),
-        instructions: [instruction].into(),
-        minimum_balance_for_rent_exemption,
+    let instructions = if input.submit {
+        Instructions {
+            fee_payer: input.sender.pubkey(),
+            signers: vec![input.sender.clone_keypair()],
+            minimum_balance_for_rent_exemption: 0,
+            instructions: [instruction].into(),
+        }
+    } else {
+        Instructions::default()
     };
 
-    let instructions = ins
-        .instructions
-        .clone()
-        .into_iter()
-        .map(|i| {
-            Value::Map(value::map! {
-                "program_id" => i.program_id,
-                "accounts" => i.accounts.into_iter().map(|a| Value::Map(value::map! {
-                    "pubkey" => a.pubkey,
-                    "is_signer" => a.is_signer,
-                    "is_writable" => a.is_writable,
-                })).collect::<Vec<_>>(),
-                "data" => Bytes::from(i.data),
-            })
-        })
-        .collect::<Vec<_>>();
-
-    let ins = input.submit.then_some(ins).unwrap_or_default();
-
-    let signature = ctx.execute(ins,    value::map! {
-        "instructions" => instructions
-    },).await?.signature;
+    let signature = ctx
+        .execute(instructions, Default::default())
+        .await?
+        .signature;
 
     Ok(Output { signature })
 }
@@ -84,30 +62,24 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::request_airdrop as airdrop;
-    use rust_decimal_macros::dec;
+
+    #[test]
+    fn test_build() {
+        build().unwrap();
+    }
 
     #[tokio::test]
     async fn test_valid() {
         let ctx = Context::default();
 
         let sender = Keypair::from_base58_string("4rQanLxTFvdgtLsGirizXejgYXACawB5ShoZgvz4wwXi4jnii7XHSyUFJbvAk4ojRiEAHvzK6Qnjq7UyJFNbydeQ");
-        let recipient: Pubkey = "GQZRKDqVzM4DXGGMEUNdnBD3CC4TTywh3PwgjYPBm8W9"
-            .parse()
-            .unwrap();
+        let recipient = solana_sdk::pubkey!("GQZRKDqVzM4DXGGMEUNdnBD3CC4TTywh3PwgjYPBm8W9");
 
         // airdrop if necessary
-        let airdrop_output = airdrop::RequestAirdrop
-            .run(
-                ctx.clone(),
-                value::to_map(&airdrop::Input {
-                    pubkey: sender.pubkey(),
-                    amount: 1_000_000_000,
-                })
-                .unwrap(),
-            )
+        let _ = ctx
+            .solana_client
+            .request_airdrop(&sender.pubkey(), 1_000_000_000)
             .await;
-        let _ = dbg!(airdrop_output);
 
         // Transfer
         let output = run(
@@ -115,12 +87,12 @@ mod tests {
             Input {
                 sender,
                 recipient,
-                amount: dec!(1030),
+                amount: rust_decimal_macros::dec!(0.1),
                 submit: true,
             },
         )
         .await
         .unwrap();
-        dbg!(output);
+        dbg!(output.signature.unwrap());
     }
 }

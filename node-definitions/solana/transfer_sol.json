@@ -15,12 +15,6 @@
             "type": "signature",
             "defaultValue": null,
             "tooltip": ""
-        },
-        {
-            "name": "instructions",
-            "type": "instructions",
-            "defaultValue": null,
-            "tooltip": ""
         }
     ],
     "targets": [
