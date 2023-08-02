@@ -20,9 +20,9 @@ pub const fn wormhole_core_program_id(net: SolanaNet) -> Pubkey {
     }
 }
 
-pub const TOKEN_BRIDGE_MAINNET: Pubkey = pubkey!("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth");
-pub const TOKEN_BRIDGE_TESTNET: Pubkey = pubkey!("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
-pub const TOKEN_BRIDGE_DEVNET: Pubkey = pubkey!("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
+pub const TOKEN_BRIDGE_MAINNET: Pubkey = pubkey!("wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb");
+pub const TOKEN_BRIDGE_TESTNET: Pubkey = pubkey!("DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe");
+pub const TOKEN_BRIDGE_DEVNET: Pubkey = pubkey!("DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe");
 
 pub const fn token_bridge_program_id(net: SolanaNet) -> Pubkey {
     match net {
