@@ -1,11 +1,6 @@
-
-
 // pub mod disburse_payment_ix;
 pub mod payment;
 pub mod update_payment;
-
-
-
 
 pub fn anchor_sighash(name: &str) -> [u8; 8] {
     let namespace = "global";

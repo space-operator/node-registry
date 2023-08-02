@@ -1,10 +1,6 @@
-use crate::{prelude::*, Error};
+use crate::prelude::*;
 use base64::decode;
-use wormhole_sdk::{
-    token::Message,
-    vaa::{Body, Digest, Header},
-    Address, Chain, Vaa,
-};
+use wormhole_sdk::{token::Message, vaa::Digest, Address, Chain, Vaa};
 
 // Command Name
 const NAME: &str = "parse_vaa";
@@ -39,10 +35,10 @@ pub struct Output {
     payload: wormhole_sdk::token::Message,
 }
 
-async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
     let vaa_string = &input.vaa;
 
-    let vaa_bytes = decode(&vaa_string)
+    let vaa_bytes = decode(vaa_string)
         .map_err(|err| anyhow::anyhow!("Failed to decode VAA string: {}", err))?;
 
     let sig_start = 6;
@@ -114,7 +110,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         parsed_vaa: parsed_vaa.clone(),
         vaa_bytes: bytes::Bytes::copy_from_slice(&vaa_bytes),
         signatures: guardian_signatures,
-        body: bytes::Bytes::copy_from_slice(&body),
+        body: bytes::Bytes::copy_from_slice(body),
         vaa_hash: bytes::Bytes::copy_from_slice(&vaa_hash),
         vaa_secp256k_hash: bytes::Bytes::copy_from_slice(&vaa_secp256k_hash),
         guardian_set_index: parsed_vaa.guardian_set_index,
@@ -125,7 +121,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 #[test]
 fn test() -> Result<(), anyhow::Error> {
     //sol vaa, not supported payload
-    let vaa_string:String = "AQAAAAABAE9eT/T0B917C5+ZQEHdlDUD/b7PNfTkyy/mXX7LPSJzVS6VTJx1gigK7xCic3UywM5/ehtUnZ/HCdoLQtOLX1IBZLYUVg1YsBoAAcARZHHBCI3jyzPKm9l0vBFJ3DJ4Yh+vmP6ZmTrfVHxrAAAAAAAAAAABSGVsbG8gV29ybGQh".to_string();
+    let _vaa_string:String = "AQAAAAABAE9eT/T0B917C5+ZQEHdlDUD/b7PNfTkyy/mXX7LPSJzVS6VTJx1gigK7xCic3UywM5/ehtUnZ/HCdoLQtOLX1IBZLYUVg1YsBoAAcARZHHBCI3jyzPKm9l0vBFJ3DJ4Yh+vmP6ZmTrfVHxrAAAAAAAAAAABSGVsbG8gV29ybGQh".to_string();
     let vaa_string:String ="AQAAAAABAMy+FBjMJafK1Xt4cCSbJ03jxJs3f3UW647HrdpT34XWE/7CBbQjo+0xMQXDTlh5IymI6wissEo8TkxTwY/ufCwBZMMBLO/WHgoAATsmQJ+Kre0/XdyhhGlapqD6gpsMhcr4SFYySJbSFMqYAAAAAAAAX3cgAv+98jdq256Gu41IuSzwRBryKQ5Ku3e8LsfhFUYdQ2pkAAEJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".to_string();
     // //eth vaa
     // let vaa_string:String="AQAAAAABAHZle4NbI4+ItAFCCwtKYDthhzq61u1az/gZIbW+hQ8MRskKSDEvutVy7pjuRwRq7EsKhB/lMz4XDDxoeyVm6YkBZMASCPZ6AAAnEgAAAAAAAAAAAAAAANtUkiZfYDiDHon0lWcP+Qmt6UvZAAAAAAAAAZgBAgAAAAAAAAAAAAAAAEEKixUC8B8oh/CwWyLMk01FpiinJxISRVJDX1NZTUJPTAAAAAAAAAAAAAAAAAAAAAAAAAAAAABNeUVSQzIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".to_string();

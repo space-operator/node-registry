@@ -1,12 +1,4 @@
-use core::panic;
-use std::str::FromStr;
-
 use crate::{prelude::*, wormhole::token_bridge::eth::Response as ServerlessOutput};
-
-use borsh::BorshSerialize;
-use serde_json::json;
-use solana_program::instruction::AccountMeta;
-use solana_sdk::pubkey::Pubkey;
 
 // Command Name
 const NAME: &str = "transfer_from_eth";
@@ -41,7 +33,7 @@ pub struct Output {
     sequence: String,
 }
 
-async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
     #[derive(Serialize, Deserialize, Debug)]
     struct Payload {
         #[serde(rename = "networkName")]
@@ -93,7 +85,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_local() {
-        let json_input = r#"{
+        let _json_input = r#"{
             "output": {
                 "receipt": {
                     "to": "0xDB5492265f6038831E89f495670FF909aDe94bd9",
@@ -180,6 +172,5 @@ mod tests {
 
         let res = test(payload).await.unwrap();
         dbg!(res);
-        std::panic!()
     }
 }

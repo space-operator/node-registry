@@ -108,7 +108,7 @@ impl CommandTrait for ThreadDelete {
         )
         .await?;
 
-        try_sign_wallet(&ctx, &mut transaction, &[&payer_input, ], recent_blockhash).await?;
+        try_sign_wallet(&ctx, &mut transaction, &[&payer_input], recent_blockhash).await?;
 
         let signature = submit_transaction(&ctx.solana_client, transaction).await?;
 

@@ -6,8 +6,7 @@ use solana_sdk::pubkey::Pubkey;
 // Command Name
 const GRANT_ACCESS: &str = "grant_access";
 
-const DEFINITION: &str =
-    include_str!("../../../../node-definitions/solana/xnft/grant_access.json");
+const DEFINITION: &str = include_str!("../../../../node-definitions/solana/xnft/grant_access.json");
 
 fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
     use once_cell::sync::Lazy;
@@ -19,9 +18,7 @@ fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
     Ok(CACHE.clone()?.build(run))
 }
 
-inventory::submit!(CommandDescription::new(GRANT_ACCESS, |_| {
-    build()
-}));
+inventory::submit!(CommandDescription::new(GRANT_ACCESS, |_| { build() }));
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input {
@@ -45,9 +42,13 @@ pub struct Output {
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let xnft_program_id = xnft::id();
-    
+
     // Access PDA
-    let seeds = &["access".as_ref(), input.wallet.as_ref(), input.xnft.as_ref()];
+    let seeds = &[
+        "access".as_ref(),
+        input.wallet.as_ref(),
+        input.xnft.as_ref(),
+    ];
     let access = Pubkey::find_program_address(seeds, &xnft_program_id).0;
 
     let accounts = xnft::accounts::GrantAccess {

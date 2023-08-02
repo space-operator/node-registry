@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::prelude::*;
 
 use borsh::{BorshDeserialize, BorshSerialize};
@@ -46,19 +44,11 @@ pub struct Output {
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
-    let wormhole_core_program_id = match ctx.cfg.solana_client.cluster {
-        SolanaNet::Mainnet => Pubkey::from_str("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth")?,
-        // TODO testnet not deployed yet
-        SolanaNet::Testnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
-        SolanaNet::Devnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
-    };
+    let wormhole_core_program_id =
+        crate::wormhole::wormhole_core_program_id(ctx.cfg.solana_client.cluster);
 
-    let token_bridge_program_id = match ctx.cfg.solana_client.cluster {
-        SolanaNet::Mainnet => Pubkey::from_str("wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb")?,
-        // TODO testnet not deployed yet
-        SolanaNet::Testnet => Pubkey::from_str("DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe")?,
-        SolanaNet::Devnet => Pubkey::from_str("DZnkkTmCiFWfYTfT41X3Rd1kDgozqzxWaHqsw6W4x2oe")?,
-    };
+    let token_bridge_program_id =
+        crate::wormhole::token_bridge_program_id(ctx.cfg.solana_client.cluster);
 
     // TODO: use a real nonce
     let nonce = rand::thread_rng().gen();

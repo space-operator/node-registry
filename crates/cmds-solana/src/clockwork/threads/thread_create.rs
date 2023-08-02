@@ -103,4 +103,3 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     Ok(Output { signature })
 }
-

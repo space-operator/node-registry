@@ -5,7 +5,6 @@ use byteorder::{LittleEndian, WriteBytesExt};
 use solana_program::{instruction::AccountMeta, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use std::io::Write;
-use std::str::FromStr;
 
 // Command Name
 const NAME: &str = "verify_signatures";
@@ -46,12 +45,8 @@ pub struct Output {
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
-    let wormhole_core_program_id = match ctx.cfg.solana_client.cluster {
-        SolanaNet::Mainnet => Pubkey::from_str("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth")?,
-        // TODO testnet not deployed yet
-        SolanaNet::Testnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
-        SolanaNet::Devnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
-    };
+    let wormhole_core_program_id =
+        crate::wormhole::wormhole_core_program_id(ctx.cfg.solana_client.cluster);
 
     let guardian_set = Pubkey::find_program_address(
         &[b"GuardianSet", &input.guardian_set_index.to_le_bytes()],
@@ -59,7 +54,8 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     )
     .0;
 
-    let account: solana_sdk::account::Account = ctx.solana_client.get_account(&guardian_set).await.unwrap();
+    let account: solana_sdk::account::Account =
+        ctx.solana_client.get_account(&guardian_set).await.unwrap();
     let guardian_set_data: GuardianSetData =
         GuardianSetData::try_from_slice(&account.data).unwrap();
 
@@ -149,7 +145,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             input.signature_set.clone_keypair(),
         ]
         .into(),
-        instructions: verify_txs.concat().into(),
+        instructions: verify_txs.concat(),
         minimum_balance_for_rent_exemption,
     };
 

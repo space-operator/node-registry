@@ -3,9 +3,9 @@ use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 use solana_program::pubkey::Pubkey;
 
-pub mod create_xnft;
 pub mod create_install;
 pub mod create_permissioned_install;
+pub mod create_xnft;
 pub mod delete_install;
 pub mod grant_access;
 pub mod revoke_access;
@@ -78,7 +78,6 @@ pub struct CreateXnftParams {
     pub uri: String,
 }
 
-
 impl From<CreateXnftParams> for xnft::state::CreateXnftParams {
     fn from(params: CreateXnftParams) -> Self {
         Self {
@@ -87,8 +86,12 @@ impl From<CreateXnftParams> for xnft::state::CreateXnftParams {
                 .into_iter()
                 .map(|param| param.into())
                 .collect(),
-            curator: params.curator.map(|curator| Pubkey::from_str(&curator).unwrap()),
-            install_authority: params.install_authority.map(|install_authority| Pubkey::from_str(&install_authority).unwrap()),
+            curator: params
+                .curator
+                .map(|curator| Pubkey::from_str(&curator).unwrap()),
+            install_authority: params
+                .install_authority
+                .map(|install_authority| Pubkey::from_str(&install_authority).unwrap()),
             install_price: params.install_price,
             install_vault: Pubkey::from_str(&params.install_vault).unwrap(),
             seller_fee_basis_points: params.seller_fee_basis_points,

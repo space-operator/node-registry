@@ -1,5 +1,4 @@
 use crate::wormhole::{PostVAAData, VAA};
-use std::str::FromStr;
 
 use crate::prelude::*;
 
@@ -48,19 +47,11 @@ pub struct Output {
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
-    let wormhole_core_program_id = match ctx.cfg.solana_client.cluster {
-        SolanaNet::Mainnet => Pubkey::from_str("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth")?,
-        // TODO testnet not deployed yet
-        SolanaNet::Testnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
-        SolanaNet::Devnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
-    };
+    let wormhole_core_program_id =
+        crate::wormhole::wormhole_core_program_id(ctx.cfg.solana_client.cluster);
 
-    let nft_bridge_program_id = match ctx.cfg.solana_client.cluster {
-        SolanaNet::Mainnet => Pubkey::from_str("WnFt12ZrnzZrFZkt2xsNsaNWoQribnuQ5B5FrDbwDhD")?,
-        // TODO testnet not deployed yet
-        SolanaNet::Testnet => Pubkey::from_str("0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78")?,
-        SolanaNet::Devnet => Pubkey::from_str("0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78")?,
-    };
+    let nft_bridge_program_id =
+        crate::wormhole::nft_bridge_program_id(ctx.cfg.solana_client.cluster);
 
     let config_key = Pubkey::find_program_address(&[b"config"], &nft_bridge_program_id).0;
 
@@ -79,13 +70,13 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             to,
             to_chain,
         } => PayloadTransfer {
-            token_address: wormhole_sdk::Address::from(nft_address).0,
-            token_chain: wormhole_sdk::Chain::from(nft_chain).into(),
-            to: wormhole_sdk::Address::from(to).0,
-            to_chain: wormhole_sdk::Chain::from(to_chain).into(),
+            token_address: nft_address.0,
+            token_chain: nft_chain.into(),
+            to: to.0,
+            to_chain: to_chain.into(),
             symbol: symbol.to_string(),
             name: name.to_string(),
-            token_id: primitive_types::U256::from(token_id.0).into(),
+            token_id: primitive_types::U256::from(token_id.0),
             uri: uri.to_string(),
         },
     };

@@ -79,13 +79,15 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             schedule,
             skippable: is_skippable,
         },
-        TriggerInput::MonitorAccount { monitor_account, offset, size } => {
-            Trigger::Account {
-                address: monitor_account,
-                offset, 
-                size, 
-            }
-        }
+        TriggerInput::MonitorAccount {
+            monitor_account,
+            offset,
+            size,
+        } => Trigger::Account {
+            address: monitor_account,
+            offset,
+            size,
+        },
     };
 
     // Thread Authority is the Payer

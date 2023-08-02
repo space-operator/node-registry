@@ -48,7 +48,11 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let metadata_program = mpl_token_metadata::ID;
 
     // Master Mint PDA
-    let seeds = &["mint".as_ref(), input.authority.as_ref(), input.name.as_ref()];
+    let seeds = &[
+        "mint".as_ref(),
+        input.authority.as_ref(),
+        input.name.as_ref(),
+    ];
     let master_mint = Pubkey::find_program_address(seeds, &xnft_program_id).0;
 
     // Master Token
@@ -84,9 +88,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     }
     .to_account_metas(None);
 
-    let params: xnft::state::CreateXnftParams = input.parameters.into();
-
-    let params = xnft::state::CreateXnftParams::from(params);
+    let params = xnft::state::CreateXnftParams::from(input.parameters);
 
     let data = xnft::instruction::CreateAppXnft {
         name: input.name,

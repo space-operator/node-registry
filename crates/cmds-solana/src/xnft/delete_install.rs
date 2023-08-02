@@ -1,8 +1,7 @@
 use crate::prelude::*;
 use anchor_lang::{InstructionData, ToAccountMetas};
-use solana_program::{instruction::Instruction};
+use solana_program::instruction::Instruction;
 use solana_sdk::pubkey::Pubkey;
-
 
 // Command Name
 const DELETE_INSTALL: &str = "delete_install";

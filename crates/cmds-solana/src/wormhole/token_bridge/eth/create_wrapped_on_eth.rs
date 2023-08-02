@@ -1,15 +1,4 @@
-use core::panic;
-use std::str::FromStr;
-
-use crate::{
-    prelude::*,
-    wormhole::token_bridge::eth::{CreateWrappedResponse, Response as ServerlessOutput},
-};
-
-use borsh::BorshSerialize;
-use serde_json::json;
-use solana_program::instruction::AccountMeta;
-use solana_sdk::pubkey::Pubkey;
+use crate::{prelude::*, wormhole::token_bridge::eth::CreateWrappedResponse};
 
 // Command Name
 const NAME: &str = "create_wrapped_on_eth";
@@ -41,7 +30,7 @@ pub struct Output {
     response: CreateWrappedResponse,
 }
 
-async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
     #[derive(Serialize, Deserialize, Debug)]
     struct Payload {
         #[serde(rename = "networkName")]
@@ -117,6 +106,5 @@ mod tests {
 
         let res = test(payload).await.unwrap();
         dbg!(res);
-        std::panic!()
     }
 }

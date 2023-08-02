@@ -2,10 +2,9 @@ pub mod create_tree;
 pub mod mint_v1;
 use std::str::FromStr;
 
+use mpl_bubblegum::state::metaplex_adapter::MetadataArgs;
 use serde::{Deserialize, Serialize};
 use solana_program::pubkey::Pubkey;
-use mpl_bubblegum::state::metaplex_adapter::MetadataArgs;
-
 
 #[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
 pub enum TokenProgramVersion {
@@ -16,8 +15,12 @@ pub enum TokenProgramVersion {
 impl From<TokenProgramVersion> for mpl_bubblegum::state::metaplex_adapter::TokenProgramVersion {
     fn from(v: TokenProgramVersion) -> Self {
         match v {
-            TokenProgramVersion::Original => mpl_bubblegum::state::metaplex_adapter::TokenProgramVersion::Original,
-            TokenProgramVersion::Token2022 => mpl_bubblegum::state::metaplex_adapter::TokenProgramVersion::Token2022,
+            TokenProgramVersion::Original => {
+                mpl_bubblegum::state::metaplex_adapter::TokenProgramVersion::Original
+            }
+            TokenProgramVersion::Token2022 => {
+                mpl_bubblegum::state::metaplex_adapter::TokenProgramVersion::Token2022
+            }
         }
     }
 }
@@ -51,10 +54,18 @@ pub enum TokenStandard {
 impl From<TokenStandard> for mpl_bubblegum::state::metaplex_adapter::TokenStandard {
     fn from(v: TokenStandard) -> Self {
         match v {
-            TokenStandard::NonFungible => mpl_bubblegum::state::metaplex_adapter::TokenStandard::NonFungible,
-            TokenStandard::FungibleAsset => mpl_bubblegum::state::metaplex_adapter::TokenStandard::FungibleAsset,
-            TokenStandard::Fungible => mpl_bubblegum::state::metaplex_adapter::TokenStandard::Fungible,
-            TokenStandard::NonFungibleEdition => mpl_bubblegum::state::metaplex_adapter::TokenStandard::NonFungibleEdition,
+            TokenStandard::NonFungible => {
+                mpl_bubblegum::state::metaplex_adapter::TokenStandard::NonFungible
+            }
+            TokenStandard::FungibleAsset => {
+                mpl_bubblegum::state::metaplex_adapter::TokenStandard::FungibleAsset
+            }
+            TokenStandard::Fungible => {
+                mpl_bubblegum::state::metaplex_adapter::TokenStandard::Fungible
+            }
+            TokenStandard::NonFungibleEdition => {
+                mpl_bubblegum::state::metaplex_adapter::TokenStandard::NonFungibleEdition
+            }
         }
     }
 }
@@ -88,7 +99,6 @@ impl From<Uses> for mpl_bubblegum::state::metaplex_adapter::Uses {
     }
 }
 
-
 #[repr(C)]
 #[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
 pub struct Collection {
@@ -104,7 +114,6 @@ impl From<Collection> for mpl_bubblegum::state::metaplex_adapter::Collection {
         }
     }
 }
-
 
 #[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
 pub struct MetadataBubblegum {
@@ -131,9 +140,6 @@ pub struct MetadataBubblegum {
     pub token_program_version: TokenProgramVersion,
     pub creators: Vec<Creator>,
 }
-
-
-
 
 // implement From MetadataBubblegum to MetadataArgs
 impl From<MetadataBubblegum> for MetadataArgs {

@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::{prelude::*, wormhole::WormholeInstructions};
 
 use borsh::{BorshDeserialize, BorshSerialize};
@@ -46,12 +44,8 @@ pub struct Output {
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
-    let wormhole_core_program_id = match ctx.cfg.solana_client.cluster {
-        SolanaNet::Mainnet => Pubkey::from_str("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth")?,
-        // TODO testnet not deployed yet
-        SolanaNet::Testnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
-        SolanaNet::Devnet => Pubkey::from_str("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5")?,
-    };
+    let wormhole_core_program_id =
+        crate::wormhole::wormhole_core_program_id(ctx.cfg.solana_client.cluster);
 
     // TODO: use a real nonce
     let nonce = rand::thread_rng().gen();
@@ -67,7 +61,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         Pubkey::find_program_address(&[b"Sequence", emitter.as_ref()], &wormhole_core_program_id).0;
 
     // TODO test payload
-    let payload = [0u8; 32].to_vec();
+    let _payload = [0u8; 32].to_vec();
     let payload = "Hello World!".as_bytes().to_vec();
 
     let ix = solana_program::instruction::Instruction {

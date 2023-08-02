@@ -1,11 +1,50 @@
-// TODO: remove before merging to main
-#![allow(unused_imports, unused_mut, unused_variables)]
-
-use std::io::{Cursor, Read};
 use anchor_lang::AnchorSerialize;
 use borsh::{BorshDeserialize, BorshSerialize};
 use byteorder::{BigEndian, ReadBytesExt};
+use flow_lib::SolanaNet;
 use serde::{Deserialize, Serialize};
+use solana_program::pubkey::Pubkey;
+use solana_sdk::pubkey;
+use std::io::{Cursor, Read};
+
+pub const WORMHOLE_CORE_MAINNET: Pubkey = pubkey!("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth");
+pub const WORMHOLE_CORE_TESTNET: Pubkey = pubkey!("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
+pub const WORMHOLE_CORE_DEVNET: Pubkey = pubkey!("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
+
+pub const fn wormhole_core_program_id(net: SolanaNet) -> Pubkey {
+    match net {
+        SolanaNet::Mainnet => crate::wormhole::WORMHOLE_CORE_MAINNET,
+        // TODO testnet not deployed yet
+        SolanaNet::Testnet => crate::wormhole::WORMHOLE_CORE_TESTNET,
+        SolanaNet::Devnet => crate::wormhole::WORMHOLE_CORE_DEVNET,
+    }
+}
+
+pub const TOKEN_BRIDGE_MAINNET: Pubkey = pubkey!("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth");
+pub const TOKEN_BRIDGE_TESTNET: Pubkey = pubkey!("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
+pub const TOKEN_BRIDGE_DEVNET: Pubkey = pubkey!("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
+
+pub const fn token_bridge_program_id(net: SolanaNet) -> Pubkey {
+    match net {
+        SolanaNet::Mainnet => TOKEN_BRIDGE_MAINNET,
+        // TODO testnet not deployed yet
+        SolanaNet::Testnet => TOKEN_BRIDGE_TESTNET,
+        SolanaNet::Devnet => TOKEN_BRIDGE_DEVNET,
+    }
+}
+
+pub const NFT_BRIDGE_MAINNET: Pubkey = pubkey!("WnFt12ZrnzZrFZkt2xsNsaNWoQribnuQ5B5FrDbwDhD");
+pub const NFT_BRIDGE_TESTNET: Pubkey = pubkey!("2rHhojZ7hpu1zA91nvZmT8TqWWvMcKmmNBCr2mKTtMq4");
+pub const NFT_BRIDGE_DEVNET: Pubkey = pubkey!("2rHhojZ7hpu1zA91nvZmT8TqWWvMcKmmNBCr2mKTtMq4");
+
+pub const fn nft_bridge_program_id(net: SolanaNet) -> Pubkey {
+    match net {
+        SolanaNet::Mainnet => NFT_BRIDGE_MAINNET,
+        // TODO testnet not deployed yet
+        SolanaNet::Testnet => NFT_BRIDGE_TESTNET,
+        SolanaNet::Devnet => NFT_BRIDGE_DEVNET,
+    }
+}
 
 pub mod nft_bridge;
 pub mod token_bridge;
