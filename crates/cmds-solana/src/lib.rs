@@ -1,5 +1,6 @@
 pub mod associated_token_account;
 pub mod clockwork;
+pub mod compression;
 pub mod create_mint_account;
 pub mod create_token_account;
 pub mod error;
@@ -17,6 +18,8 @@ pub mod transfer_sol;
 pub mod transfer_token;
 pub mod utils;
 pub mod wallet;
+pub mod wormhole;
+pub mod xnft;
 
 pub use error::{Error, Result};
 

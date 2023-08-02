@@ -96,8 +96,8 @@ impl CommandTrait for ThreadDelete {
 
         let instructions = vec![thread_delete(
             payer_input.pubkey(),
-            thread_input,
             close_to_input,
+            thread_input,
         )];
 
         let (mut transaction, recent_blockhash) = execute(

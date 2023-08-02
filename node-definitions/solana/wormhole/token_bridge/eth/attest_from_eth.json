@@ -1,0 +1,60 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "attest_from_eth",
+    "version": "0.1",
+    "display_name": "Attest From ETH",
+    "description": "",
+    "width": 200,
+    "height": 235,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "response",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "emitter",
+      "type": "address",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "sequence",
+      "type": "u32",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "keypair",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "network_name",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "token",
+      "type_bounds": ["address"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

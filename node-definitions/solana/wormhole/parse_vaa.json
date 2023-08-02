@@ -1,0 +1,74 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "parse_vaa",
+    "version": "0.1",
+    "display_name": "Parse VAA",
+    "description": "",
+    "width": 200,
+    "height": 235,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "parsed_vaa",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "vaa_bytes",
+      "type": "bytes",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "signatures",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "guardian_set_index",
+      "type": "u32",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "body",
+      "type": "bytes",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "vaa_hash",
+      "type": "bytes",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "vaa_secp256k_hash",
+      "type": "bytes",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "payload",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "vaa",
+      "type_bounds": ["json"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

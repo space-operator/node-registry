@@ -1,0 +1,72 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "verify_signatures",
+    "version": "0.1",
+    "display_name": "Verify Signatures",
+    "description": "",
+    "width": 200,
+    "height": 235,
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "signature_set",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "guardian_set_index",
+      "type_bounds": ["u32"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "signatures",
+      "type_bounds": ["vec<signature>"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "vaa_body",
+      "type_bounds": ["bytes"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "vaa_hash",
+      "type_bounds": ["bytes"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": true
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

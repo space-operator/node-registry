@@ -1,24 +1,31 @@
 {
     "type": "native",
     "data": {
-        "node_id": "update_payment",
+        "node_id": "create_permissioned_install",
         "version": "0.1",
-        "display_name": "Update Payment",
+        "display_name": "Create Private xNFT Install",
         "description": "",
         "width": 200,
-        "height": 425,
+        "height": 290,
         "backgroundColor": "#fff"
     },
     "sources": [
+     
         {
             "name": "signature",
             "type": "signature",
             "defaultValue": null,
             "tooltip": ""
+        },
+           {
+            "name": "access",
+            "type": "pubkey",
+            "defaultValue": null,
+            "tooltip": ""
         }
     ],
     "targets": [
-           {
+        {
             "name": "payer",
             "type_bounds": [
                 "keypair"
@@ -29,7 +36,7 @@
             "passthrough": true
         },
         {
-            "name": "recipient",
+            "name": "authority",
             "type_bounds": [
                 "pubkey"
             ],
@@ -39,7 +46,7 @@
             "passthrough": true
         },
         {
-            "name": "token_mint",
+            "name": "xnft",
             "type_bounds": [
                 "pubkey"
             ],
@@ -49,12 +56,22 @@
             "passthrough": true
         },
         {
-            "name": "amount",
+            "name": "wallet",
             "type_bounds": [
-                "u64"
+                "pubkey"
             ],
             "required": true,
             "defaultValue": null,
+            "tooltip": "",
+            "passthrough": false
+        },
+            {
+            "name": "submit",
+            "type_bounds": [
+                "bool"
+            ],
+            "required": false,
+            "defaultValue": true,
             "tooltip": "",
             "passthrough": false
         }

@@ -123,6 +123,9 @@ impl CommandTrait for DisbursePaymentIx {
         } = value::from_map::<Input>(inputs)?;
 
         let payment = ClockworkPayment::pubkey(payer, mint, recipient);
+        
+    // Get recipient's Associated Token Account
+    let recipient_ata_pubkey = get_associated_token_address(&input.recipient, &input.token_mint);
 
         let program_id = payments::ID;
         let accounts = vec![
