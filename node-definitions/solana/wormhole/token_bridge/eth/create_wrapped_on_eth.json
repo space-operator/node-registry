@@ -41,6 +41,14 @@
       "defaultValue": null,
       "tooltip": "",
       "passthrough": false
+    },
+    {
+      "name": "token",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
     }
   ],
   "targets_form.json_schema": {},
