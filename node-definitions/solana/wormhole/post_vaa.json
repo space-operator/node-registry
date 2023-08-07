@@ -58,7 +58,7 @@
     },
     {
       "name": "vaa",
-      "type_bounds": ["vec<u8>"],
+      "type_bounds": ["bytes"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",

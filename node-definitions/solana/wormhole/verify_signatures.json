@@ -44,7 +44,7 @@
     },
     {
       "name": "signatures",
-      "type_bounds": ["vec<signature>"],
+      "type_bounds": ["array"],
       "required": false,
       "defaultValue": true,
       "tooltip": "",
