@@ -1,44 +1,18 @@
-use crate::{
-    prelude::*,
-    utils::{execute, submit_transaction},
-};
-use solana_program::instruction::Instruction;
+use crate::prelude::*;
 
-#[derive(Debug, Clone)]
-pub struct ApproveCollectionAuthority;
+const NAME: &str = "approve_collection_authority";
 
-impl ApproveCollectionAuthority {
-    #[allow(clippy::too_many_arguments)]
-    pub async fn command_approve_collection_authority(
-        &self,
-        rpc_client: &RpcClient,
-        collection_authority_record: Pubkey,
-        new_collection_authority: Pubkey,
-        update_authority: Pubkey,
-        payer: Pubkey,
-        metadata: Pubkey,
-        mint: Pubkey,
-    ) -> crate::Result<(u64, Vec<Instruction>)> {
-        let minimum_balance_for_rent_exemption = rpc_client
-            .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
-                mpl_token_metadata::state::CollectionAuthorityRecord,
-            >())
-            .await?;
+inventory::submit!(CommandDescription::new(NAME, |_| build()));
 
-        let instructions = vec![
-            mpl_token_metadata::instruction::approve_collection_authority(
-                mpl_token_metadata::id(),
-                collection_authority_record,
-                new_collection_authority,
-                update_authority,
-                payer,
-                metadata,
-                mint,
-            ),
-        ];
-
-        Ok((minimum_balance_for_rent_exemption, instructions))
-    }
+fn build() -> BuildResult {
+    const DEFINITION: &str =
+        include_str!("../../../../node-definitions/solana/NFT/approve_collection_authority.json");
+    static CACHE: BuilderCache = BuilderCache::new(|| {
+        Ok(CmdBuilder::new(DEFINITION)?
+            .check_name(NAME)?
+            .simple_instruction_info("signature")?)
+    });
+    Ok(CACHE.clone()?.build(run))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -61,133 +35,62 @@ pub struct Output {
     pub signature: Option<Signature>,
 }
 
-const APPROVE_COLLECTION_AUTHORITY: &str = "approve_collection_authority";
+async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
+    let program_id = mpl_token_metadata::id();
 
-// Inputs
-const NEW_COLLECTION_AUTHORITY: &str = "new_collection_authority";
-const UPDATE_AUTHORITY: &str = "update_authority";
-const FEE_PAYER: &str = "fee_payer";
-const MINT_ACCOUNT: &str = "mint_account";
-const SUBMIT: &str = "submit";
+    let metadata_seeds = &[
+        mpl_token_metadata::state::PREFIX.as_bytes(),
+        program_id.as_ref(),
+        input.mint_account.as_ref(),
+    ];
 
-// Output
-const SIGNATURE: &str = "signature";
+    let (metadata_pubkey, _) = Pubkey::find_program_address(metadata_seeds, &program_id);
 
-#[async_trait]
-impl CommandTrait for ApproveCollectionAuthority {
-    fn name(&self) -> Name {
-        APPROVE_COLLECTION_AUTHORITY.into()
-    }
+    let (collection_authority_record, _) =
+        mpl_token_metadata::pda::find_collection_authority_account(
+            &input.mint_account,
+            &input.new_collection_authority,
+        );
 
-    fn inputs(&self) -> Vec<CmdInput> {
-        [
-            CmdInput {
-                name: NEW_COLLECTION_AUTHORITY.into(),
-                type_bounds: [ValueType::Pubkey].to_vec(),
-                required: true,
-                passthrough: false,
-            },
-            CmdInput {
-                name: UPDATE_AUTHORITY.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: FEE_PAYER.into(),
-                type_bounds: [ValueType::Keypair].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: MINT_ACCOUNT.into(),
-                type_bounds: [ValueType::Pubkey].to_vec(),
-                required: true,
-                passthrough: true,
-            },
-            CmdInput {
-                name: SUBMIT.into(),
-                type_bounds: [ValueType::Bool].to_vec(),
-                required: false,
-                passthrough: false,
-            },
-        ]
-        .to_vec()
-    }
+    let minimum_balance_for_rent_exemption = ctx
+        .solana_client
+        .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
+            mpl_token_metadata::state::CollectionAuthorityRecord,
+        >())
+        .await?;
 
-    fn outputs(&self) -> Vec<CmdOutput> {
-        [CmdOutput {
-            name: SIGNATURE.into(),
-            r#type: ValueType::String,
-        }]
-        .to_vec()
-    }
+    let instruction = mpl_token_metadata::instruction::approve_collection_authority(
+        mpl_token_metadata::id(),
+        collection_authority_record,
+        input.new_collection_authority,
+        input.update_authority.pubkey(),
+        input.fee_payer.pubkey(),
+        metadata_pubkey,
+        input.mint_account,
+    );
 
-    async fn run(&self, ctx: Context, inputs: ValueSet) -> Result<ValueSet, CommandError> {
-        let Input {
-            new_collection_authority,
-            update_authority,
-            fee_payer,
-            mint_account,
-            submit,
-        } = value::from_map(inputs)?;
-
-        let program_id = mpl_token_metadata::id();
-
-        let metadata_seeds = &[
-            mpl_token_metadata::state::PREFIX.as_bytes(),
-            program_id.as_ref(),
-            mint_account.as_ref(),
-        ];
-
-        let (metadata_pubkey, _) = Pubkey::find_program_address(metadata_seeds, &program_id);
-
-        let (collection_authority_record, _) =
-            mpl_token_metadata::pda::find_collection_authority_account(
-                &mint_account,
-                &new_collection_authority,
-            );
-
-        let (minimum_balance_for_rent_exemption, instructions) = self
-            .command_approve_collection_authority(
-                &ctx.solana_client,
-                collection_authority_record,
-                new_collection_authority,
-                update_authority.pubkey(),
-                fee_payer.pubkey(),
-                metadata_pubkey,
-                mint_account,
-            )
-            .await?;
-
-        let fee_payer_pubkey = fee_payer.pubkey();
-
-        let (mut transaction, recent_blockhash) = execute(
-            &ctx.solana_client,
-            &fee_payer_pubkey,
-            &instructions,
+    let instructions = if input.submit {
+        Instructions {
+            fee_payer: input.fee_payer.pubkey(),
+            signers: [input.fee_payer, input.update_authority].into(),
             minimum_balance_for_rent_exemption,
-        )
-        .await?;
-        try_sign_wallet(
-            &ctx,
-            &mut transaction,
-            &[&update_authority, &fee_payer],
-            recent_blockhash,
-        )
-        .await?;
+            instructions: [instruction].into(),
+        }
+    } else {
+        <_>::default()
+    };
 
-        let signature = if submit {
-            Some(submit_transaction(&ctx.solana_client, transaction).await?)
-        } else {
-            None
-        };
+    let signature = ctx.execute(instructions, <_>::default()).await?.signature;
 
-        Ok(value::to_map(&Output { signature })?)
-    }
+    Ok(Output { signature })
 }
 
-inventory::submit!(CommandDescription::new(
-    APPROVE_COLLECTION_AUTHORITY,
-    |_| Ok(Box::new(ApproveCollectionAuthority))
-));
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_build() {
+        build().unwrap();
+    }
+}
