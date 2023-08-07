@@ -41,12 +41,17 @@ pub enum ValueType {
     Decimal,
     #[serde(rename = "pubkey")]
     Pubkey,
+    // Wormhole address
+    #[serde(rename = "address")]
+    Address,
     #[serde(rename = "keypair")]
     Keypair,
     #[serde(rename = "signature")]
     Signature,
     #[serde(rename = "string")]
     String,
+    #[serde(rename = "bytes")]
+    Bytes,
     #[serde(rename = "array")]
     Array,
     #[serde(rename = "object")]

@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_local() {
+    async fn need_key_test_local() {
         let _json_input = r#"{
             "output": {
                 "receipt": {

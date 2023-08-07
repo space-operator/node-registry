@@ -77,7 +77,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_local() {
+    async fn need_key_test_local() {
         async fn test(payload: Payload) -> Result<CreateWrappedResponse, reqwest::Error> {
             let client = reqwest::Client::new();
             let json = client
