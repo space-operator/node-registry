@@ -19,14 +19,6 @@
     ],
     "targets": [],
     "targets_form.json_schema": {
-        "type": "object",
-        "properties": {
-            "label": {
-                "type": "string",
-                "title": "Input Label",
-                "default": ""
-            }
-        }
     },
     "targets_form.ui_schema": {
         "label": {

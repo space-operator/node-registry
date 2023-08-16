@@ -111,7 +111,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             AccountMeta::new_readonly(solana_program::sysvar::rent::id(), false),
             AccountMeta::new_readonly(solana_program::system_program::id(), false),
             // Program
-            AccountMeta::new_readonly(bridge_config, false),
+            AccountMeta::new_readonly(wormhole_core_program_id, false),
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
         data: (TokenBridgeInstructions::TransferNative, wrapped_data).try_to_vec()?,
@@ -127,7 +127,19 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
         signers: [input.payer.clone_keypair(), input.message.clone_keypair()].into(),
-        instructions: [ix].into(),
+        instructions: [
+            spl_token::instruction::approve(
+                &spl_token::id(),
+                &input.from,
+                &authority_signer,
+                &input.payer.pubkey(),
+                &[],
+                input.amount,
+            )
+            .unwrap(),
+            ix,
+        ]
+        .into(),
         minimum_balance_for_rent_exemption,
     };
 
