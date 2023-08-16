@@ -113,7 +113,7 @@ mod tests {
 
         let payload = Payload {
             network_name: "devnet".into(),
-            keypair: "0x1bb0ed141673d3228d6dc10806f0de5ee6522695160aed8fb99e487a9abc622c".into(),
+            keypair: "".into(),
             signed_vaa: "AQAAAAABAG9er/MmJMZA+TXKhvruR6h07pgDs4jvGEX32tA/X+fPJoLN5GdryI2AnnKLeN/y2DG1XVfqQIjSwVmJrdFQ1JUAZNvkF/RT7/MAATsmQJ+Kre0/XdyhhGlapqD6gpsMhcr4SFYySJbSFMqYAAAAAAAAYqYgAmc+E+tQG8MVnhfmdvaOmyILEFx3DYlI+fuqLuFPMiDtAAEJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".into(),
        token:"7x1tu6xjxhCNnnwTNytmGYL6w4Cwe3PDMo7gmfc89GHa".into()
         };
