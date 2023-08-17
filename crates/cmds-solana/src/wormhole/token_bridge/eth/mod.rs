@@ -1,7 +1,8 @@
 use std::num::ParseIntError;
 
 use serde::{Deserialize, Serialize};
-use wormhole_sdk::Address;
+
+use super::Address;
 
 pub mod attest_from_eth;
 pub mod create_wrapped_on_eth;

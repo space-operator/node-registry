@@ -7,7 +7,7 @@ use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::token::Message;
 
-use super::{CompleteNativeData, PayloadTransfer, TokenBridgeInstructions};
+use super::{Address, CompleteNativeData, PayloadTransfer, TokenBridgeInstructions};
 
 // Command Name
 const NAME: &str = "complete_native";
@@ -35,7 +35,7 @@ pub struct Input {
     pub vaa: bytes::Bytes,
     pub payload: wormhole_sdk::token::Message,
     pub vaa_hash: bytes::Bytes,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     pub fee_recipient: Option<Pubkey>,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
@@ -68,7 +68,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             amount,
             token_address: token_address.0,
             token_chain: token_chain.into(),
-            to: recipient.0,
+            to: recipient.into(),
             to_chain: recipient_chain.into(),
             fee,
         },
@@ -78,7 +78,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         }
     };
 
-    let to = Pubkey::from(payload.to);
+    let to: Pubkey = Pubkey::from(payload.to.0);
     let mint = Pubkey::from(payload.token_address);
 
     let custody_key = Pubkey::find_program_address(&[mint.as_ref()], &token_bridge_program_id).0;

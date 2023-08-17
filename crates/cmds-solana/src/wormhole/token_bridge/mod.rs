@@ -1,7 +1,9 @@
 use crate::wormhole::ForeignAddress;
 use borsh::{BorshDeserialize, BorshSerialize};
 
+use flow_lib::Context;
 use serde::{Deserialize, Serialize};
+use solana_program::pubkey::Pubkey;
 use wormhole_sdk::Amount;
 
 pub mod attest;
@@ -54,7 +56,20 @@ pub struct PayloadAssetMeta {
     pub name: String,
 }
 
-pub type Address = [u8; 32];
+#[derive(
+    Serialize, Deserialize, BorshDeserialize, BorshSerialize, Default, PartialEq, Debug, Clone,
+)]
+pub struct Address(pub [u8; 32]);
+
+// implement from wormhole_sdk::Address to Address
+impl From<wormhole_sdk::Address> for Address {
+    fn from(address: wormhole_sdk::Address) -> Self {
+        let mut addr = [0u8; 32];
+        addr.copy_from_slice(&address.0);
+        Address(addr)
+    }
+}
+
 pub type ChainID = u16;
 
 #[derive(BorshDeserialize, BorshSerialize, Default)]
@@ -122,3 +137,11 @@ pub struct TransferNativeData {
 
 #[derive(BorshDeserialize, BorshSerialize, Default)]
 pub struct CompleteNativeData {}
+
+pub async fn get_sequence_number(ctx: &Context, sequence: Pubkey) -> SequenceTracker {
+    let sequence_account: solana_sdk::account::Account =
+        ctx.solana_client.get_account(&sequence).await.unwrap();
+    let sequence_data: SequenceTracker =
+        SequenceTracker::try_from_slice(&sequence_account.data).unwrap();
+    sequence_data
+}

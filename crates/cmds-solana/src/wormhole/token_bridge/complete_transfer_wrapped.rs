@@ -8,7 +8,7 @@ use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::token::Message;
 
-use super::{CompleteWrappedData, PayloadTransfer, TokenBridgeInstructions};
+use super::{Address, CompleteWrappedData, PayloadTransfer, TokenBridgeInstructions};
 
 // Command Name
 const NAME: &str = "complete_transfer_wrapped";
@@ -36,7 +36,7 @@ pub struct Input {
     pub vaa: bytes::Bytes,
     pub payload: wormhole_sdk::token::Message,
     pub vaa_hash: bytes::Bytes,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     pub fee_recipient: Option<Pubkey>,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
@@ -73,7 +73,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             amount,
             token_address: token_address.0,
             token_chain: token_chain.into(),
-            to: recipient.0,
+            to: Address(recipient.0),
             to_chain: recipient_chain.into(),
             fee,
         },
@@ -83,7 +83,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         }
     };
 
-    let to = Pubkey::from(payload.to);
+    let to = Pubkey::from(payload.to.0);
 
     let message =
         Pubkey::find_program_address(&[b"PostedVAA", &input.vaa_hash], &wormhole_core_program_id).0;

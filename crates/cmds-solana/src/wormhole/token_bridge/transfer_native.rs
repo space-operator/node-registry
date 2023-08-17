@@ -6,7 +6,10 @@ use solana_program::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::Address;
 
-use super::{TokenBridgeInstructions, TransferNativeData};
+use super::{
+    eth::hex_to_address, get_sequence_number, SequenceTracker, TokenBridgeInstructions,
+    TransferNativeData,
+};
 
 // Command Name
 const NAME: &str = "transfer_native";
@@ -37,9 +40,10 @@ pub struct Input {
     pub from: Pubkey,
     #[serde(with = "value::pubkey")]
     pub mint: Pubkey,
+    // 1 = 1,000,000,000
     pub amount: u64,
     pub fee: u64,
-    pub target_address: Address,
+    pub target_address: String,
     pub target_chain: u16,
     #[serde(default = "value::default::bool_true")]
     submit: bool,
@@ -83,11 +87,13 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     // TODO: use a real nonce
     let nonce = rand::thread_rng().gen();
 
+    let address = hex_to_address(&input.target_address).map_err(anyhow::Error::msg)?;
+
     let wrapped_data = TransferNativeData {
         nonce,
         amount: input.amount,
         fee: input.fee,
-        target_address: input.target_address.0,
+        target_address: address,
         target_chain: input.target_chain,
     };
 
@@ -145,12 +151,16 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = input.submit.then_some(ins).unwrap_or_default();
 
+    let sequence_data: SequenceTracker = get_sequence_number(&ctx, sequence).await;
+
     let signature = ctx
         .execute(
             ins,
             value::map! {
                 "custody_key" => custody_key,
                 "custody_signer" => custody_signer,
+                "sequence" => sequence_data.sequence.to_string(),
+                "emitter" => emitter.to_string(),
             },
         )
         .await?

@@ -5,7 +5,7 @@ use rand::Rng;
 use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 
-use super::{AttestTokenData, SequenceTracker, TokenBridgeInstructions};
+use super::{get_sequence_number, AttestTokenData, SequenceTracker, TokenBridgeInstructions};
 
 // Command Name
 const NAME: &str = "attest_token";
@@ -125,10 +125,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = input.submit.then_some(ins).unwrap_or_default();
 
-    let sequence_account: solana_sdk::account::Account =
-        ctx.solana_client.get_account(&sequence).await.unwrap();
-    let sequence_data: SequenceTracker =
-        SequenceTracker::try_from_slice(&sequence_account.data).unwrap();
+    let sequence_data: SequenceTracker = get_sequence_number(&ctx, sequence).await;
 
     let signature = ctx
         .execute(

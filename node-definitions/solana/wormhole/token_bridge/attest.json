@@ -30,7 +30,7 @@
     },
     {
       "name": "sequence",
-      "type": "pubkey",
+      "type": "string",
       "defaultValue": null,
       "tooltip": ""
     },

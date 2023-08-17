@@ -6,9 +6,8 @@ use borsh::BorshSerialize;
 use rand::Rng;
 use solana_program::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
-use wormhole_sdk::Address;
 
-use super::{TokenBridgeInstructions, TransferWrappedData};
+use super::{Address, TokenBridgeInstructions, TransferWrappedData};
 
 // Command Name
 const NAME: &str = "transfer_wrapped";
@@ -100,7 +99,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         nonce,
         amount: input.amount,
         fee: input.fee,
-        target_address: input.target_address.0,
+        target_address: Address(input.target_address.0),
         target_chain: input.target_chain,
     };
 

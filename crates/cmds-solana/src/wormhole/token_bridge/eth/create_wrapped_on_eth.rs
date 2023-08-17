@@ -1,8 +1,9 @@
-use wormhole_sdk::Address;
-
 use crate::{
     prelude::*,
-    wormhole::token_bridge::eth::{hex_to_address, CreateWrappedResponse},
+    wormhole::token_bridge::{
+        eth::{hex_to_address, CreateWrappedResponse},
+        Address,
+    },
 };
 
 use super::Receipt;
@@ -68,6 +69,7 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let receipt = response.output.receipt;
 
+    // token contract address on ETH
     let address = hex_to_address(&response.output.address).map_err(anyhow::Error::msg)?;
 
     Ok(Output { receipt, address })

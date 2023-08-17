@@ -23,6 +23,18 @@
       "tooltip": ""
     },
     {
+      "name": "sequence",
+      "type": "string",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "emitter",
+      "type": "string",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
       "name": "signature",
       "type": "signature",
       "defaultValue": null,
