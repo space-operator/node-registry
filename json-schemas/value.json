@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://assets.spaceoperator.com/json-schemas/value",
+    "$id": "https://assets.spaceoperator.com/json-schemas/value.json",
     "type": "object",
     "oneOf": [
         {

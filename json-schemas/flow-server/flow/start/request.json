@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://assets.spaceoperator.com/json-schemas/flow-server/flow/start/request",
+    "$id": "https://assets.spaceoperator.com/json-schemas/flow-server/flow/start/request.json",
     "type": "object",
     "description": "Request body for /flow/start/{id}",
     "properties": {
@@ -9,7 +9,7 @@
             "type": "object",
             "patternProperties": {
                 "": {
-                    "$ref": "https://assets.spaceoperator.com/json-schemas/value"
+                    "$ref": "https://assets.spaceoperator.com/json-schemas/value.json"
                 }
             }
         },

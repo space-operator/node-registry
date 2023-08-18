@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://assets.spaceoperator.com/json-schemas/flow-server/flow/start/response",
+    "$id": "https://assets.spaceoperator.com/json-schemas/flow-server/flow/start/response.json",
     "type": "object",
     "description": "Response of /flow/start/{id}",
     "properties": {
