@@ -14,7 +14,7 @@
             }
         },
         "partial_config": {
-            "title": "Partial-run config",
+            "description": "Partial-run config",
             "type": "object",
             "properties": {
                 "only_nodes": {
