@@ -1,0 +1,39 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://assets.spaceoperator.com/json-schemas/flow-server/flow/start/request.json",
+    "type": "object",
+    "description": "Request body for /flow/start/{id}",
+    "properties": {
+        "inputs": {
+            "description": "Flow inputs",
+            "type": "object",
+            "patternProperties": {
+                "": {
+                    "$ref": "https://assets.spaceoperator.com/json-schemas/value.json"
+                }
+            }
+        },
+        "partial_config": {
+            "description": "Partial-run config",
+            "type": "object",
+            "properties": {
+                "only_nodes": {
+                    "description": "IDs of nodes to run",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "inputs_from": {
+                    "description": "flow_run_id to fetch input values. Column: flow_run.id",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "only_nodes",
+                "inputs_from"
+            ]
+        }
+    },
+    "required": []
+}
