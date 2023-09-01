@@ -6,6 +6,7 @@ use super::Address;
 
 pub mod attest_from_eth;
 pub mod create_wrapped_on_eth;
+pub mod redeem_on_eth;
 pub mod transfer_from_eth;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -90,6 +91,16 @@ struct CreateWrappedOutput {
 #[derive(Serialize, Deserialize, Debug)]
 struct CreateWrappedResponse {
     output: CreateWrappedOutput,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct RedeemOnEthOutput {
+    receipt: Receipt,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct RedeemOnEthResponse {
+    output: RedeemOnEthOutput,
 }
 
 // Function to Decode Hex String to Bytes
