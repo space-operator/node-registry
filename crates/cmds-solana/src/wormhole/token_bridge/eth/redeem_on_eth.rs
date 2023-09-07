@@ -59,6 +59,10 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let receipt: Receipt = response.output.receipt;
 
+    // to is the wormhole token bridge contract
+    // from is the recipient
+    // logs/address is the transferred token contract address
+
     Ok(Output { receipt })
 }
 

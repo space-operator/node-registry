@@ -126,7 +126,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
                 AccountMeta::new(to, false)
             },
             AccountMeta::new(custody_key, false),
-            AccountMeta::new(mint, false),
+            AccountMeta::new_readonly(mint, false),
             AccountMeta::new_readonly(custody_signer, false),
             // Dependencies
             AccountMeta::new_readonly(sysvar::rent::id(), false),
