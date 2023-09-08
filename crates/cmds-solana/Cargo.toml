@@ -6,20 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-solana-sdk = "1.14.13"
-solana-client = "1.14.13"
-solana-program = "1.14.13"
-spl-token = { version = "3.2", features = ["no-entrypoint"] }
-spl-memo = { version = "3.0", features = ["no-entrypoint"] }
-# 1.1.3 compile errors
-spl-associated-token-account = { version = "=1.1.2", features = ["no-entrypoint"] }
-spl-account-compression = "=0.1.10"
-spl-noop = "=0.1.3"
-mpl-token-auth-rules = "=1.2"
-mpl-token-metadata = "1.8"
-mpl-candy-machine-core = {version="=1.0.4", features = ["no-entrypoint"]}
-mpl-candy-guard = {version="=1.1.0", features = ["no-entrypoint"]}
-mpl-bubblegum = {version="=0.7.0", features=["no-entrypoint"]}
+value = { path = "../value", version = "0.0.1" }
+flow-lib = { path = "../flow-lib", version = "0.0.1" }
+
 async-trait = "0.1"
 tiny-bip39 = "0.8"
 inventory = "0.3"
@@ -37,9 +26,6 @@ tokio = { version = "1", features = ["time", "macros"] }
 mime_guess = "2"
 borsh = "0.9"
 bytes = "1"
-bundlr-sdk = { version = "0.3.0", default-features = false, features = [
-    "solana",
-] }
 ed25519-dalek = "1"
 futures = "0.3"
 thiserror = "1"
@@ -48,8 +34,6 @@ serde_with = "3.1.0"
 rhai = "1.10.1"
 indexmap = { version = "1.9.1", features = ["serde-1"] }
 bs58 = "0.4"
-anchor-lang ="=0.27.0"
-anchor-spl ="=0.27.0"
 fasteval = "0.2.4"
 tracing = "0.1"
 once_cell = "1.17"
@@ -57,14 +41,26 @@ rand = "0.7.3"
 hex = "0.4.3"
 byteorder = "1.4.3"
 primitive-types = { version = "0.9.0", default-features = false }
-bstr = { version = "1", features = ["serde"] }
-
-
-value = { path = "../value", version = "0.0.1" }
-flow-lib = { path = "../flow-lib", version = "0.0.1" }
 hyper = { version = "0.14.26", default-features = false, features = ["client"] }
 url = "2.3.1"
 
+# solana libs
+solana-sdk = "=1.14.16"
+solana-client = "=1.14.16"
+solana-program = "=1.14.16"
+spl-token = { version = "=3.5", features = ["no-entrypoint"] }
+spl-memo = { version = "=3.0", features = ["no-entrypoint"] }
+spl-associated-token-account = { version = "=1.1.2", features = ["no-entrypoint"] }
+spl-account-compression = "=0.1.10"
+spl-noop = "=0.1.3"
+mpl-token-auth-rules = "=1.3.0"
+mpl-token-metadata = "=1.9.1"
+mpl-candy-machine-core = { version="=1.0.4", features = ["no-entrypoint"] }
+mpl-candy-guard = {version="=1.1.0", features = ["no-entrypoint"]}
+mpl-bubblegum = {version="=0.7.0", features=["no-entrypoint"]}
+bundlr-sdk = { version = "=0.3.0", default-features = false, features = ["solana"] }
+anchor-lang ="=0.27.0"
+anchor-spl ="=0.27.0"
 clockwork-client = "=2.0.1"
 clockwork-utils = "=2.0.1"
 clockwork-thread-program = "=2.0.1"
@@ -72,12 +68,11 @@ clockwork-sdk = "=2.0.1"
 
 [dependencies.anchor-lang-26]
 package="anchor-lang"
-version="0.26.0"
+version="=0.26.0"
 
 [dependencies.anchor-spl-26]
 package="anchor-spl"
-version="0.26.0"
-
+version="=0.26.0"
 
 # [dependencies.clockwork-thread-program]
 # git = "https://github.com/space-operator/clockwork.git"
@@ -115,7 +110,6 @@ rev = "b209022b85d8e6cbf4e37b059bfe3ce7fa11c6e1"
 # [dependencies.wormhole-anchor-sdk]
 # git = "https://github.com/wormhole-foundation/wormhole-scaffolding.git"
 # rev = "7756f517fd63abae4be9b41ed82723def22bad09"
-
 
 [dev-dependencies]
 rust_decimal_macros = "1.26"
