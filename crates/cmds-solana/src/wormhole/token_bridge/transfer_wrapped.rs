@@ -1,4 +1,4 @@
-use crate::wormhole::ForeignAddress;
+use crate::wormhole::{token_bridge::eth::hex_to_address, ForeignAddress};
 
 use crate::prelude::*;
 
@@ -6,9 +6,10 @@ use borsh::BorshSerialize;
 use rand::Rng;
 use solana_program::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
-use wormhole_sdk::Address;
 
-use super::{TokenBridgeInstructions, TransferWrappedData};
+use super::{
+    get_sequence_number, Address, SequenceTracker, TokenBridgeInstructions, TransferWrappedData,
+};
 
 // Command Name
 const NAME: &str = "transfer_wrapped";
@@ -34,10 +35,10 @@ pub struct Input {
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
     pub token_chain: u16,
-    pub token_address: ForeignAddress,
+    pub token_address: Pubkey,
     pub amount: u64,
     pub fee: u64,
-    pub target_address: Address,
+    pub target_address: String,
     pub target_chain: u16,
     #[serde(with = "value::keypair")]
     pub message: Keypair,
@@ -64,11 +65,13 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let config_key = Pubkey::find_program_address(&[b"config"], &token_bridge_program_id).0;
 
+    let target_address = hex_to_address(&input.target_address).map_err(anyhow::Error::msg)?;
+
     let wrapped_mint_key = Pubkey::find_program_address(
         &[
             b"wrapped",
             input.token_chain.to_be_bytes().as_ref(),
-            &input.token_address,
+            &input.token_address.as_ref(),
         ],
         &token_bridge_program_id,
     )
@@ -84,7 +87,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         Pubkey::find_program_address(&[b"authority_signer"], &token_bridge_program_id).0;
 
     let emitter = Pubkey::find_program_address(&[b"emitter"], &token_bridge_program_id).0;
-
     let bridge_config = Pubkey::find_program_address(&[b"Bridge"], &wormhole_core_program_id).0;
 
     let sequence =
@@ -100,7 +102,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         nonce,
         amount: input.amount,
         fee: input.fee,
-        target_address: input.target_address.0,
+        target_address,
         target_chain: input.target_chain,
     };
 
@@ -145,11 +147,25 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             input.message.clone_keypair(),
         ]
         .into(),
-        instructions: [ix].into(),
+        instructions: [
+            spl_token::instruction::approve(
+                &spl_token::id(),
+                &input.from,
+                &authority_signer,
+                &input.payer.pubkey(),
+                &[],
+                input.amount,
+            )
+            .unwrap(),
+            ix,
+        ]
+        .into(),
         minimum_balance_for_rent_exemption,
     };
 
     let ins = input.submit.then_some(ins).unwrap_or_default();
+
+    let sequence_data: SequenceTracker = get_sequence_number(&ctx, sequence).await;
 
     let signature = ctx
         .execute(
@@ -157,6 +173,8 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             value::map! {
                 "wrapped_mint_key" => wrapped_mint_key,
                 "wrapped_meta_key" => wrapped_meta_key,
+                "sequence" => sequence_data.sequence.to_string(),
+                "emitter" => emitter,
             },
         )
         .await?

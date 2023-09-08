@@ -1,4 +1,12 @@
-use crate::{prelude::*, wormhole::token_bridge::eth::CreateWrappedResponse};
+use crate::{
+    prelude::*,
+    wormhole::token_bridge::{
+        eth::{hex_to_address, CreateWrappedResponse},
+        Address,
+    },
+};
+
+use super::Receipt;
 
 // Command Name
 const NAME: &str = "create_wrapped_on_eth";
@@ -22,12 +30,14 @@ pub struct Input {
     pub keypair: String,
     pub network_name: String,
     pub signed_vaa: String,
-    pub token: String,
+    #[serde(with = "value::pubkey")]
+    pub token: Pubkey,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    response: CreateWrappedResponse,
+    receipt: Receipt,
+    address: Address,
 }
 
 async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
@@ -45,7 +55,7 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         network_name: input.network_name,
         keypair: input.keypair,
         signed_vaa: input.signed_vaa,
-        token: input.token,
+        token: input.token.to_string(),
     };
 
     let client = reqwest::Client::new();
@@ -57,14 +67,20 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         .json::<CreateWrappedResponse>()
         .await?;
 
-    Ok(Output { response })
+    let receipt = response.output.receipt;
+
+    // token contract address on ETH
+    let address = hex_to_address(&response.output.address).map_err(anyhow::Error::msg)?;
+
+    Ok(Output { receipt, address })
 }
 
 #[cfg(test)]
 mod tests {
     use crate::wormhole::token_bridge::eth::CreateWrappedResponse;
-
-    use super::*;
+    use serde::{Deserialize, Serialize};
+    use std::{fmt::Write, num::ParseIntError};
+    use wormhole_sdk::Address;
 
     #[derive(Serialize, Deserialize, Debug)]
     struct Payload {
@@ -100,11 +116,49 @@ mod tests {
         let payload = Payload {
             network_name: "devnet".into(),
             keypair: "".into(),
-            signed_vaa: "AQAAAAABACTH+5e/0/FZYU/YqK3hYxfoR0vdBK5O4yAveiILfgbQDrhVmE1r6jFD9tNzLmC4npm2iBMs8yWEkYiw4QyCTVEBZMlzE++C5sQAATsmQJ+Kre0/XdyhhGlapqD6gpsMhcr4SFYySJbSFMqYAAAAAAAAX9kgApi7fW9jhJ4tQJVc/RdjCHlBXnAU+DA652cYv7j3QvzCAAEJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".into(),
-       token:"".into()
+            signed_vaa: "AQAAAAABAG9er/MmJMZA+TXKhvruR6h07pgDs4jvGEX32tA/X+fPJoLN5GdryI2AnnKLeN/y2DG1XVfqQIjSwVmJrdFQ1JUAZNvkF/RT7/MAATsmQJ+Kre0/XdyhhGlapqD6gpsMhcr4SFYySJbSFMqYAAAAAAAAYqYgAmc+E+tQG8MVnhfmdvaOmyILEFx3DYlI+fuqLuFPMiDtAAEJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".into(),
+       token:"7x1tu6xjxhCNnnwTNytmGYL6w4Cwe3PDMo7gmfc89GHa".into()
         };
 
         let res = test(payload).await.unwrap();
         dbg!(res);
+    }
+
+    pub fn decode_hex(s: &str) -> Result<Vec<u8>, ParseIntError> {
+        (0..s.len())
+            .step_by(2)
+            .map(|i| u8::from_str_radix(&s[i..i + 2], 16))
+            .collect()
+    }
+
+    #[test]
+    fn hex_to_address() -> Result<(), anyhow::Error> {
+        let address = "0xc15B6515aC32a91ACe0b8fABEBBB924a6CD4A539";
+
+        if !address.starts_with("0x") {
+            return Err(anyhow::anyhow!("invalid address {}", address));
+        };
+
+        let stripped_address = address.split_at(2).1;
+
+        let bytes = decode_hex(stripped_address).unwrap();
+        let mut array = [0u8; 32];
+        array[32 - bytes.len()..].copy_from_slice(&bytes);
+        let address: Address = Address(array);
+        dbg!(address.to_string());
+
+        // back to string
+        // remove left zero padding
+        let mut s = String::new();
+        s.push_str("0x");
+        for b in address.0.iter() {
+            if *b == 0 {
+                continue;
+            }
+            write!(&mut s, "{:02x}", b).unwrap();
+        }
+        dbg!(s);
+
+        panic!("")
     }
 }

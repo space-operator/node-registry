@@ -1,7 +1,12 @@
+use std::num::ParseIntError;
+
 use serde::{Deserialize, Serialize};
+
+use super::Address;
 
 pub mod attest_from_eth;
 pub mod create_wrapped_on_eth;
+pub mod redeem_on_eth;
 pub mod transfer_from_eth;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -80,10 +85,43 @@ struct Response {
 #[derive(Serialize, Deserialize, Debug)]
 struct CreateWrappedOutput {
     receipt: Receipt,
+    address: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 struct CreateWrappedResponse {
     output: CreateWrappedOutput,
-    address: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct RedeemOnEthOutput {
+    receipt: Receipt,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct RedeemOnEthResponse {
+    output: RedeemOnEthOutput,
+}
+
+// Function to Decode Hex String to Bytes
+pub fn decode_hex(s: &str) -> Result<Vec<u8>, ParseIntError> {
+    (0..s.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&s[i..i + 2], 16))
+        .collect()
+}
+
+// Function to Convert Hex String to Address
+pub fn hex_to_address(hex: &str) -> Result<Address, anyhow::Error> {
+    if !hex.starts_with("0x") {
+        return Err(anyhow::anyhow!("invalid address {}", hex));
+    };
+
+    let stripped_address = hex.split_at(2).1;
+
+    let bytes = decode_hex(stripped_address).unwrap();
+    let mut array = [0u8; 32];
+    array[32 - bytes.len()..].copy_from_slice(&bytes);
+    let address: Address = Address(array);
+    Ok(address)
 }

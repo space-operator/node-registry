@@ -23,7 +23,7 @@ pub struct Input {
     pub token: String,
     pub network_name: String,
     pub recipient: String,
-    pub amount: u64,
+    pub amount: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -49,7 +49,7 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         token: input.token,
         keypair: input.keypair,
         recipient: input.recipient,
-        amount: input.amount.to_string(),
+        amount: input.amount,
     };
 
     let client = reqwest::Client::new();

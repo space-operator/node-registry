@@ -81,9 +81,9 @@ version="=0.26.0"
 # git = "https://github.com/space-operator/clockwork.git"
 # rev = "efd73675f670bfc0aab551d89c741e18c8cfed10"
 
-[dependencies.payments]
-git = "https://github.com/clockwork-xyz/examples.git"
-rev = "1b65e8185796b4eac009750c0a0b8128576201ad"
+# [dependencies.payments]
+# git = "https://github.com/clockwork-xyz/examples.git"
+# rev = "1b65e8185796b4eac009750c0a0b8128576201ad"
 
 [dependencies.metaboss_utils]
 git = "https://github.com/space-operator/metaboss_utils.git"

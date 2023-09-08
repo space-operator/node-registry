@@ -1,9 +1,9 @@
 {
   "type": "native",
   "data": {
-    "node_id": "create_wrapped_on_eth",
+    "node_id": "redeem_on_eth",
     "version": "0.1",
-    "display_name": "Create Wrapped On ETH",
+    "display_name": "Redeem On ETH",
     "description": "",
     "width": 200,
     "height": 235,
@@ -13,12 +13,6 @@
     {
       "name": "receipt",
       "type": "json",
-      "defaultValue": null,
-      "tooltip": ""
-    },
-    {
-      "name": "address",
-      "type": "address",
       "defaultValue": null,
       "tooltip": ""
     }
@@ -43,14 +37,6 @@
     {
       "name": "signed_vaa",
       "type_bounds": ["string"],
-      "required": true,
-      "defaultValue": null,
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
-      "name": "token",
-      "type_bounds": ["pubkey"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",
