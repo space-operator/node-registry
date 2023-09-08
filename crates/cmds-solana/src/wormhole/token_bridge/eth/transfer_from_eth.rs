@@ -52,8 +52,6 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         amount: input.amount,
     };
 
-    dbg!(&payload.amount);
-
     let client = reqwest::Client::new();
     let response: ServerlessOutput = client
         .post("https://gygvoikm3c.execute-api.us-east-1.amazonaws.com/transfer_from_eth")
