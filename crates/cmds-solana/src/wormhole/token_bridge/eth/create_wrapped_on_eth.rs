@@ -158,7 +158,6 @@ mod tests {
             write!(&mut s, "{:02x}", b).unwrap();
         }
         dbg!(s);
-
-        panic!("")
+        Ok(())
     }
 }
