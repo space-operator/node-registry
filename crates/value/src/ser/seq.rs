@@ -51,8 +51,13 @@ impl serde::ser::SerializeSeq for SerializeSeq {
                 match u8::try_from(value) {
                     Ok(v) => vec.push(v),
                     Err(v) => {
-                        let Self::Bytes(old) = std::mem::replace(self, Self::Array(Vec::new())) else { unreachable!() };
-                        let Self::Array(new) = self else { unreachable!() };
+                        let Self::Bytes(old) = std::mem::replace(self, Self::Array(Vec::new()))
+                        else {
+                            unreachable!()
+                        };
+                        let Self::Array(new) = self else {
+                            unreachable!()
+                        };
                         new.extend(old.into_iter().map(Value::from).chain(std::iter::once(v)));
                     }
                 }
