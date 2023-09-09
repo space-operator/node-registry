@@ -1,14 +1,21 @@
+use space_lib::{space, Result};
 use std::collections::HashMap;
 
 use regex::{Error as RegexError, Regex};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use util::*;
 
-#[cfg(not(test))]
-#[no_mangle]
-fn main(text: &String, regex: &String) -> Box<String> {
-    iter_captures(text, regex)
+#[derive(Deserialize)]
+struct Input {
+    text: String,
+    regex: String,
+}
+
+// #[cfg(not(test))]
+#[space]
+fn main(mut input: Input) -> Result<String> {
+    iter_captures(&input.text, &input.regex)
 }
 
 #[derive(Serialize)]
@@ -18,7 +25,7 @@ struct Captures {
     named: HashMap<String, Option<String>>,
 }
 
-pub fn iter_captures(text: &String, regex: &String) -> Box<String> {
+pub fn iter_captures(text: &String, regex: &String) -> String {
     serialize_result(iter_captures_impl(text, regex))
 }
 
@@ -123,7 +130,7 @@ mod util {
         },
     }
 
-    pub fn serialize_result<T, E>(result: Result<T, E>) -> Box<String>
+    pub fn serialize_result<T, E>(result: Result<T, E>) -> String
     where
         T: Serialize,
         E: Display,
@@ -132,7 +139,7 @@ mod util {
             Ok(value) => ResultSer::Ok { value },
             Err(error) => ResultSer::Error { error },
         };
-        Box::new(serde_json::to_string(&result).unwrap())
+        serde_json::to_string(&result).unwrap()
     }
 
     pub fn use_display<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
