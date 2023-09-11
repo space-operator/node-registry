@@ -7,7 +7,7 @@ use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::token::Message;
 
-use super::{Address, CompleteNativeData, PayloadTransfer, TokenBridgeInstructions};
+use super::{CompleteNativeData, PayloadTransfer, TokenBridgeInstructions};
 
 // Command Name
 const NAME: &str = "complete_native";

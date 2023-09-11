@@ -1,4 +1,4 @@
-use crate::wormhole::{token_bridge::eth::hex_to_address, ForeignAddress};
+use crate::wormhole::token_bridge::eth::hex_to_address;
 
 use crate::prelude::*;
 
@@ -7,9 +7,7 @@ use rand::Rng;
 use solana_program::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
 
-use super::{
-    get_sequence_number, Address, SequenceTracker, TokenBridgeInstructions, TransferWrappedData,
-};
+use super::{get_sequence_number, SequenceTracker, TokenBridgeInstructions, TransferWrappedData};
 
 // Command Name
 const NAME: &str = "transfer_wrapped";
