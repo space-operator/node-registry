@@ -1,6 +1,6 @@
 use crate::{
     prelude::*,
-    wormhole::token_bridge::eth::{Receipt, RedeemOnEthResponse, Response as ServerlessOutput},
+    wormhole::token_bridge::eth::{Receipt, RedeemOnEthResponse},
 };
 
 // Command Name
@@ -82,7 +82,7 @@ mod tests {
 
     #[tokio::test]
     async fn need_key_test_local() {
-        let json_response = r#"{
+        let _json_response = r#"{
             "output": Object {
                 "receipt": Object {
                     "to": String("0xDB5492265f6038831E89f495670FF909aDe94bd9"),

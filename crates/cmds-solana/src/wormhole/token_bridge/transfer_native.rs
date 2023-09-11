@@ -4,7 +4,6 @@ use borsh::BorshSerialize;
 use rand::Rng;
 use solana_program::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
-use wormhole_sdk::Address;
 
 use super::{
     eth::hex_to_address, get_sequence_number, SequenceTracker, TokenBridgeInstructions,
