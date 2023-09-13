@@ -20,6 +20,24 @@ use tower::ServiceExt;
 
 pub const SIGNATURE_TIMEOUT: Duration = Duration::from_secs(5 * 60);
 
+pub fn find_failed_instruction(err: &ClientError) -> Option<usize> {
+    if let ClientErrorKind::RpcError(RpcError::RpcResponseError { message, .. }) = &err.kind {
+        if let Some(s) =
+            message.strip_prefix("Transaction simulation failed: Error processing Instruction ")
+        {
+            let index = s
+                .chars()
+                .take_while(char::is_ascii_digit)
+                .collect::<String>();
+            index.parse().ok()
+        } else {
+            None
+        }
+    } else {
+        None
+    }
+}
+
 pub fn verbose_solana_error(err: &ClientError) -> String {
     use std::fmt::Write;
     if let ClientErrorKind::RpcError(RpcError::RpcResponseError {
