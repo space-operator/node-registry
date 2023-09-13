@@ -85,6 +85,8 @@ pub mod execute {
         Timeout,
         #[error("insufficient solana balance, needed={needed}; have={balance};")]
         InsufficientSolanaBalance { needed: u64, balance: u64 },
+        #[error("transaction simulation failed")]
+        TxSimFailed,
         #[error("{}", crate::solana::verbose_solana_error(.0))]
         Solana(#[from] Arc<ClientError>),
         #[error(transparent)]
