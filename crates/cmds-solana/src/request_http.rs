@@ -38,6 +38,8 @@ pub struct Input {
     pub query_params: Vec<(String, String)>,
     #[serde(default)]
     pub body: Option<serde_json::Value>,
+    #[serde(default)]
+    pub form: Option<Vec<(String, String)>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -186,6 +188,15 @@ async fn run(_: Context, input: Input) -> Result<Output, CommandError> {
 
     let mut req = client.request(input.method.parse()?, input.url);
 
+    // let mut req = match (&input.body, &input.form) {
+    //     (Some(body), None) => client.request(input.method.parse()?, input.url),
+    //     (None, Some(form)) => client.request(input.method.parse()?, input.url),
+    //     (None, None) => client.request(input.method.parse()?, input.url),
+    //     _ => {
+    //         return Err(anyhow::anyhow!("Cannot have both body and form"));
+    //     }
+    // };
+
     if !input.query_params.is_empty() {
         req = req.query(&input.query_params);
     }
@@ -203,6 +214,14 @@ async fn run(_: Context, input: Input) -> Result<Output, CommandError> {
         req = req.json(&body);
     }
 
+    if let Some(form) = input.form {
+        let mut multiform = reqwest::multipart::Form::new();
+        for (k, v) in form {
+            multiform = multiform.text(k, v);
+        }
+        req = req.multipart(multiform);
+    }
+    
     let resp = req.send().await?;
 
     let status = resp.status();
