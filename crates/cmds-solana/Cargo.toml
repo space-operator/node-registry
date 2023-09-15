@@ -21,6 +21,7 @@ reqwest = { version = "0.11", default-features = false, features = [
     "json",
     "rustls-tls",
     "gzip",
+    "multipart"
 ] }
 tokio = { version = "1", features = ["time", "macros"] }
 mime_guess = "2"

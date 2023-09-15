@@ -38,6 +38,8 @@ pub struct Input {
     pub query_params: Vec<(String, String)>,
     #[serde(default)]
     pub body: Option<serde_json::Value>,
+    #[serde(default)]
+    pub form: Option<Vec<(String, String)>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -201,6 +203,14 @@ async fn run(_: Context, input: Input) -> Result<Output, CommandError> {
 
     if let Some(body) = input.body {
         req = req.json(&body);
+    }
+
+    if let Some(form) = input.form {
+        let mut multiform = reqwest::multipart::Form::new();
+        for (k, v) in form {
+            multiform = multiform.text(k, v);
+        }
+        req = req.multipart(multiform);
     }
 
     let resp = req.send().await?;

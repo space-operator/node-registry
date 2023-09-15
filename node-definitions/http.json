@@ -47,7 +47,7 @@
         {
             "name": "headers",
             "type_bounds": [
-                "array"
+                "kv"
             ],
             "required": false,
             "passthrough": false,
@@ -63,7 +63,6 @@
             "passthrough": false,
             "defaultValue": null,
             "tooltip": "e.g. {\"user\": \"<username>\", \"password\": \"<password>\"}"
-
         },
         {
             "name": "query_params",
@@ -84,6 +83,16 @@
             "passthrough": false,
             "defaultValue": null,
             "tooltip": "Request's JSON body"
+        },
+        {
+            "name": "form",
+            "type_bounds": [
+                "kv"
+            ],
+            "required": false,
+            "passthrough": false,
+            "defaultValue": null,
+            "tooltip": "content-type will be automatically set to multipart/form-data"
         }
     ],
     "targets_form.json_schema": {},
