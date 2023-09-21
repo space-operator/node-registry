@@ -82,10 +82,18 @@ pub struct ClientConfig {
     pub sol_network: Network,
     #[serde(default)]
     pub instructions_bundling: BundlingMode,
+    #[serde(default)]
     pub partial_config: Option<PartialConfig>,
+    #[serde(default)]
     pub collect_instructions: bool,
+    #[serde(default)]
     pub call_depth: u32,
+    #[serde(default = "default_origin")]
     pub origin: FlowRunOrigin,
+}
+
+const fn default_origin() -> FlowRunOrigin {
+    FlowRunOrigin::Start {}
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
