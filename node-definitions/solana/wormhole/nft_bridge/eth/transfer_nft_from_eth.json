@@ -1,66 +1,72 @@
 {
   "type": "native",
   "data": {
-    "node_id": "revoke_access",
+    "node_id": "transfer_nft_from_eth",
     "version": "0.1",
-    "display_name": "xNFT Revoke Access",
+    "display_name": "Transfer NFT From ETH",
     "description": "",
     "width": 200,
-    "height": 290,
+    "height": 235,
     "backgroundColor": "#fff"
   },
   "sources": [
     {
-      "name": "signature",
-      "type": "signature",
+      "name": "response",
+      "type": "json",
       "defaultValue": null,
       "tooltip": ""
     },
     {
-      "name": "access",
-      "type": "pubkey",
+      "name": "emitter",
+      "type": "address",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "sequence",
+      "type": "u32",
       "defaultValue": null,
       "tooltip": ""
     }
   ],
   "targets": [
     {
-      "name": "payer",
-      "type_bounds": ["keypair"],
+      "name": "keypair",
+      "type_bounds": ["string"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",
       "passthrough": true
     },
     {
-      "name": "authority",
-      "type_bounds": ["pubkey"],
-      "required": true,
-      "defaultValue": null,
-      "tooltip": "",
-      "passthrough": true
-    },
-    {
-      "name": "xnft",
-      "type_bounds": ["pubkey"],
-      "required": true,
-      "defaultValue": null,
-      "tooltip": "",
-      "passthrough": true
-    },
-    {
-      "name": "wallet",
-      "type_bounds": ["pubkey"],
+      "name": "network_name",
+      "type_bounds": ["string"],
       "required": true,
       "defaultValue": null,
       "tooltip": "",
       "passthrough": false
     },
     {
-      "name": "submit",
-      "type_bounds": ["bool"],
-      "required": false,
-      "defaultValue": true,
+      "name": "token",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "token_id",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "recipient",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
       "tooltip": "",
       "passthrough": false
     }

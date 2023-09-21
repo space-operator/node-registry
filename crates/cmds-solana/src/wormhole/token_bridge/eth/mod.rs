@@ -24,7 +24,7 @@ struct EffectiveGasPrice {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Receipt {
+pub struct Receipt {
     to: String,
     from: String,
     contract_address: Option<String>,
@@ -70,16 +70,16 @@ struct Log {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Output {
-    receipt: Receipt,
+pub struct Output {
+    pub receipt: Receipt,
     #[serde(rename = "emitterAddress")]
-    emitter_address: String,
-    sequence: String,
+    pub emitter_address: String,
+    pub sequence: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Response {
-    output: Output,
+pub struct Response {
+    pub output: Output,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

@@ -1,6 +1,9 @@
 use crate::prelude::*;
 use base64::decode;
-use wormhole_sdk::{token::Message, vaa::Digest, Address, Chain, Vaa};
+use mpl_token_auth_rules::payload;
+use wormhole_sdk::{nft::Message as NftMessage, token::Message, vaa::Digest, Address, Chain, Vaa};
+
+use super::MessageAlias;
 
 // Command Name
 const NAME: &str = "parse_vaa";
@@ -32,7 +35,7 @@ pub struct Output {
     vaa_hash: bytes::Bytes,
     vaa_secp256k_hash: bytes::Bytes,
     guardian_set_index: u32,
-    payload: wormhole_sdk::token::Message,
+    payload: serde_json::Value,
 }
 
 async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
@@ -103,8 +106,19 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         secp256k_hash: vaa_secp256k_hash,
     } = wormhole_sdk::vaa::digest(body).map_err(|_| anyhow::anyhow!("Failed to digest VAA"))?;
 
-    let payload: Message = serde_wormhole::from_slice(&parsed_vaa.payload)
-        .map_err(|_| anyhow::anyhow!("Payload content not supported"))?;
+    let payload = match serde_wormhole::from_slice(&parsed_vaa.payload) {
+        Ok(message) => MessageAlias::Transfer(message),
+        Err(_) => match serde_wormhole::from_slice(&parsed_vaa.payload) {
+            Ok(nft_message) => MessageAlias::NftTransfer(nft_message),
+            Err(_) => return Err(anyhow::anyhow!("Payload content not supported")),
+        },
+    };
+    let payload: serde_json::Value = serde_json::from_str(&serde_json::to_string(&payload)?)?;
+
+    let payload = payload
+        .get("NftTransfer")
+        .or(payload.get("Transfer"))
+        .ok_or_else(|| anyhow::anyhow!("Invalid payload"))?;
 
     Ok(Output {
         parsed_vaa: parsed_vaa.clone(),
@@ -114,7 +128,7 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         vaa_hash: bytes::Bytes::copy_from_slice(&vaa_hash),
         vaa_secp256k_hash: bytes::Bytes::copy_from_slice(&vaa_secp256k_hash),
         guardian_set_index: parsed_vaa.guardian_set_index,
-        payload,
+        payload: payload.clone(),
     })
 }
 
@@ -128,6 +142,9 @@ fn test() -> Result<(), anyhow::Error> {
 
     // //eth transfer vaa
     // let vaa_string:String="AQAAAAABAIDirkZb0u0i33P55FM8+ErUor6LbHELePcpfMyC3JRHPFQJ7ztwLOI9XlwvK1cqgSQC8Q+4hh/gyV5W8/rKt2cBZMFSePdTAQAnEgAAAAAAAAAAAAAAANtUkiZfYDiDHon0lWcP+Qmt6UvZAAAAAAAAAacBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF9eEAAAAAAAAAAAAAAAAAQQqLFQLwHyiH8LBbIsyTTUWmKKcnEi26xJVia/fd3KTtEQn+ZwcAonBDCzA1vRw+oHhAWKEJAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".to_string();
+
+    // NFT vaa from ETH
+    // let vaa_string ="AQAAAAABALt3I337ZUXILcnBsZqCMIG8TVwIePD/Gru2X50QwQMaZaFpI1XlnJ1LgsPhOTISd/YQXoTliIaZ/OVMPnp/7tgAZQuaBBt5AAAnEgAAAAAAAAAAAAAAAGoLUqwZjkhw5fN5fVtAODilu/2ZAAAAAAAAAAABAQAAAAAAAAAAAAAAACEVANGWC9t7ozkDR//YrUhriXoYJxIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADVZB9ilABQaXBmczovL2JhZnlyZWloMjczeDRqc2lkNjQ1YWE3NGE2d3RmYnlqNWNzbmNnazUzNGozeWUzcm00NHZpeWNwaXlhL21ldGFkYXRhLmpzb26+go39e1e9XPUt3DPsAFRBGQwfoFO6fZhM+R92rOMsEwAB".to_string();
 
     let vaa_bytes = decode(vaa_string).unwrap();
 
@@ -161,15 +178,33 @@ fn test() -> Result<(), anyhow::Error> {
         payload: body[51..].to_vec(),
     };
 
-    let msg: Message = serde_wormhole::from_slice(&parsed_vaa.payload)
-        .map_err(|_| anyhow::anyhow!("Payload content not supported"))?;
+    #[derive(Serialize, Deserialize, Debug)]
+    enum MessageAlias {
+        Transfer(Message),
+        NftTransfer(NftMessage),
+    }
 
-    dbg!(&parsed_vaa);
-    dbg!(&msg);
+    let payload = match serde_wormhole::from_slice(&parsed_vaa.payload) {
+        Ok(message) => MessageAlias::Transfer(message),
+        Err(_) => match serde_wormhole::from_slice(&parsed_vaa.payload) {
+            Ok(nft_message) => MessageAlias::NftTransfer(nft_message),
+            Err(_) => return Err(anyhow::anyhow!("Payload content not supported")),
+        },
+    };
+
+    let payload_value: serde_json::Value = serde_json::from_str(&serde_json::to_string(&payload)?)?;
+
+    let inner_json = payload_value
+        .get("NftTransfer")
+        .or(payload_value.get("Transfer"))
+        .ok_or_else(|| anyhow::anyhow!("Invalid payload"))?;
+
+    // dbg!(&parsed_vaa);
+    // dbg!(&inner_json);
 
     // let string = String::from_utf8(parsed_vaa.payload).unwrap();
     // println!("{}", string);
-    dbg!(&vaa_bytes);
+    // dbg!(&vaa_bytes);
 
     Ok(())
 }

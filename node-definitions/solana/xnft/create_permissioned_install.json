@@ -3,7 +3,7 @@
   "data": {
     "node_id": "create_permissioned_install",
     "version": "0.1",
-    "display_name": "Create Private xNFT Install",
+    "display_name": "xNFT Create Private Install",
     "description": "",
     "width": 200,
     "height": 290,
