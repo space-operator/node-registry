@@ -7,6 +7,7 @@
     "description": "",
     "width": 200,
     "height": 290,
+    "backgroundColorDark": "#000000",
     "backgroundColor": "#fff"
   },
   "sources": [
@@ -60,14 +61,12 @@
     },
     {
       "name": "submit",
-      "type_bounds": [
-          "bool"
-      ],
+      "type_bounds": ["bool"],
       "required": false,
       "defaultValue": true,
       "tooltip": "",
       "passthrough": false
-  }
+    }
   ],
   "targets_form.json_schema": {},
   "targets_form.ui_schema": {}

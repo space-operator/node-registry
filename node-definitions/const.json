@@ -1,23 +1,24 @@
 {
-    "type": "native",
-    "data": {
-        "width": 300,
-        "height": 200,
-        "node_id": "const",
-        "version": "0.1",
-        "description": "",
-        "display_name": "Const",
-        "backgroundColor": "#fff"
-    },
-    "sources": [
-        {
-            "name": "Source",
-            "type": "free",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets": [],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+  "type": "native",
+  "data": {
+    "width": 300,
+    "height": 200,
+    "node_id": "const",
+    "version": "0.1",
+    "description": "",
+    "display_name": "Const",
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "Source",
+      "type": "free",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

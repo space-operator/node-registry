@@ -1,34 +1,33 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "print",
-        "version": "0.1",
-        "display_name": "Print",
-        "description": "Shows the result of an output",
-        "width": 250,
-        "height": 150,
-        "backgroundColor": "#ffd9b3"
-    },
-    "targets": [
-        {
-            "name": "print",
-            "type_bounds": [
-                "free"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        }
-    ],
-    "sources": [
-        {
-            "name": "__print_output",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+  "type": "native",
+  "data": {
+    "node_id": "print",
+    "version": "0.1",
+    "display_name": "Print",
+    "description": "Shows the result of an output",
+    "width": 250,
+    "height": 150,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "print",
+      "type_bounds": ["free"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    }
+  ],
+  "sources": [
+    {
+      "name": "__print_output",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

@@ -1,34 +1,33 @@
 {
-    "type": "WASM",
-    "data": {
-        "node_id": "word sort",
-        "version": "0.3",
-        "display_name": "Word Sort",
-        "description": "Sorts a list of words in alphabetical order.",
-        "width": 200,
-        "height": 180,
-        "backgroundColor": "#ffd9b3"
-    },
-    "targets": [
-        {
-            "name": "words",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "{[]}",
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "sources": [
-        {
-            "name": "sorted words",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+  "type": "WASM",
+  "data": {
+    "node_id": "word sort",
+    "version": "0.3",
+    "display_name": "Word Sort",
+    "description": "Sorts a list of words in alphabetical order.",
+    "width": 200,
+    "height": 180,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "words",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "{[]}",
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "sorted words",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

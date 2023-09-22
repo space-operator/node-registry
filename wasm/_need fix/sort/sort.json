@@ -1,44 +1,41 @@
 {
-    "type": "WASM",
-    "data": {
-        "node_id": "sort",
-        "version": "0.1",
-        "display_name": "Sort Array",
-        "description": "Node which performs sorting of arrays of nulls, numbers or strings in asc or desc mode",
-        "width": 200,
-        "height": 155,
-        "backgroundColor": "#ffd9b3"
+  "type": "WASM",
+  "data": {
+    "node_id": "sort",
+    "version": "0.1",
+    "display_name": "Sort Array",
+    "description": "Node which performs sorting of arrays of nulls, numbers or strings in asc or desc mode",
+    "width": 200,
+    "height": 155,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "array",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
     },
-    "targets": [
-        {
-            "name": "array",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "ordering",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "pass 'asc' or 'desc'",
-            "passthrough": false
-        }
-    ],
-    "sources": [
-        {
-            "name": "result",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "ordering",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "pass 'asc' or 'desc'",
+      "passthrough": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "result",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

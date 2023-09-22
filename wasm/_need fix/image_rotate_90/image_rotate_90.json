@@ -1,44 +1,41 @@
 {
-    "type": "WASM",
-    "data": {
-        "node_id": "image rotate 90",
-        "version": "0.5",
-        "display_name": "Image Rotate 90 deg",
-        "description": "Rotates an image 90 deg either clockwise or anticlockwise.",
-        "width": 200,
-        "height": 180,
-        "backgroundColor": "#ffd9b3"
+  "type": "WASM",
+  "data": {
+    "node_id": "image rotate 90",
+    "version": "0.5",
+    "display_name": "Image Rotate 90 deg",
+    "description": "Rotates an image 90 deg either clockwise or anticlockwise.",
+    "width": 200,
+    "height": 180,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "base64",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
     },
-    "targets": [
-        {
-            "name": "base64",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "clockwise",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": true,
-            "defaultValue": true,
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "sources": [
-        {
-            "name": "base64 output",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "clockwise",
+      "type_bounds": ["bool"],
+      "required": true,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "base64 output",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

@@ -6,8 +6,9 @@
     "display_name": "NFT Transfer Native",
     "description": "",
     "width": 200,
-    "height": 235,
-    "backgroundColor": "#fff"
+    "height": 200,
+    "backgroundColor": "#0d2e51",
+    "backgroundColorDark": "#0d2e51"
   },
   "sources": [
     {

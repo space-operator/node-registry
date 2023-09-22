@@ -7,6 +7,7 @@
     "description": "Splits input by delimiter",
     "width": 200,
     "height": 180,
+    "backgroundColorDark": "#000000",
     "backgroundColor": "#ffd9b3"
   },
   "targets": [

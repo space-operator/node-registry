@@ -1,64 +1,57 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "transfer_sol",
-        "version": "0.1",
-        "display_name": "Transfer SOL",
-        "description": "",
-        "width": 200,
-        "height": 235,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "transfer_sol",
+    "version": "0.1",
+    "display_name": "Transfer SOL",
+    "description": "",
+    "width": 200,
+    "height": 235,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "sender",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
     },
-    "sources": [
-        {
-            "name": "signature",
-            "type": "signature",
-            "defaultValue": null,
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "sender",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "recipient",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "amount",
-            "type_bounds": [
-                "f64"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "submit",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": false,
-            "defaultValue": true,
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "recipient",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "amount",
+      "type_bounds": ["f64"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

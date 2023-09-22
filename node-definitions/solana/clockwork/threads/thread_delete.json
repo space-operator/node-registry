@@ -1,64 +1,57 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "thread_delete",
-        "version": "0.1",
-        "display_name": "Thread Delete",
-        "description": "",
-        "width": 200,
-        "height": 200,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "thread_delete",
+    "version": "0.1",
+    "display_name": "Thread Delete",
+    "description": "",
+    "width": 200,
+    "height": 200,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "thread_authority",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
     },
-    "sources": [
-        {
-            "name": "signature",
-            "type": "signature",
-            "defaultValue": null,
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "thread_authority",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "payer",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "thread",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "close_to",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "thread",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "close_to",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

@@ -1,54 +1,49 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "arweave_file_upload",
-        "version": "0.1",
-        "display_name": "Arweave File Upload",
-        "description": "",
-        "width": 200,
-        "height": 200,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "arweave_file_upload",
+    "version": "0.1",
+    "display_name": "Arweave File Upload",
+    "description": "",
+    "width": 200,
+    "height": 200,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "file_url",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "fee_payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
     },
-    "sources": [
-        {
-            "name": "file_url",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "fee_payer",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "file_path",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "fund_bundlr",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": true,
-            "defaultValue": true,
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "file_path",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "fund_bundlr",
+      "type_bounds": ["bool"],
+      "required": true,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

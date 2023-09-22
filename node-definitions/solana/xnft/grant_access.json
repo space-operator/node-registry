@@ -1,81 +1,71 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "grant_access",
-        "version": "0.1",
-        "display_name": "xNFT Grant Access",
-        "description": "",
-        "width": 200,
-        "height": 290,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "grant_access",
+    "version": "0.1",
+    "display_name": "xNFT Grant Access",
+    "description": "",
+    "width": 200,
+    "height": 290,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": null,
+      "tooltip": ""
     },
-    "sources": [
-     
-        {
-            "name": "signature",
-            "type": "signature",
-            "defaultValue": null,
-            "tooltip": ""
-        },
-           {
-            "name": "access",
-            "type": "pubkey",
-            "defaultValue": null,
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "payer",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "authority",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "xnft",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "wallet",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": false
-        },
-            {
-            "name": "submit",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": false,
-            "defaultValue": true,
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "access",
+      "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "authority",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "xnft",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "wallet",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

@@ -1,100 +1,87 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "http_request",
-        "version": "0.1",
-        "display_name": "HTTP Request",
-        "description": "",
-        "width": 200,
-        "height": 425,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "http_request",
+    "version": "0.1",
+    "display_name": "HTTP Request",
+    "description": "",
+    "width": 200,
+    "height": 425,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "body",
+      "type": "free",
+      "defaultValue": "",
+      "tooltip": ""
     },
-    "sources": [
-        {
-            "name": "body",
-            "type": "free",
-            "defaultValue": "",
-            "tooltip": ""
-        },
-        {
-            "name": "headers",
-            "type": "object",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "url",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "passthrough": false,
-            "defaultValue": null,
-            "tooltip": "Request's URL"
-        },
-        {
-            "name": "method",
-            "type_bounds": [
-                "string"
-            ],
-            "required": false,
-            "passthrough": false,
-            "defaultValue": "GET",
-            "tooltip": "GET, POST, PATCH, etc."
-        },
-        {
-            "name": "headers",
-            "type_bounds": [
-                "kv"
-            ],
-            "required": false,
-            "passthrough": false,
-            "defaultValue": null,
-            "tooltip": ""
-        },
-        {
-            "name": "basic_auth",
-            "type_bounds": [
-                "object"
-            ],
-            "required": false,
-            "passthrough": false,
-            "defaultValue": null,
-            "tooltip": "e.g. {\"user\": \"<username>\", \"password\": \"<password>\"}"
-        },
-        {
-            "name": "query_params",
-            "type_bounds": [
-                "array"
-            ],
-            "required": false,
-            "passthrough": false,
-            "defaultValue": null,
-            "tooltip": ""
-        },
-        {
-            "name": "body",
-            "type_bounds": [
-                "json"
-            ],
-            "required": false,
-            "passthrough": false,
-            "defaultValue": null,
-            "tooltip": "Request's JSON body"
-        },
-        {
-            "name": "form",
-            "type_bounds": [
-                "kv"
-            ],
-            "required": false,
-            "passthrough": false,
-            "defaultValue": null,
-            "tooltip": "content-type will be automatically set to multipart/form-data"
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "headers",
+      "type": "object",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "url",
+      "type_bounds": ["string"],
+      "required": true,
+      "passthrough": false,
+      "defaultValue": null,
+      "tooltip": "Request's URL"
+    },
+    {
+      "name": "method",
+      "type_bounds": ["string"],
+      "required": false,
+      "passthrough": false,
+      "defaultValue": "GET",
+      "tooltip": "GET, POST, PATCH, etc."
+    },
+    {
+      "name": "headers",
+      "type_bounds": ["kv"],
+      "required": false,
+      "passthrough": false,
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "basic_auth",
+      "type_bounds": ["object"],
+      "required": false,
+      "passthrough": false,
+      "defaultValue": null,
+      "tooltip": "e.g. {\"user\": \"<username>\", \"password\": \"<password>\"}"
+    },
+    {
+      "name": "query_params",
+      "type_bounds": ["array"],
+      "required": false,
+      "passthrough": false,
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "body",
+      "type_bounds": ["json"],
+      "required": false,
+      "passthrough": false,
+      "defaultValue": null,
+      "tooltip": "Request's JSON body"
+    },
+    {
+      "name": "form",
+      "type_bounds": ["kv"],
+      "required": false,
+      "passthrough": false,
+      "defaultValue": null,
+      "tooltip": "content-type will be automatically set to multipart/form-data"
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

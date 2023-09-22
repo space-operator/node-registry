@@ -1,38 +1,39 @@
 {
-    "type": "WASM",
-    "data": {
-        "node_id": "number sort",
-        "version": "0.1",
-        "display_name": "Number Sort",
-        "description": "Sorts a list of numbers in ascending order.",
-        "width": 200,
-        "height": 180,
-        "backgroundColor": "#ffd9b3"
-    },
-    "targets": [
+  "type": "WASM",
+  "data": {
+    "node_id": "number sort",
+    "version": "0.1",
+    "display_name": "Number Sort",
+    "description": "Sorts a list of numbers in ascending order.",
+    "width": 200,
+    "height": 180,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "numbers",
+      "type_bounds": [
         {
-            "name": "numbers",
-            "type_bounds": [
-                {
-                    "array": "i64"
-                }
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
+          "array": "i64"
         }
-    ],
-    "sources": [
-        {
-            "name": "sorted numbers",
-            "type": {
-                "array": "i64"
-            },
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+      ],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "sorted numbers",
+      "type": {
+        "array": "i64"
+      },
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

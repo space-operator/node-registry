@@ -1,34 +1,33 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "collect",
-        "version": "0.1",
-        "display_name": "Collect",
-        "description": "Collect inputs into an array",
-        "width": 250,
-        "height": 100,
-        "backgroundColor": "#fff"
-    },
-    "sources": [
-        {
-            "name": "array",
-            "type": "free",
-            "defaultValue": null,
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "element",
-            "type_bounds": [
-                "free"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "passthrough": false,
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+  "type": "native",
+  "data": {
+    "node_id": "collect",
+    "version": "0.1",
+    "display_name": "Collect",
+    "description": "Collect inputs into an array",
+    "width": 250,
+    "height": 100,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "array",
+      "type": "free",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "element",
+      "type_bounds": ["free"],
+      "required": false,
+      "defaultValue": null,
+      "passthrough": false,
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

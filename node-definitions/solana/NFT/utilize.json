@@ -1,104 +1,89 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "utilize",
-        "version": "0.1",
-        "display_name": "Utilize",
-        "description": "",
-        "width": 200,
-        "height": 110,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "utilize",
+    "version": "0.1",
+    "display_name": "Utilize",
+    "description": "",
+    "width": 200,
+    "height": 110,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "mint_account",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
     },
-    "sources": [
-        {
-            "name": "signature",
-            "type": "signature",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "mint_account",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "use_authority",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "fee_payer",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "account",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "owner",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "burner",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "number_of_uses",
-            "type_bounds": [
-                "u64"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "submit",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "use_authority",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "fee_payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "account",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "owner",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "burner",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "number_of_uses",
+      "type_bounds": ["u64"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

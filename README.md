@@ -1,16 +1,20 @@
 # node-registry
+
 A place to store and test all the available nodes
 
 ## Use form builder to build form!
+
 https://ginkgobioworks.github.io/react-json-schema-form-builder/
 https://github.com/ginkgobioworks/react-json-schema-form-builder
 
 ## JSON to form schema
+
 https://rjsf-team.github.io/react-jsonschema-form/
 
 Need both JSONSchema and UISchema
 
 ## Node Definition
+
 ```
 {
   "type": "native", // native | WASM | custom
@@ -19,9 +23,9 @@ Need both JSONSchema and UISchema
     "version": "0.1",
     "display_name": "Mint Token",
     "description": "Create a token",
-    "width": 250, 
+    "width": 250,
     "height": 0, // need to manually calculate height = 50 + 15 + max(sources.count, targets.count)*45
-    "backgroundColor": "#fff"
+    "backgroundColorDark":"#000000" ,"backgroundColor": "#fff"
   },
   // node outputs
   "sources": [

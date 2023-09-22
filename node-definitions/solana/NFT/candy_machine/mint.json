@@ -7,6 +7,7 @@
     "description": "",
     "width": 200,
     "height": 290,
+    "backgroundColorDark": "#000000",
     "backgroundColor": "#fff"
   },
   "sources": [
@@ -122,7 +123,7 @@
       "tooltip": "",
       "passthrough": false
     },
-  
+
     {
       "name": "submit",
       "type_bounds": ["bool"],

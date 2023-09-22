@@ -1,43 +1,41 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "to_vec",
-        "version": "0.1",
-        "display_name": "To Vec",
-        "description": "Create a vector from two values",
-        "width": 250,
-        "height": 100,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "to_vec",
+    "version": "0.1",
+    "display_name": "To Vec",
+    "description": "Create a vector from two values",
+    "width": 250,
+    "height": 100,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "result",
+      "type": "free",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "first",
+      "type_bounds": ["free"],
+      "required": false,
+      "defaultValue": null,
+      "passthrough": false,
+      "tooltip": ""
     },
-    "sources": [
-        {
-            "name": "result",
-            "type": "free",
-            "defaultValue": null,
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "first",
-            "type_bounds": [
-                "free"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "passthrough": false,
-            "tooltip": ""
-        },  {
-            "name": "second",
-            "type_bounds": [
-                "free"
-            ],
-            "required": false,
-            "defaultValue": null,
-            "passthrough": false,
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "second",
+      "type_bounds": ["free"],
+      "required": false,
+      "defaultValue": null,
+      "passthrough": false,
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

@@ -8,7 +8,7 @@
         "description": "",
         "width": 200,
         "height": 350,
-        "backgroundColor": "#FFFF99"
+        "backgroundColorDark":"#000000" ,"backgroundColor": "#FFFF99"
     },
     "sources": [
         {

@@ -1,74 +1,65 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "create_token_account",
-        "version": "0.1",
-        "display_name": "Create Token Account",
-        "description": "",
-        "width": 200,
-        "height": 290,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "create_token_account",
+    "version": "0.1",
+    "display_name": "Create Token Account",
+    "description": "",
+    "width": 200,
+    "height": 290,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "owner",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
     },
-    "sources": [
-        {
-            "name": "signature",
-            "type": "signature",
-            "defaultValue": null,
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "owner",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "fee_payer",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "mint_account",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "token_account",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "submit",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": false,
-            "defaultValue": true,
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "fee_payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "mint_account",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "token_account",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

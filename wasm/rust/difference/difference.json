@@ -7,7 +7,7 @@
         "description": "Find the difference between two strings",
         "width": 200,
         "height": 155,
-        "backgroundColor": "#ffd9b3"
+        "backgroundColorDark":"#000000" ,"backgroundColor": "#ffd9b3"
     },
     "targets": [
         {

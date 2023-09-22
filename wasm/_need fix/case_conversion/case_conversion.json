@@ -1,43 +1,40 @@
 {
-    "type": "WASM",
-    "data": {
-        "node_id": "case_conversion",
-        "version": "0.4",
-        "display_name": "Case Conversion",
-        "description": "Node which allows conversion of strings to various cases",
-        "width": 200,
-        "height": 155,
-        "backgroundColor": "#ffd9b3"
+  "type": "WASM",
+  "data": {
+    "node_id": "case_conversion",
+    "version": "0.4",
+    "display_name": "Case Conversion",
+    "description": "Node which allows conversion of strings to various cases",
+    "width": 200,
+    "height": 155,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "value",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "passthrough": false
     },
-    "targets": [
-        {
-            "name": "value",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "passthrough": false
-        },
-        {
-            "name": "case_type",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "Allowed values for case: upper, lower, title, toggle, camel, pascal, upper_camel, snake, upper_snake, screaming_snake, kebab, cobol, upper_kebab, train, flat, upper_flat, alternating",
-            "passthrough": false
-        }
-    ],
-    "sources": [
-        {
-            "name": "result",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "case_type",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "Allowed values for case: upper, lower, title, toggle, camel, pascal, upper_camel, snake, upper_snake, screaming_snake, kebab, cobol, upper_kebab, train, flat, upper_flat, alternating",
+      "passthrough": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "result",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

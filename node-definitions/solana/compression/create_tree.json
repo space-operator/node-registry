@@ -1,97 +1,95 @@
 {
-    "type": "native",
-    "data": {
-      "node_id": "create_tree",
-      "version": "0.1",
-      "display_name": "Create Tree",
-      "description": "",
-      "width": 200,
-      "height": 290,
-      "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "create_tree",
+    "version": "0.1",
+    "display_name": "Create Tree",
+    "description": "",
+    "width": 200,
+    "height": 290,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
     },
-    "sources": [
-      {
-        "name": "signature",
-        "type": "string",
-        "defaultValue": "",
-        "tooltip": ""
-      },
-      {
-        "name": "tree_authority",
-        "type": "string",
-        "defaultValue": "",
-        "tooltip": ""
-      }
-    ],
-    "targets": [
-      {
-        "name": "payer",
-        "type_bounds": ["keypair"],
-        "required": true,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": true
-      },
-      {
-        "name": "creator",
-        "type_bounds": ["keypair"],
-        "required": true,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },
-      {
-        "name": "merkle_tree",
-        "type_bounds": ["keypair"],
-        "required": false,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },
-      {
-        "name": "max_depth",
-        "type_bounds": ["u32"],
-        "required": false,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },    {
-        "name": "max_buffer",
-        "type_bounds": ["u32"],
-        "required": false,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },     {
-        "name": "canopy_levels",
-        "type_bounds": ["u32"],
-        "required": false,
-        "defaultValue": "",
-        "tooltip": "",
-        "passthrough": false
-      },
-      {
-        "name": "is_public",
-        "type_bounds": [
-            "bool"
-        ],
-        "required": false,
-        "defaultValue": true,
-        "tooltip": "",
-        "passthrough": false
-    },
-      {
-        "name": "submit",
-        "type_bounds": [
-            "bool"
-        ],
-        "required": false,
-        "defaultValue": true,
-        "tooltip": "",
-        "passthrough": false
+    {
+      "name": "tree_authority",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
     }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
-  }
-  
+  ],
+  "targets": [
+    {
+      "name": "payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "creator",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "merkle_tree",
+      "type_bounds": ["keypair"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "max_depth",
+      "type_bounds": ["u32"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "max_buffer",
+      "type_bounds": ["u32"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "canopy_levels",
+      "type_bounds": ["u32"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "is_public",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

@@ -1,93 +1,81 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "disburse_payment_ix",
-        "version": "0.1",
-        "display_name": "Disburse Payment Instruction",
-        "description": "",
-        "width": 200,
-        "height": 425,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "disburse_payment_ix",
+    "version": "0.1",
+    "display_name": "Disburse Payment Instruction",
+    "description": "",
+    "width": 200,
+    "height": 425,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "instruction",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "payer",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
     },
-    "sources": [
-        {
-            "name": "instruction",
-            "type": "json",
-            "defaultValue": null,
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-             {
-            "name": "payer",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "authority_token_account",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "mint",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        }, {
-            "name": "payment",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "thread",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "recipient",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "recipient_ata",
-            "type_bounds": [
-                "pubkey"
-            ],
-            "required": true,
-            "defaultValue": null,
-            "tooltip": "",
-            "passthrough": true
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "authority_token_account",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "mint",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "payment",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "thread",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "recipient",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "recipient_ata",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

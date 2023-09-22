@@ -1,60 +1,55 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "arweave_nft_upload",
-        "version": "0.1",
-        "display_name": "Arweave NFT Upload",
-        "description": "",
-        "width": 200,
-        "height": 200,
-        "backgroundColor": "#fff"
+  "type": "native",
+  "data": {
+    "node_id": "arweave_nft_upload",
+    "version": "0.1",
+    "display_name": "Arweave NFT Upload",
+    "description": "",
+    "width": 200,
+    "height": 200,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "metadata_url",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
     },
-    "sources": [
-        {
-            "name": "metadata_url",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        },
-        {
-            "name": "updated_metadata",
-            "type": "json",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "fee_payer",
-            "type_bounds": [
-                "keypair"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": true
-        },
-        {
-            "name": "metadata",
-            "type_bounds": [
-                "json"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        },
-        {
-            "name": "fund_bundlr",
-            "type_bounds": [
-                "bool"
-            ],
-            "required": true,
-            "defaultValue": true,
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "updated_metadata",
+      "type": "json",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "fee_payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "metadata",
+      "type_bounds": ["json"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "fund_bundlr",
+      "type_bounds": ["bool"],
+      "required": true,
+      "defaultValue": true,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

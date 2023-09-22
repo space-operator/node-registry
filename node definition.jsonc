@@ -7,6 +7,7 @@
     "description": "Create a token",
     "width": 0, // add non zero to override front-end
     "height": 0,
+    "backgroundColorDark": "#000000",
     "backgroundColor": "#fff"
   },
   // node outputs
@@ -22,9 +23,7 @@
   "targets": [
     {
       "name": "token_name",
-      "type_bounds": [
-        "string"
-      ],
+      "type_bounds": ["string"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",

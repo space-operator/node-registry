@@ -1,40 +1,39 @@
 {
-    "type": "native",
-    "data": {
-        "node_id": "wallet",
-        "version": "0.1",
-        "display_name": "Wallet",
-        "description": "",
-        "width": 300,
-        "height": 155,
-        "backgroundColor": "#baf2b1"
+  "type": "native",
+  "data": {
+    "node_id": "wallet",
+    "version": "0.1",
+    "display_name": "Wallet",
+    "description": "",
+    "width": 300,
+    "height": 155,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#baf2b1"
+  },
+  "sources": [
+    {
+      "name": "pubkey",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
     },
-    "sources": [
-        {
-            "name": "pubkey",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        },
-        {
-            "name": "keypair",
-            "type": "keypair",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets": [
-        {
-            "name": "name",
-            "type_bounds": [
-                "string"
-            ],
-            "required": false,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    {
+      "name": "keypair",
+      "type": "keypair",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "name",
+      "type_bounds": ["string"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }
