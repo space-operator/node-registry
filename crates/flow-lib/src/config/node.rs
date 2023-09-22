@@ -33,6 +33,8 @@ pub struct Data {
     pub height: u32,
     #[serde(rename = "backgroundColor")]
     pub background_color: String,
+    #[serde(rename = "backgroundColorDark")]
+    pub background_color_dark: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
