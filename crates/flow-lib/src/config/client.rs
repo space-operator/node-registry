@@ -1,6 +1,6 @@
 //! Parse JS front-end flow config into back-end flow config
 
-use crate::{CommandType, FlowId, SolanaNet, ValueType};
+use crate::{CommandType, FlowId, FlowRunId, NodeId, SolanaNet, ValueType};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use serde_with::serde_as;
@@ -77,12 +77,39 @@ pub struct ClientConfig {
     #[serde(default)]
     #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
     pub environment: HashMap<String, String>,
-    // TODO: remove default value
     #[serde(default)]
     #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
-    pub current_network: Network,
+    pub sol_network: Network,
     #[serde(default)]
     pub instructions_bundling: BundlingMode,
+    #[serde(default)]
+    pub partial_config: Option<PartialConfig>,
+    #[serde(default)]
+    pub collect_instructions: bool,
+    #[serde(default)]
+    pub call_depth: u32,
+    #[serde(default = "default_origin")]
+    pub origin: FlowRunOrigin,
+}
+
+const fn default_origin() -> FlowRunOrigin {
+    FlowRunOrigin::Start {}
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum FlowRunOrigin {
+    Start {},
+    Interflow {
+        flow_run_id: FlowRunId,
+        node_id: NodeId,
+        times: u32,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PartialConfig {
+    pub only_nodes: Vec<NodeId>,
+    pub inputs_from: FlowRunId,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]

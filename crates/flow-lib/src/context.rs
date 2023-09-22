@@ -1,4 +1,6 @@
-use crate::{solana::Instructions, ContextConfig, UserId};
+use crate::{
+    config::client::FlowRunOrigin, solana::Instructions, ContextConfig, FlowRunId, NodeId, UserId,
+};
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
 use solana_sdk::{pubkey::Pubkey, signature::Signature};
@@ -159,6 +161,9 @@ pub mod execute {
 #[derive(Clone)]
 pub struct CommandContext {
     pub svc: execute::Svc,
+    pub flow_run_id: FlowRunId,
+    pub node_id: NodeId,
+    pub times: u32,
 }
 
 #[derive(Clone)]
@@ -184,6 +189,9 @@ impl Default for Context {
         );
         ctx.command = Some(CommandContext {
             svc: execute::simple(&ctx, 1),
+            flow_run_id: uuid::Uuid::nil(),
+            node_id: uuid::Uuid::nil(),
+            times: 0,
         });
         ctx
     }
@@ -251,6 +259,15 @@ impl Context {
             signer: sig_svc,
             command: None,
         }
+    }
+
+    pub fn new_interflow_origin(&self) -> Option<FlowRunOrigin> {
+        let c = self.command.as_ref()?;
+        Some(FlowRunOrigin::Interflow {
+            flow_run_id: c.flow_run_id,
+            node_id: c.node_id,
+            times: c.times,
+        })
     }
 
     pub async fn execute(
