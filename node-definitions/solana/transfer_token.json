@@ -7,7 +7,7 @@
     "description": "Transfer a custom token",
     "width": 200,
     "height": 470,
-    "backgroundColorDark": "#000000",
+    "backgroundColorDark": "#2e003f",
     "backgroundColor": "#fff"
   },
   "sources": [

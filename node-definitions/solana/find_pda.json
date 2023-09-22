@@ -7,7 +7,7 @@
     "description": "Find the PDA address for a given program ID and seeds",
     "width": 200,
     "height": 110,
-    "backgroundColorDark": "#000000",
+    "backgroundColorDark": "#2e003f",
     "backgroundColor": "#fff"
   },
   "sources": [
