@@ -119,7 +119,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let wrapped_data = TransferWrappedData {
         nonce,
-        target_address: input.target_address.0,
+        target_address: super::Address(input.target_address.0),
         target_chain: input.target_chain,
     };
 

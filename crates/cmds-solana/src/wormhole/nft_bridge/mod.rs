@@ -1,8 +1,12 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use primitive_types::U256;
+use serde::{Deserialize, Serialize};
+
+use super::{token_bridge::Address, ForeignAddress};
 
 pub mod complete_wrapped;
 pub mod complete_wrapped_meta;
+pub mod eth;
 pub mod transfer_native;
 pub mod transfer_wrapped;
 
@@ -19,7 +23,6 @@ enum NFTBridgeInstructions {
     UpgradeContract,
 }
 
-pub type Address = [u8; 32];
 pub type ChainID = u16;
 
 #[derive(BorshDeserialize, BorshSerialize, Default)]
@@ -32,7 +35,7 @@ pub struct TransferWrappedData {
 #[derive(PartialEq, Debug, Clone)]
 pub struct PayloadTransfer {
     // Address of the token. Left-zero-padded if shorter than 32 bytes
-    pub token_address: Address,
+    pub token_address: ForeignAddress,
     // Chain ID of the token
     pub token_chain: ChainID,
     // Symbol of the token

@@ -1,11 +1,10 @@
-use crate::prelude::*;
+use crate::{prelude::*, wormhole::token_bridge::eth::hex_to_address};
 
 use borsh::BorshSerialize;
 
 use rand::Rng;
 use solana_program::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
-use wormhole_sdk::Address;
 
 use super::{NFTBridgeInstructions, TransferNativeData};
 
@@ -32,7 +31,7 @@ inventory::submit!(CommandDescription::new(NAME, |_| { build() }));
 pub struct Input {
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
-    pub target_address: Address,
+    pub target_address: String,
     pub target_chain: u16,
     #[serde(with = "value::keypair")]
     pub message: Keypair,
@@ -92,9 +91,11 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     // TODO: use a real nonce
     let nonce = rand::thread_rng().gen();
 
-    let wrapped_data = TransferNativeData {
+    let address = hex_to_address(&input.target_address).map_err(anyhow::Error::msg)?;
+
+    let data = TransferNativeData {
         nonce,
-        target_address: input.target_address.0,
+        target_address: address,
         target_chain: input.target_chain,
     };
 
@@ -122,7 +123,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             AccountMeta::new_readonly(wormhole_core_program_id, false),
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
-        data: (NFTBridgeInstructions::TransferWrapped, wrapped_data).try_to_vec()?,
+        data: (NFTBridgeInstructions::TransferNative, data).try_to_vec()?,
     };
 
     let minimum_balance_for_rent_exemption = ctx
@@ -135,7 +136,19 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let ins = Instructions {
         fee_payer: input.payer.pubkey(),
         signers: [input.payer.clone_keypair(), input.message.clone_keypair()].into(),
-        instructions: [ix].into(),
+        instructions: [
+            spl_token::instruction::approve(
+                &spl_token::id(),
+                &input.from,
+                &authority_signer,
+                &input.payer.pubkey(),
+                &[],
+                1,
+            )
+            .unwrap(),
+            ix,
+        ]
+        .into(),
         minimum_balance_for_rent_exemption,
     };
 

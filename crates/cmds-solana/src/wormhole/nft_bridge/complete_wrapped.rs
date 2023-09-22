@@ -1,12 +1,16 @@
+use crate::wormhole::nft_bridge::Address;
 use crate::wormhole::{PostVAAData, VAA};
 
 use crate::prelude::*;
 
+use base64::decode;
 use borsh::BorshSerialize;
 
+use serde_json::json;
 use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::nft::Message;
+use wormhole_sdk::Vaa;
 
 use super::{CompleteWrappedData, NFTBridgeInstructions, PayloadTransfer};
 
@@ -34,7 +38,9 @@ pub struct Input {
     #[serde(with = "value::keypair")]
     pub payer: Keypair,
     pub vaa: bytes::Bytes,
+    // pub vaa: String,
     pub payload: wormhole_sdk::nft::Message,
+    // pub payload: serde_json::Value,
     pub vaa_hash: bytes::Bytes,
     #[serde(with = "value::pubkey")]
     pub to_authority: Pubkey,
@@ -59,7 +65,19 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let vaa =
         VAA::deserialize(&input.vaa).map_err(|_| anyhow::anyhow!("Failed to deserialize VAA"))?;
+    // let vaa_bytes =
+    //     decode(input.vaa).map_err(|err| anyhow::anyhow!("Failed to decode VAA string: {}", err))?;
+
+    // let vaa =
+    //     VAA::deserialize(&vaa_bytes).map_err(|_| anyhow::anyhow!("Failed to deserialize VAA"))?;
+
     let vaa: PostVAAData = vaa.into();
+
+    // let payload = serde_json::to_vec(&input.payload)?;
+    // let payload = serde_json::from_slice::<Message>(&payload)?;
+    // let payload: Message =
+    //     serde_json::from_value(j).map_err(|_| anyhow::anyhow!("Failed to deserialize payload"))?;
+    // let payload: PayloadTransfer = match payload {
 
     let payload: PayloadTransfer = match input.payload {
         Message::Transfer {
@@ -74,7 +92,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         } => PayloadTransfer {
             token_address: nft_address.0,
             token_chain: nft_chain.into(),
-            to: to.0,
+            to: Address(to.0),
             to_chain: to_chain.into(),
             symbol: symbol.to_string(),
             name: name.to_string(),
@@ -137,9 +155,9 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             AccountMeta::new(claim_key, false),
             AccountMeta::new_readonly(endpoint, false),
             AccountMeta::new(token_account, false),
+            AccountMeta::new_readonly(input.to_authority, false),
             AccountMeta::new(mint, false),
-            AccountMeta::new_readonly(mint_meta, false),
-            AccountMeta::new(input.to_authority, false),
+            AccountMeta::new(mint_meta, false),
             AccountMeta::new_readonly(mint_authority, false),
             // Dependencies
             AccountMeta::new_readonly(sysvar::rent::id(), false),
@@ -187,3 +205,85 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     Ok(Output { signature })
 }
+
+// #[cfg(test)]
+// mod tests {
+//     use crate::wormhole::token_bridge::eth::Receipt;
+
+//     use super::*;
+
+//     #[derive(Serialize, Deserialize, Debug)]
+//     struct Payload {
+//         #[serde(rename = "networkName")]
+//         network_name: String,
+//         token: String,
+//         keypair: String,
+//         recipient: String,
+//         #[serde(rename = "tokenId")]
+//         token_id: String,
+//     }
+
+//     #[tokio::test]
+//     async fn need_key_test_local() {
+//         let _json_input = r#"{
+//             "output": {
+//                 "receipt": {
+//                     "to": "0xD8E4C2DbDd2e2bd8F1336EA691dBFF6952B1a6eB",
+//                     "from": "0xdD6c5B9eA3Ac0FB5387E5e6B482788d5F70772A6",
+//                     "contractAddress": null,
+//                     "transactionIndex": 8,
+//                     "gasUsed": {
+//                         "type": "BigNumber",
+//                         "hex": "0x578c"
+//                     },
+//                     "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+//                     "blockHash": "0x4eb1e80788dfed4d50a5bf72d5ece34f023e796ebb522d0102997cc8b066c49f",
+//                     "transactionHash": "0x0b911086660107e379011b76a5841626db0b67df80f4734ed12ddceef8f41799",
+//                     "logs": [],
+//                     "blockNumber": 4330148,
+//                     "confirmations": 1,
+//                     "cumulativeGasUsed": {
+//                         "type": "BigNumber",
+//                         "hex": "0x23ebec"
+//                     },
+//                     "effectiveGasPrice": {
+//                         "type": "BigNumber",
+//                         "hex": "0x59682f08"
+//                     },
+//                     "status": 1,
+//                     "type": 2,
+//                     "byzantium": true,
+//                     "events": []
+//                 }
+//             }
+//         }"#;
+
+//         async fn test(payload: Payload) -> Result<Receipt, reqwest::Error> {
+//             let client = reqwest::Client::new();
+//             let response = client
+//                 .post(
+//                     "https://gygvoikm3c.execute-api.us-east-1.amazonaws.com/transfer_nft_from_eth",
+//                 )
+//                 .json(&payload)
+//                 .send()
+//                 .await?
+//                 .json::<ServerlessOutput>()
+//                 .await?;
+
+//             let receipt = response.output.receipt;
+
+//             Ok(receipt)
+//         }
+
+//         let payload = Payload {
+//             network_name: "devnet".into(),
+//             token: "0xDB5492265f6038831E89f495670FF909aDe94bd9".into(),
+//             keypair: "".into(),
+//             recipient: "0x00000000".into(),
+//             token_id: "0".into(),
+//         };
+
+//         let res = test(payload).await.unwrap();
+//         dbg!(res);
+//     }
+// }

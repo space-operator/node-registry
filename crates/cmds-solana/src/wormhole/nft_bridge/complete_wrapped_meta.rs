@@ -8,7 +8,7 @@ use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::nft::Message;
 
-use super::{CompleteWrappedMetaData, NFTBridgeInstructions, PayloadTransfer};
+use super::{Address, CompleteWrappedMetaData, NFTBridgeInstructions, PayloadTransfer};
 
 // Command Name
 const NAME: &str = "nft_complete_wrapped_meta";
@@ -72,7 +72,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         } => PayloadTransfer {
             token_address: nft_address.0,
             token_chain: nft_chain.into(),
-            to: to.0,
+            to: Address(to.0),
             to_chain: to_chain.into(),
             symbol: symbol.to_string(),
             name: name.to_string(),
