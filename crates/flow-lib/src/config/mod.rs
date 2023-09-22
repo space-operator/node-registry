@@ -255,8 +255,8 @@ impl FlowConfig {
                     gzip: true,
                 },
                 solana_client: SolanaClientConfig {
-                    url: config.current_network.url,
-                    cluster: config.current_network.cluster,
+                    url: config.sol_network.url,
+                    cluster: config.sol_network.cluster,
                 },
                 environment: config.environment,
             },
