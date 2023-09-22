@@ -1,4 +1,7 @@
-use crate::{prelude::*, wormhole::token_bridge::eth::hex_to_address};
+use crate::{
+    prelude::*,
+    wormhole::token_bridge::{eth::hex_to_address, get_sequence_number, SequenceTracker},
+};
 
 use borsh::BorshSerialize;
 
@@ -68,7 +71,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         Pubkey::find_program_address(&[b"custody_signer"], &nft_bridge_program_id).0;
 
     // SPL Metadata
-    let spl_metadata = Pubkey::find_program_address(
+    let metadata = Pubkey::find_program_address(
         &[
             b"metadata".as_ref(),
             mpl_token_metadata::id().as_ref(),
@@ -106,7 +109,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             AccountMeta::new_readonly(config_key, false),
             AccountMeta::new(input.from, false),
             AccountMeta::new(input.mint, false),
-            AccountMeta::new_readonly(spl_metadata, false),
+            AccountMeta::new_readonly(metadata, false),
             AccountMeta::new(custody_key, false),
             AccountMeta::new_readonly(authority_signer, false),
             AccountMeta::new_readonly(custody_signer, false),
@@ -154,11 +157,15 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let ins = input.submit.then_some(ins).unwrap_or_default();
 
+    let sequence_data: SequenceTracker = get_sequence_number(&ctx, sequence).await;
+
     let signature = ctx
         .execute(
             ins,
             value::map! {
-                "spl_metadata" => spl_metadata,
+                "metadata" => metadata,
+                "sequence" => sequence_data.sequence.to_string(),
+                "emitter" => emitter.to_string(),
             },
         )
         .await?

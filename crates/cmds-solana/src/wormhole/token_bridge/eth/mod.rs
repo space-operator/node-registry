@@ -94,13 +94,13 @@ struct CreateWrappedResponse {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct RedeemOnEthOutput {
-    receipt: Receipt,
+pub struct RedeemOnEthOutput {
+    pub receipt: Receipt,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct RedeemOnEthResponse {
-    output: RedeemOnEthOutput,
+pub struct RedeemOnEthResponse {
+    pub output: RedeemOnEthOutput,
 }
 
 // Function to Decode Hex String to Bytes

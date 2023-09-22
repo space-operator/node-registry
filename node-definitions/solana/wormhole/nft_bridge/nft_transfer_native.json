@@ -11,8 +11,20 @@
   },
   "sources": [
     {
-      "name": "spl_metadata",
+      "name": "metadata",
       "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "sequence",
+      "type": "string",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "emitter",
+      "type": "string",
       "defaultValue": null,
       "tooltip": ""
     },
