@@ -58,6 +58,12 @@
       "type": "json",
       "defaultValue": null,
       "tooltip": ""
+    },
+    {
+      "name": "nft_token_id",
+      "type": "string",
+      "defaultValue": null,
+      "tooltip": ""
     }
   ],
   "targets": [

@@ -1,0 +1,79 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "nft_complete_native",
+    "version": "0.1",
+    "display_name": "NFT Complete Native",
+    "description": "",
+    "width": 200,
+    "height": 201,
+    "backgroundColorDark": "#0d2e51",
+    "backgroundColor": "#8DB7FB"
+  },
+  "sources": [
+    {
+      "name": "token",
+      "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+      {
+        "name": "payer",
+        "type_bounds": ["keypair"],
+        "required": true,
+        "defaultValue": null,
+        "tooltip": "",
+        "passthrough": true
+      },
+      {
+        "name": "vaa",
+        "type_bounds": ["bytes"],
+        "required": true,
+        "defaultValue": null,
+        "tooltip": "",
+        "passthrough": false
+      },
+      {
+        "name": "payload",
+        "type_bounds": ["json"],
+        "required": true,
+        "defaultValue": null,
+        "tooltip": "",
+        "passthrough": false
+      },
+      {
+        "name": "vaa_hash",
+        "type_bounds": ["bytes"],
+        "required": true,
+        "defaultValue": null,
+        "tooltip": "",
+        "passthrough": false
+      },
+      {
+        "name": "to_authority",
+        "type_bounds": ["pubkey"],
+        "required": true,
+        "defaultValue": null,
+        "tooltip": "",
+        "passthrough": false
+      },
+      {
+        "name": "submit",
+        "type_bounds": ["bool"],
+        "required": false,
+        "defaultValue": true,
+        "tooltip": "",
+        "passthrough": false
+      }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

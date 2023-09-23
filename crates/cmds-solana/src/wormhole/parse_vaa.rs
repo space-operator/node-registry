@@ -1,6 +1,6 @@
 use crate::prelude::*;
 use base64::decode;
-use mpl_token_auth_rules::payload;
+use primitive_types::U256;
 use wormhole_sdk::{nft::Message as NftMessage, token::Message, vaa::Digest, Address, Chain, Vaa};
 
 use super::MessageAlias;
@@ -36,6 +36,7 @@ pub struct Output {
     vaa_secp256k_hash: bytes::Bytes,
     guardian_set_index: u32,
     payload: serde_json::Value,
+    nft_token_id: Option<String>,
 }
 
 async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
@@ -113,12 +114,37 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
             Err(_) => return Err(anyhow::anyhow!("Payload content not supported")),
         },
     };
-    let payload: serde_json::Value = serde_json::from_str(&serde_json::to_string(&payload)?)?;
 
-    let payload = payload
+    let output_payload: serde_json::Value =
+        serde_json::from_str(&serde_json::to_string(&payload)?)?;
+
+    let output_payload = output_payload
         .get("NftTransfer")
-        .or(payload.get("Transfer"))
+        .or(output_payload.get("Transfer"))
         .ok_or_else(|| anyhow::anyhow!("Invalid payload"))?;
+
+    let token_id = match &payload {
+        MessageAlias::NftTransfer(message) => match message {
+            NftMessage::Transfer {
+                token_id,
+                nft_address: _,
+                nft_chain: _,
+                symbol: _,
+                name: _,
+                uri: _,
+                to: _,
+                to_chain: _,
+            } => Some(token_id),
+            _ => None,
+        },
+        _ => None,
+    };
+
+    let nft_token_id = if let Some(token_id) = token_id {
+        Some(U256::from_big_endian(&token_id.0).to_string())
+    } else {
+        None
+    };
 
     Ok(Output {
         parsed_vaa: parsed_vaa.clone(),
@@ -128,7 +154,8 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         vaa_hash: bytes::Bytes::copy_from_slice(&vaa_hash),
         vaa_secp256k_hash: bytes::Bytes::copy_from_slice(&vaa_secp256k_hash),
         guardian_set_index: parsed_vaa.guardian_set_index,
-        payload: payload.clone(),
+        payload: output_payload.clone(),
+        nft_token_id,
     })
 }
 
@@ -144,7 +171,7 @@ fn test() -> Result<(), anyhow::Error> {
     // let vaa_string:String="AQAAAAABAIDirkZb0u0i33P55FM8+ErUor6LbHELePcpfMyC3JRHPFQJ7ztwLOI9XlwvK1cqgSQC8Q+4hh/gyV5W8/rKt2cBZMFSePdTAQAnEgAAAAAAAAAAAAAAANtUkiZfYDiDHon0lWcP+Qmt6UvZAAAAAAAAAacBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF9eEAAAAAAAAAAAAAAAAAQQqLFQLwHyiH8LBbIsyTTUWmKKcnEi26xJVia/fd3KTtEQn+ZwcAonBDCzA1vRw+oHhAWKEJAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==".to_string();
 
     // NFT vaa from ETH
-    // let vaa_string ="AQAAAAABALt3I337ZUXILcnBsZqCMIG8TVwIePD/Gru2X50QwQMaZaFpI1XlnJ1LgsPhOTISd/YQXoTliIaZ/OVMPnp/7tgAZQuaBBt5AAAnEgAAAAAAAAAAAAAAAGoLUqwZjkhw5fN5fVtAODilu/2ZAAAAAAAAAAABAQAAAAAAAAAAAAAAACEVANGWC9t7ozkDR//YrUhriXoYJxIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADVZB9ilABQaXBmczovL2JhZnlyZWloMjczeDRqc2lkNjQ1YWE3NGE2d3RmYnlqNWNzbmNnazUzNGozeWUzcm00NHZpeWNwaXlhL21ldGFkYXRhLmpzb26+go39e1e9XPUt3DPsAFRBGQwfoFO6fZhM+R92rOMsEwAB".to_string();
+    // let vaa_string ="AQAAAAABAK2WRJ3P2kYYzQTI1P9QS7PK19hPBic2XYQviPBIzGqOISa+/M6aSwm/2VyKfVEPvAfDXbhKqpOpeHuifzlSluwBZQ3JzfuW1JYAAXUqSYFOQLlrCXIH5LU/3TMFROHmYWU/utS8FZzCioOeAAAAAAAAAKsgAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAAFTUE9QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFNPICMxMTExMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA0YcsTJvXJtMAUWOeXRBneS7i9QqAN/hIBs4rqasbOrnIaHR0cHM6Ly9hcndlYXZlLm5ldC8zRnhwSUlicHlTbmZUVFhJcnBvamhGMktISGpldkk4TXJ0M3BBQ21FYlNZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADdbFueo6wPtTh+XmtIJ4jV9wdypicS".to_string();
 
     let vaa_bytes = decode(vaa_string).unwrap();
 
@@ -192,19 +219,61 @@ fn test() -> Result<(), anyhow::Error> {
         },
     };
 
-    let payload_value: serde_json::Value = serde_json::from_str(&serde_json::to_string(&payload)?)?;
+    let token_id = match &payload {
+        MessageAlias::NftTransfer(message) => match message {
+            NftMessage::Transfer {
+                token_id,
+                nft_address: _,
+                nft_chain: _,
+                symbol: _,
+                name: _,
+                uri: _,
+                to: _,
+                to_chain: _,
+            } => Some(token_id),
+            _ => return Err(anyhow::anyhow!("Invalid message type")),
+        },
+        _ => None,
+    };
 
-    let inner_json = payload_value
-        .get("NftTransfer")
-        .or(payload_value.get("Transfer"))
-        .ok_or_else(|| anyhow::anyhow!("Invalid payload"))?;
+    let _token_id = if let Some(token_id) = token_id {
+        Some(U256::from_big_endian(&token_id.0).to_string())
+    } else {
+        None
+    };
+    // dbg!(token_id);
+    // panic!("test");
+
+    // Convert token id
+
+    // let payload_value: serde_json::Value = serde_json::from_str(&serde_json::to_string(&payload)?)?;
+
+    // let inner_json = payload_value
+    //     .get("NftTransfer")
+    //     .or(payload_value.get("Transfer"))
+    //     .ok_or_else(|| anyhow::anyhow!("Invalid payload"))?;
 
     // dbg!(&parsed_vaa);
-    // dbg!(&inner_json);
+    // dbg!(&inner_json.to_string());
 
     // let string = String::from_utf8(parsed_vaa.payload).unwrap();
     // println!("{}", string);
     // dbg!(&vaa_bytes);
 
+    // let token_id_str = inner_json["1"]["token_id"].as_str().ok_or_else(|| anyhow::anyhow!("Token ID not found"))?;
+    // let token_id = U256::from_dec_str(token_id_str).map_err(|_| anyhow::anyhow!("Invalid token ID"))?;
+    // let mut token_id_bytes = vec![0u8; 32];
+    // token_id.to_big_endian(&mut token_id_bytes);
+    // dbg!(token_id);
+
+    // let token_id_bytes = U256::from_dec_str(token_id)
+    //     .map_err(|_| anyhow::anyhow!("Invalid token ID"))?
+    //     .to_big_endian();
+    // dbg!(token_id_bytes);
+
+    // let token_id_input =
+    //     U256::from_str(token_id_str).map_err(|_| anyhow::anyhow!("Invalid token id"))?;
+    // let mut token_id = vec![0u8; 32];
+    // token_id_input.to_big_endian(&mut token_id);
     Ok(())
 }

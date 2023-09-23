@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{token_bridge::Address, ForeignAddress};
 
+pub mod complete_native;
 pub mod complete_wrapped;
 pub mod complete_wrapped_meta;
 pub mod eth;
@@ -64,3 +65,6 @@ pub struct TransferNativeData {
     pub target_address: Address,
     pub target_chain: ChainID,
 }
+
+#[derive(BorshDeserialize, BorshSerialize, Default)]
+pub struct CompleteNativeData {}
