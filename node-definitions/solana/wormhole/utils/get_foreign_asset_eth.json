@@ -1,0 +1,58 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "get_foreign_asset_eth",
+    "version": "0.1",
+    "display_name": "Get Foreign Asset on ETH",
+    "description": "",
+    "width": 200,
+    "height": 235,
+    "backgroundColorDark": "#0d2e51",
+    "backgroundColor": "#8DB7FB"
+  },
+  "sources": [
+    {
+      "name": "address",
+      "type": "string",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "token",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "is_nft",
+      "type_bounds": ["bool"],
+      "required": false,
+      "defaultValue": false,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "chain_id",
+      "type_bounds": ["number"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+
+    {
+      "name": "network",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

@@ -83,6 +83,16 @@ pub struct Response {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct GetForeignAddress {
+    pub output: AddressOnEth,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AddressOnEth {
+    pub address: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 struct CreateWrappedOutput {
     receipt: Receipt,
     address: String,

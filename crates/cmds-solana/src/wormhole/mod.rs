@@ -8,6 +8,8 @@ use solana_sdk::pubkey;
 use std::io::{Cursor, Read};
 use wormhole_sdk::{nft::Message as NftMessage, token::Message};
 
+pub mod utils;
+
 pub const WORMHOLE_CORE_MAINNET: Pubkey = pubkey!("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth");
 pub const WORMHOLE_CORE_TESTNET: Pubkey = pubkey!("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
 pub const WORMHOLE_CORE_DEVNET: Pubkey = pubkey!("3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5");
