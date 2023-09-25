@@ -67,7 +67,7 @@ where
 }
 
 #[serde_as]
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ClientConfig {
     pub id: FlowId,
     #[serde(deserialize_with = "ignore_error_node")]
@@ -106,10 +106,16 @@ pub enum FlowRunOrigin {
     },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ValuesConfig {
+    pub nodes: HashMap<NodeId, FlowRunId>,
+    pub default_run_id: Option<FlowRunId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PartialConfig {
     pub only_nodes: Vec<NodeId>,
-    pub inputs_from: FlowRunId,
+    pub values_config: ValuesConfig,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
