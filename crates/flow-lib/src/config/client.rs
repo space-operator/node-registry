@@ -108,6 +108,7 @@ pub enum FlowRunOrigin {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ValuesConfig {
+    #[serde(default)]
     pub nodes: HashMap<NodeId, FlowRunId>,
     pub default_run_id: Option<FlowRunId>,
 }
