@@ -7,7 +7,7 @@ pub mod error;
 pub mod find_pda;
 pub mod generate_keypair;
 pub mod get_balance;
-pub mod metaboss;
+// pub mod metaboss;
 pub mod mint_token;
 pub mod nft;
 pub mod proxy_authority;

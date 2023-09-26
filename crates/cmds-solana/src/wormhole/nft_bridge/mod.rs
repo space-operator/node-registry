@@ -1,6 +1,5 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use primitive_types::U256;
-use serde::{Deserialize, Serialize};
 
 use super::{token_bridge::Address, ForeignAddress};
 
