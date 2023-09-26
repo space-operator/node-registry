@@ -1,0 +1,65 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "set_token_standard",
+    "version": "0.1",
+    "display_name": "Set Token Standard",
+    "description": "",
+    "width": 200,
+    "height": 335,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "fee_payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "update_authority",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "mint_account",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "edition_account",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

@@ -74,7 +74,7 @@
     {
       "name": "max_supply",
       "type_bounds": ["u64"],
-      "required": true,
+      "required": false,
       "defaultValue": null,
       "tooltip": "How many copies you can print. Leave empty for unlimited\n1/1 NFTs should have supply 0",
       "passthrough": false

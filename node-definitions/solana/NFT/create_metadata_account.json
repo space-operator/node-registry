@@ -92,7 +92,7 @@
     {
       "name": "uses",
       "type_bounds": ["json"],
-      "required": true,
+      "required": false,
       "defaultValue": null,
       "tooltip": "How many and which type of uses each NFT will have.\nUses:\nBurn is a single-time use and is burned after use.\nSingle is a single-time use and does not burn the token.\nMultiple allows up to the specified number of uses",
       "passthrough": false

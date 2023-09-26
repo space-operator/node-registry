@@ -62,7 +62,7 @@ pub struct Output {
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
-    let token_metadata_program = mpl_token_metadata::id();
+    let token_metadata_program = mpl_token_metadata::ID;
     let candy_machine_program = mpl_candy_machine_core::id();
     let candy_pubkey = input.candy_machine.pubkey();
 
