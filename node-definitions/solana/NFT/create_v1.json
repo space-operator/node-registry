@@ -18,6 +18,12 @@
       "tooltip": ""
     },
     {
+      "name": "mint_account",
+      "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+    {
       "name": "metadata_account",
       "type": "pubkey",
       "defaultValue": null,

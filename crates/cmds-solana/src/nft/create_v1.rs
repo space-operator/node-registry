@@ -99,7 +99,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     });
 
     let creators = creators_input.or(creators_data);
-    dbg!(&creators);
+
     // Uses
     let uses = input
         .uses
@@ -169,6 +169,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             value::map! {
                 "metadata_account" => metadata_account,
                 "master_edition_account" => master_edition_account,
+                "mint_account" => input.mint_account.pubkey(),
             },
         )
         .await?
