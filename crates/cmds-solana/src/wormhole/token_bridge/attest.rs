@@ -62,10 +62,10 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let spl_metadata = Pubkey::find_program_address(
         &[
             b"metadata".as_ref(),
-            mpl_token_metadata::id().as_ref(),
+            mpl_token_metadata::ID.as_ref(),
             input.mint.as_ref(),
         ],
-        &mpl_token_metadata::id(),
+        &mpl_token_metadata::ID,
     )
     .0;
 

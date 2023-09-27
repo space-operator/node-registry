@@ -117,10 +117,10 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let spl_metadata = Pubkey::find_program_address(
         &[
             b"metadata".as_ref(),
-            mpl_token_metadata::id().as_ref(),
+            mpl_token_metadata::ID.as_ref(),
             mint.as_ref(),
         ],
-        &mpl_token_metadata::id(),
+        &mpl_token_metadata::ID,
     )
     .0;
 
@@ -142,7 +142,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             AccountMeta::new_readonly(wormhole_core_program_id, false),
             AccountMeta::new_readonly(spl_token::id(), false),
             AccountMeta::new_readonly(spl_associated_token_account::id(), false),
-            AccountMeta::new_readonly(mpl_token_metadata::id(), false),
+            AccountMeta::new_readonly(mpl_token_metadata::ID, false),
         ],
         data: (
             NFTBridgeInstructions::CompleteWrappedMeta,
