@@ -10,6 +10,7 @@ pub mod arweave_nft_upload;
 // pub mod candy_machine_v3;
 pub mod create_master_edition;
 pub mod create_metadata_account;
+pub mod create_v1;
 // pub mod get_left_uses;
 // pub mod set_token_standard;
 // pub mod sign_metadata;
@@ -131,9 +132,9 @@ impl From<NftUseMethod> for UseMethod {
     }
 }
 
-impl From<NftCreator> for Creator {
+impl From<NftCreator> for mpl_token_metadata::types::Creator {
     fn from(v: NftCreator) -> Self {
-        Creator {
+        mpl_token_metadata::types::Creator {
             address: v.address,
             verified: v.verified.is_some(),
             share: v.share,
@@ -250,6 +251,80 @@ impl From<CollectionDetails> for mpl_token_metadata::types::CollectionDetails {
             CollectionDetails::V1 { size } => {
                 mpl_token_metadata::types::CollectionDetails::V1 { size }
             }
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, PartialOrd, Hash)]
+pub enum TokenStandard {
+    NonFungible,
+    FungibleAsset,
+    Fungible,
+    NonFungibleEdition,
+    ProgrammableNonFungible,
+    ProgrammableNonFungibleEdition,
+}
+
+// Convert string to TokenStandard
+impl From<String> for TokenStandard {
+    fn from(v: String) -> Self {
+        match v.as_str() {
+            "non_fungible" => TokenStandard::NonFungible,
+            "fungible_asset" => TokenStandard::FungibleAsset,
+            "fungible" => TokenStandard::Fungible,
+            "non_fungible_edition" => TokenStandard::NonFungibleEdition,
+            "programmable_non_fungible" => TokenStandard::ProgrammableNonFungible,
+            "programmable_non_fungible_edition" => TokenStandard::ProgrammableNonFungibleEdition,
+            _ => panic!("Invalid token standard"),
+        }
+    }
+}
+
+// implement From for TokenStandard
+impl From<TokenStandard> for mpl_token_metadata::types::TokenStandard {
+    fn from(v: TokenStandard) -> Self {
+        match v {
+            TokenStandard::NonFungible => mpl_token_metadata::types::TokenStandard::NonFungible,
+            TokenStandard::FungibleAsset => mpl_token_metadata::types::TokenStandard::FungibleAsset,
+            TokenStandard::Fungible => mpl_token_metadata::types::TokenStandard::Fungible,
+            TokenStandard::NonFungibleEdition => {
+                mpl_token_metadata::types::TokenStandard::NonFungibleEdition
+            }
+            TokenStandard::ProgrammableNonFungible => {
+                mpl_token_metadata::types::TokenStandard::ProgrammableNonFungible
+            }
+            TokenStandard::ProgrammableNonFungibleEdition => {
+                mpl_token_metadata::types::TokenStandard::ProgrammableNonFungibleEdition
+            }
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub enum PrintSupply {
+    Zero,
+    Limited(u64),
+    Unlimited,
+}
+
+// convert 0,u64, none to PrintSupply
+impl From<Option<u64>> for PrintSupply {
+    fn from(v: Option<u64>) -> Self {
+        match v {
+            Some(0) => PrintSupply::Zero,
+            Some(supply) => PrintSupply::Limited(supply),
+            None => PrintSupply::Unlimited,
+        }
+    }
+}
+
+// implement From for PrintSupply
+impl From<PrintSupply> for mpl_token_metadata::types::PrintSupply {
+    fn from(v: PrintSupply) -> Self {
+        match v {
+            PrintSupply::Zero => mpl_token_metadata::types::PrintSupply::Zero,
+            PrintSupply::Limited(supply) => mpl_token_metadata::types::PrintSupply::Limited(supply),
+            PrintSupply::Unlimited => mpl_token_metadata::types::PrintSupply::Unlimited,
         }
     }
 }
