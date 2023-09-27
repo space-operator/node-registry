@@ -237,3 +237,19 @@ impl From<ConfigLineSettingsAlias> for mpl_candy_machine_core::ConfigLineSetting
         }
     }
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+pub enum CollectionDetails {
+    V1 { size: u64 },
+}
+
+// implement From for CollectionDetails
+impl From<CollectionDetails> for mpl_token_metadata::types::CollectionDetails {
+    fn from(v: CollectionDetails) -> Self {
+        match v {
+            CollectionDetails::V1 { size } => {
+                mpl_token_metadata::types::CollectionDetails::V1 { size }
+            }
+        }
+    }
+}

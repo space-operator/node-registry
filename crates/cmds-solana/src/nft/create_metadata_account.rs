@@ -1,11 +1,7 @@
-use super::{NftCreator, NftMetadata, NftUses};
-use crate::{prelude::*, proxy_authority::utils::find_proxy_authority_address};
-use anchor_lang::InstructionData;
-use mpl_token_metadata::{types::{Collection, CollectionDetails, Creator}, accounts::Metadata};
-use solana_program::{
-    instruction::{AccountMeta, Instruction},
-    system_program,
-};
+use super::{CollectionDetails, NftCreator, NftDataV2, NftUses};
+use crate::prelude::*;
+use mpl_token_metadata::accounts::Metadata;
+use solana_program::system_program;
 use solana_sdk::pubkey::Pubkey;
 
 // Command Name
@@ -37,7 +33,7 @@ pub struct Input {
     pub mint_authority: Pubkey,
     #[serde(with = "value::keypair")]
     pub fee_payer: Keypair,
-    pub metadata: NftMetadata,
+    pub metadata: NftDataV2,
     pub metadata_uri: String,
     pub uses: Option<NftUses>,
     #[serde(default, with = "value::pubkey::opt")]
@@ -64,48 +60,26 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         >())
         .await?;
 
-    let data = mpl_token_metadata::types::DataV2 {
-        name: ,
-        symbol: ,
-        uri: input.metadata_uri ,
-        seller_fee_basis_points: ,
-        creators: ,
-        collection: ,
-        uses: input.uses.map(Into::into),
+    let create_ix = mpl_token_metadata::instructions::CreateMetadataAccountV3 {
+        metadata: metadata_account,
+        mint: input.mint_account,
+        mint_authority: input.mint_authority,
+        payer: input.fee_payer.pubkey(),
+        update_authority: input.update_authority.pubkey(),
+        system_program: system_program::id(),
+        //TODO double check what this is for
+        rent: Some(input.fee_payer.pubkey()),
     };
 
-    let create_ix = mpl_token_metadata::instructions::CreateMetadataAccountV3Builder::new()
-        .metadata(metadata_account)
-        .mint(input.mint_account)
-        .mint_authority(input.mint_authority)
-        .payer(input.fee_payer.pubkey())
-        .update_authority(input.update_authority.pubkey())
-        .data()
-        .is_mutable(input.is_mutable)
-        .collection_details(input.collection_details.map(Into::into))
-        .instruction();
+    let args = mpl_token_metadata::instructions::CreateMetadataAccountV3InstructionArgs {
+        data: input.metadata.into(),
+        is_mutable: input.is_mutable,
+        collection_details: input
+            .collection_details
+            .map_or(None, |details| Some(details.into())),
+    };
 
-    // create_metadata_accounts_v3(
-    //     mpl_token_metadata::ID,
-    //     metadata_account,
-    //     inputs.mint_account,
-    //     inputs.mint_authority,
-    //     inputs.fee_payer.pubkey(),
-    //     update_authority,
-    //     inputs.metadata.name.clone(),
-    //     inputs.metadata.symbol.clone(),
-    //     inputs.metadata_uri.clone(),
-    //     Some(inputs.creators.iter().cloned().map(Creator::from).collect()),
-    //     inputs.metadata.seller_fee_basis_points,
-    //     update_authority_is_signer,
-    //     inputs.is_mutable,
-    //     inputs.collection_mint_account.map(|key| Collection {
-    //         verified: false,
-    //         key,
-    //     }),
-    //     inputs.uses.clone().map(Into::into),
-    //     inputs.collection_details.clone().map(Into::into),
-    // );
+    let ins = create_ix.instruction(args);
 
     let ins = Instructions {
         fee_payer: input.fee_payer.pubkey(),
@@ -114,7 +88,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             input.update_authority.clone_keypair(),
         ]
         .into(),
-        instructions: [create_ix].into(),
+        instructions: [ins].into(),
         minimum_balance_for_rent_exemption,
     };
 
