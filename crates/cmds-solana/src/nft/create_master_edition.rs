@@ -1,14 +1,9 @@
-use crate::{prelude::*, proxy_authority::utils::find_proxy_authority_address};
-use anchor_lang::InstructionData;
+use crate::prelude::*;
 use mpl_token_metadata::{
     accounts::{MasterEdition, Metadata},
-    instructions::{CreateMasterEditionV3InstructionArgs, CreateV1Builder},
+    instructions::CreateMasterEditionV3InstructionArgs,
 };
-use solana_program::{
-    instruction::{AccountMeta, Instruction},
-    stake::state::Meta,
-    system_program,
-};
+use solana_program::system_program;
 
 // Command Name
 const NAME: &str = "create_master_edition";
@@ -61,25 +56,26 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         >())
         .await?;
 
-    let create_ix = CreateV1Builder::new()
-        .metadata(metadata_account)
-        .master_edition(Some(master_edition_account))
-        .mint(input.mint_account, true)
-        .authority(input.mint_authority)
-        .payer(input.fee_payer.pubkey())
-        .update_authority(input.update_authority.pubkey(), true)
-        .is_mutable(true)
-        .primary_sale_happened(false)
-        .name(String::from("NonFungible"))
-        .symbol(String::from("NFT"))
-        .uri(String::from("http://my.nft"))
-        .seller_fee_basis_points(500)
-        .token_standard(TokenStandard::NonFungible)
-        .print_supply(PrintSupply::Zero)
-        .instruction();
+    let create_ix = mpl_token_metadata::instructions::CreateMasterEditionV3 {
+        edition: master_edition_account,
+        mint: input.mint_account,
+        update_authority: input.update_authority.pubkey(),
+        mint_authority: input.mint_authority,
+        payer: input.fee_payer.pubkey(),
+        metadata: metadata_account,
+        token_program: spl_token::id(),
+        system_program: system_program::id(),
+        rent: None,
+    };
+
+    let args = CreateMasterEditionV3InstructionArgs {
+        max_supply: input.max_supply,
+    };
+
+    let create_ix = create_ix.instruction(args);
 
     let ins = Instructions {
-        fee_payer: input.payer.pubkey(),
+        fee_payer: input.fee_payer.pubkey(),
         signers: [
             input.fee_payer.clone_keypair(),
             input.update_authority.clone_keypair(),

@@ -1,6 +1,6 @@
 pub mod associated_token_account;
 // pub mod clockwork;
-pub mod compression;
+// pub mod compression;
 pub mod create_mint_account;
 pub mod create_token_account;
 pub mod error;
@@ -10,7 +10,7 @@ pub mod get_balance;
 // pub mod metaboss;
 pub mod mint_token;
 pub mod nft;
-pub mod proxy_authority;
+// pub mod proxy_authority;
 pub mod request_airdrop;
 pub mod request_http;
 pub mod std;

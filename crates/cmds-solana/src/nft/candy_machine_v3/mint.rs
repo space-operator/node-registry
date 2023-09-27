@@ -4,7 +4,10 @@ use mpl_candy_guard::instruction::MintV2;
 use solana_program::{instruction::Instruction, system_program, sysvar};
 use solana_sdk::{compute_budget::ComputeBudgetInstruction, pubkey::Pubkey};
 
-use mpl_token_metadata::instruction::MetadataDelegateRole;
+use mpl_token_metadata::{
+    accounts::{MasterEdition, Metadata},
+    instructions::MetadataDelegateRole,
+};
 
 use super::CandyGuardData;
 
@@ -81,11 +84,10 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let candy_guard = Pubkey::find_program_address(seeds, &candy_guard_program).0;
 
     // Metadata PDA
-    let nft_metadata = mpl_token_metadata::pda::find_metadata_account(&input.mint_account).0;
+    let nft_metadata = Metadata::find_pda(&input.mint_account).0;
 
     // Master Edition PDA
-    let nft_master_edition =
-        mpl_token_metadata::pda::find_master_edition_account(&input.mint_account).0;
+    let nft_master_edition = MasterEdition::find_pda(&input.mint_account).0;
 
     // NFT Associated Token Account
     let nft_associated_token_account = spl_associated_token_account::get_associated_token_address(
@@ -111,12 +113,10 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         .0;
 
     // Collection Metadata PDA
-    let collection_metadata =
-        mpl_token_metadata::pda::find_metadata_account(&input.collection_mint).0;
+    let collection_metadata = Metadata::find_pda(&input.collection_mint).0;
 
     // Collection Master Edition PDA
-    let collection_master_edition =
-        mpl_token_metadata::pda::find_master_edition_account(&input.collection_mint).0;
+    let collection_master_edition = MasterEdition::find_pda(&input.collection_mint).0;
 
     let accounts = mpl_candy_guard::accounts::MintV2 {
         candy_guard,
