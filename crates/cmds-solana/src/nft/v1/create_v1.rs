@@ -6,14 +6,15 @@ use mpl_token_metadata::{
 };
 use solana_program::{system_program, sysvar};
 
-use super::{
+use crate::nft::{
     CollectionDetails, NftCollection, NftCreator, NftDataV2, NftUses, PrintSupply, TokenStandard,
 };
 
 // Command Name
 const NAME: &str = "create_v1";
 
-const DEFINITION: &str = include_str!("../../../../node-definitions/solana/NFT/create_v1.json");
+const DEFINITION: &str =
+    include_str!("../../../../../node-definitions/solana/NFT/v1/create_v1.json");
 
 fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
     use once_cell::sync::Lazy;
@@ -63,6 +64,12 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let (metadata_account, _) = Metadata::find_pda(&input.mint_account.pubkey());
 
     let (master_edition_account, _) = MasterEdition::find_pda(&input.mint_account.pubkey());
+
+    // get associated token account pda
+    let token_account = spl_associated_token_account::get_associated_token_address(
+        &input.fee_payer.pubkey(),
+        &input.mint_account.pubkey(),
+    );
 
     let minimum_balance_for_rent_exemption = ctx
         .solana_client
@@ -170,6 +177,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
                 "metadata_account" => metadata_account,
                 "master_edition_account" => master_edition_account,
                 "mint_account" => input.mint_account.pubkey(),
+                "token"=> token_account,
             },
         )
         .await?

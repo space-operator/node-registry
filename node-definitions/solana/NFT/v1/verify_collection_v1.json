@@ -1,0 +1,73 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "verify_collection_v1",
+    "version": "0.1",
+    "display_name": "Verify Collection V1",
+    "description": "",
+    "width": 200,
+    "height": 335,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "signature",
+      "type": "signature",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "mint_account",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "fee_payer",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "collection_authority",
+      "type_bounds": ["keypair"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "collection_mint_account",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "delegate_record",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "submit",
+      "type_bounds": ["bool"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

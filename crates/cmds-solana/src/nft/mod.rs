@@ -10,7 +10,7 @@ pub mod arweave_nft_upload;
 // pub mod candy_machine_v3;
 pub mod create_master_edition;
 pub mod create_metadata_account;
-pub mod create_v1;
+pub mod v1;
 // pub mod get_left_uses;
 // pub mod set_token_standard;
 // pub mod sign_metadata;

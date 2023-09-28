@@ -34,6 +34,12 @@
       "type": "pubkey",
       "defaultValue": null,
       "tooltip": ""
+    },
+    {
+      "name": "token",
+      "type": "pubkey",
+      "defaultValue": null,
+      "tooltip": ""
     }
   ],
   "targets": [
@@ -146,7 +152,7 @@
       "type_bounds": ["pubkey"],
       "required": false,
       "defaultValue": null,
-      "tooltip": "",
+      "tooltip": "Programmable rule set configuration (only applicable to `Programmable` asset types)",
       "passthrough": false
     },
     {
