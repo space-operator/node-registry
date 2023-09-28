@@ -1,0 +1,48 @@
+{
+  "type": "WASM",
+  "data": {
+    "node_id": "multisort",
+    "version": "0.2",
+    "display_name": "Sort Array with Algorithm",
+    "description": "Node which performs sorting of arrays of nulls, numbers or strings in asc or desc mode, and the algorithm can be chosen.",
+    "width": 200,
+    "height": 155,
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "array",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "ordering",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "pass 'asc' or 'desc'",
+      "passthrough": false
+    },
+    {
+      "name": "algorithm",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "default",
+      "tooltip": "valid values: 'default', 'bubble', 'insertion', 'merge', 'quick', 'selection', 'shell', 'heap', 'bucket', 'strand', 'stooge', 'comb', 'cocktail'",
+      "passthrough": false
+    }
+  ],
+  "sources": [
+    {
+      "name": "result",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}

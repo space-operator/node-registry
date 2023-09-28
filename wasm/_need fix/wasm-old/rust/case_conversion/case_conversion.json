@@ -1,0 +1,44 @@
+{
+    "type": "WASM",
+    "data": {
+        "node_id": "case_conversion",
+        "version": "0.1",
+        "display_name": "Case Conversion",
+        "description": "Node which allows conversion of strings to various cases",
+        "width": 200,
+        "height": 155,
+        "backgroundColor": "#ffd9b3"
+    },
+    "targets": [
+        {
+            "name": "input",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "",
+            "passthrough": false
+        },
+        {
+            "name": "output type",
+            "type_bounds": [
+                "string"
+            ],
+            "required": true,
+            "defaultValue": "",
+            "tooltip": "Allowed values: upper, lower, title, toggle, camel, pascal, upper_camel, snake, upper_snake, screaming_snake, kebab, cobol, upper_kebab, train, flat, upper_flat, alternating",
+            "passthrough": false
+        }
+    ],
+    "sources": [
+        {
+            "name": "result",
+            "type": "string",
+            "defaultValue": "",
+            "tooltip": ""
+        }
+    ],
+    "targets_form.json_schema": {},
+    "targets_form.ui_schema": {}
+}
