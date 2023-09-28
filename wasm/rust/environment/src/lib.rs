@@ -1,11 +1,8 @@
-use space_lib::{space, Result};
-
-#[derive(Deserialize)]
-struct Input {
-    env: String,
-}
+use space_lib::space;
 
 #[space]
-fn main(mut input: Input) -> Result<String> {
-    Ok(std::env::var(input.env))
+fn main(input: String) -> Option<String> {
+    dbg!(std::env::vars());
+    
+    std::env::var(input).ok()
 }
