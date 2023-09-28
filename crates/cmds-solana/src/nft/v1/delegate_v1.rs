@@ -126,6 +126,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         master_edition: Some(master_edition_account),
         token_record: Some(token_record),
         mint: input.mint_account,
+        // TODO: check if token account is correct
         token: Some(token_account),
         authority: input.update_authority.pubkey(),
         payer: input.fee_payer.pubkey(),

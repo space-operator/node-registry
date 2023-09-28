@@ -80,45 +80,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             .update_authority
             .expect("update_authority field must be set")
     });
-    // let delegate_role = match input.update_args {
-    //     // UpdateArgs::V1 { new_update_authority, data, primary_sale_happened, is_mutable, collection, collection_details, uses, rule_set, authorization_data } => ,
-    //     //         UpdateArgs::AsUpdateAuthorityV2 {
-    //     //  ..
-    //     //         } => ,
-    //     UpdateArgs::AsAuthorityItemDelegateV2 { .. } => {
-    //         DelegateType::Metadata(MetadataDelegateRole::AuthorityItem)
-    //     }
-    //     UpdateArgs::AsCollectionDelegateV2 { .. } => {
-    //         DelegateType::Metadata(MetadataDelegateRole::Collection)
-    //     }
-    //     UpdateArgs::AsDataDelegateV2 { .. } => DelegateType::Metadata(MetadataDelegateRole::Data),
-    //     UpdateArgs::AsProgrammableConfigDelegateV2 { .. } => {
-    //         DelegateType::Metadata(MetadataDelegateRole::ProgrammableConfig)
-    //     }
-    //     UpdateArgs::AsDataItemDelegateV2 { .. } => {
-    //         DelegateType::Metadata(MetadataDelegateRole::DataItem)
-    //     }
-    //     UpdateArgs::AsCollectionItemDelegateV2 { .. } => {
-    //         DelegateType::Metadata(MetadataDelegateRole::CollectionItem)
-    //     }
-    //     UpdateArgs::AsProgrammableConfigItemDelegateV2 { .. } => {
-    //         DelegateType::Metadata(MetadataDelegateRole::ProgrammableConfigItem)
-    //     }
-    //     _ => unimplemented!(),
-    // };
-
-    // let delegate_record = match delegate_role {
-    //     DelegateType::Metadata(role) => {
-    //         MetadataDelegateRecord::find_pda(
-    //             &input.mint_account,
-    //             role,
-    //             &input.update_authority.pubkey(),
-    //             &input.delegate.pubkey(),
-    //         )
-    //         .0
-    //     }
-    //     DelegateType::Token(_role) => TokenRecord::find_pda(&input.mint_account, &token_account).0,
-    // };
+    dbg!(authority_or_delegate.pubkey());
 
     let minimum_balance_for_rent_exemption = ctx
         .solana_client
@@ -128,7 +90,8 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let delegate_v1 = UpdateAsDelegateV1 {
         authority: authority_or_delegate.pubkey(),
         delegate_record: input.delegate_record,
-        token: Some(token_account),
+        // TODO
+        token: None,
         mint: input.mint_account,
         metadata: metadata_account,
         // TODO: edition
@@ -159,7 +122,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         .execute(
             ins,
             value::map! {
-                "authority_or_delegate" => authority_or_delegate.pubkey(),
+                "authority or delegate" => authority_or_delegate.pubkey(),
             },
         )
         .await?
@@ -704,7 +667,7 @@ impl From<UpdateArgs> for mpl_token_metadata::types::UpdateArgs {
             UpdateArgs::AsDataItemDelegateV2 {
                 data,
                 authorization_data,
-            } => Self::AsDataDelegateV2 {
+            } => Self::AsDataItemDelegateV2 {
                 data: data.map(Into::into),
                 authorization_data: authorization_data.map(Into::into),
             },
