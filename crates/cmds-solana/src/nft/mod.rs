@@ -90,7 +90,7 @@ pub struct NftMetadataFile {
     pub kind: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq)]
 pub struct NftCreator {
     #[serde(with = "value::pubkey")]
     pub address: Pubkey,
@@ -98,14 +98,14 @@ pub struct NftCreator {
     pub share: u8, // in percentage not basis points
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct NftUses {
     pub use_method: NftUseMethod,
     pub remaining: u64,
     pub total: u64,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub enum NftUseMethod {
     Burn,
     Single,

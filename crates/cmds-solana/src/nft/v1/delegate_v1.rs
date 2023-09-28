@@ -12,7 +12,7 @@ use mpl_token_metadata::{
         DelegateStakingV1InstructionArgs, DelegateStandardV1InstructionArgs,
         DelegateTransferV1InstructionArgs, DelegateUtilityV1InstructionArgs, InstructionAccount,
     },
-    types::MetadataDelegateRole,
+    types::{MetadataDelegateRole, TokenDelegateRole},
 };
 use solana_program::{system_program, sysvar};
 
@@ -55,6 +55,11 @@ pub struct Output {
     pub signature: Option<Signature>,
 }
 
+pub enum DelegateType {
+    Metadata(MetadataDelegateRole),
+    Token(TokenDelegateRole),
+}
+
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let (metadata_account, _) = Metadata::find_pda(&input.mint_account);
 
@@ -68,21 +73,50 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let token_record = TokenRecord::find_pda(&input.mint_account, &token_account).0;
 
-    let delegate_role = MetadataDelegateRole::Collection;
+    let delegate_role: DelegateType = match input.delegate_args {
+        DelegateArgs::CollectionV1 { .. } => {
+            DelegateType::Metadata(MetadataDelegateRole::Collection)
+        }
+        DelegateArgs::SaleV1 { .. } => DelegateType::Token(TokenDelegateRole::Sale),
+        DelegateArgs::TransferV1 { .. } => DelegateType::Token(TokenDelegateRole::Transfer),
+        DelegateArgs::DataV1 { .. } => DelegateType::Metadata(MetadataDelegateRole::Data),
+        DelegateArgs::DataItemV1 { .. } => DelegateType::Metadata(MetadataDelegateRole::DataItem),
+        DelegateArgs::UtilityV1 { .. } => DelegateType::Token(TokenDelegateRole::Utility),
+        DelegateArgs::StakingV1 { .. } => DelegateType::Token(TokenDelegateRole::Staking),
+        DelegateArgs::StandardV1 { amount: _ } => DelegateType::Token(TokenDelegateRole::Standard),
+        DelegateArgs::LockedTransferV1 { .. } => {
+            DelegateType::Token(TokenDelegateRole::LockedTransfer)
+        }
+        DelegateArgs::ProgrammableConfigV1 { .. } => {
+            DelegateType::Metadata(MetadataDelegateRole::ProgrammableConfig)
+        }
+        DelegateArgs::AuthorityItemV1 { .. } => {
+            DelegateType::Metadata(MetadataDelegateRole::AuthorityItem)
+        }
+        DelegateArgs::CollectionItemV1 { .. } => {
+            DelegateType::Metadata(MetadataDelegateRole::CollectionItem)
+        }
+        DelegateArgs::ProgrammableConfigItemV1 { .. } => {
+            DelegateType::Metadata(MetadataDelegateRole::ProgrammableConfigItem)
+        }
+    };
 
-    let delegate_record = MetadataDelegateRecord::find_pda(
-        &input.mint_account,
-        delegate_role,
-        &input.update_authority.pubkey(),
-        &input.delegate.pubkey(),
-    )
-    .0;
+    let delegate_record = match delegate_role {
+        DelegateType::Metadata(role) => {
+            MetadataDelegateRecord::find_pda(
+                &input.mint_account,
+                role,
+                &input.update_authority.pubkey(),
+                &input.delegate.pubkey(),
+            )
+            .0
+        }
+        DelegateType::Token(..) => TokenRecord::find_pda(&input.mint_account, &token_account).0,
+    };
 
     let minimum_balance_for_rent_exemption = ctx
         .solana_client
-        .get_minimum_balance_for_rent_exemption(std::mem::size_of::<
-            mpl_token_metadata::accounts::MasterEdition,
-        >())
+        .get_minimum_balance_for_rent_exemption(std::mem::size_of::<DelegateV1>())
         .await?;
 
     let delegate_v1 = DelegateV1 {
