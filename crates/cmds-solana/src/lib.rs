@@ -20,6 +20,7 @@ pub mod utils;
 pub mod wallet;
 pub mod wormhole;
 // pub mod xnft;
+pub mod db;
 
 pub use error::{Error, Result};
 

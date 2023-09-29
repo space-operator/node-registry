@@ -1,0 +1,33 @@
+{
+  "type": "native",
+  "data": {
+    "node_id": "supabase",
+    "version": "0.1",
+    "display_name": "supabase",
+    "description": "C",
+    "width": 250,
+    "height": 100,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#fff"
+  },
+  "sources": [
+    {
+      "name": "res",
+      "type": "json",
+      "defaultValue": null,
+      "tooltip": ""
+    }
+  ],
+  "targets": [
+    {
+      "name": "input",
+      "type_bounds": ["json"],
+      "required": true,
+      "defaultValue": null,
+      "passthrough": false,
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
+}
