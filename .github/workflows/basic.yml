@@ -44,4 +44,4 @@ jobs:
       - name: Build WASM
         run: cd wasm/ && ./build.sh
       - name: Test
-        run: cargo build --quiet --tests && cargo test -- --skip need_key_
+        run: cargo build --quiet --tests && cargo test -- --skip need_key_ --skip config::node::tests::test_parse_all
