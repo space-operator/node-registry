@@ -1,5 +1,7 @@
 use crate::{
-    config::client::FlowRunOrigin, solana::Instructions, ContextConfig, FlowRunId, NodeId, UserId,
+    config::{client::FlowRunOrigin, Endpoints},
+    solana::Instructions,
+    ContextConfig, FlowRunId, NodeId, UserId,
 };
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
@@ -183,7 +185,6 @@ impl Default for Context {
         let mut ctx = Context::from_cfg(
             &ContextConfig::default(),
             User::default(),
-            Endpoints::default(),
             signer::unimplemented_svc(),
             Extensions::default(),
         );
@@ -194,19 +195,6 @@ impl Default for Context {
             times: 0,
         });
         ctx
-    }
-}
-
-#[derive(Clone)]
-pub struct Endpoints {
-    pub flow_server: String,
-}
-
-impl Default for Endpoints {
-    fn default() -> Self {
-        Self {
-            flow_server: "http://localhost:8080".to_owned(),
-        }
     }
 }
 
@@ -240,10 +228,8 @@ impl Default for User {
 
 impl Context {
     pub fn from_cfg(
-        // TODO: pass by value
         cfg: &ContextConfig,
         user: User,
-        endpoints: Endpoints,
         sig_svc: signer::Svc,
         extensions: Extensions,
     ) -> Self {
@@ -254,7 +240,7 @@ impl Context {
             solana_client: Arc::new(solana_client),
             environment: cfg.environment.clone(),
             user,
-            endpoints,
+            endpoints: cfg.endpoints.clone(),
             extensions: Arc::new(extensions),
             signer: sig_svc,
             command: None,
