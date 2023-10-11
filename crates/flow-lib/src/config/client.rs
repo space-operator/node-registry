@@ -193,6 +193,8 @@ impl std::fmt::Debug for TargetsForm {
 pub struct Extra {
     // for WASM node
     pub supabase_id: Option<i64>,
+    #[serde(flatten)]
+    pub rest: HashMap<String, JsonValue>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
