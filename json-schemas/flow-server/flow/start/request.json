@@ -24,15 +24,40 @@
                         "type": "string"
                     }
                 },
-                "inputs_from": {
-                    "description": "flow_run_id to fetch input values. Column: flow_run.id",
-                    "type": "string"
+                "values_config": {
+                    "description": "Configure values for outputs of excluded nodes.",
+                    "type": "object",
+                    "properties": {
+                        "nodes": {
+                            "description": "Set which flow_run_id each nodes use. Syntax: map of 'node_id' => 'flow_run.id'.",
+                            "type": "object",
+                            "patternProperties": {
+                                "": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "default_run_id": {
+                            "description": "Default run ID for nodes that are not specified above.",
+                            "type": "string"
+                        }
+                    },
+                    "required": []
                 }
             },
             "required": [
                 "only_nodes",
                 "inputs_from"
             ]
+        },
+        "environment": {
+            "description": "Environment variables",
+            "type": "object",
+            "patternProperties": {
+                "": {
+                    "type": "string"
+                }
+            }
         }
     },
     "required": []
