@@ -12,7 +12,7 @@ pub mod mint_token;
 pub mod nft;
 // pub mod proxy_authority;
 pub mod request_airdrop;
-pub mod request_http;
+pub mod http_request;
 pub mod std;
 pub mod transfer_sol;
 pub mod transfer_token;
