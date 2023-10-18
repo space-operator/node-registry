@@ -306,6 +306,18 @@ impl Context {
         }
     }
 
+    pub async fn get_supabase_token(&mut self) -> Result<String, get_supabase_token::Error> {
+        Ok(self
+            .get_supabase_token
+            .ready()
+            .await?
+            .call(get_supabase_token::Request {
+                user_id: self.user.id,
+            })
+            .await?
+            .access_token)
+    }
+
     pub fn new_interflow_origin(&self) -> Option<FlowRunOrigin> {
         let c = self.command.as_ref()?;
         Some(FlowRunOrigin::Interflow {
