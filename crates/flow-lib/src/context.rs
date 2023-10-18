@@ -11,6 +11,61 @@ use tower::{Service, ServiceExt};
 
 pub use http::Extensions;
 
+pub mod get_supabase_token {
+    use crate::{utils::TowerClient, BoxError, UserId};
+    use std::sync::Arc;
+    use thiserror::Error as ThisError;
+
+    pub struct Request {
+        pub user_id: UserId,
+    }
+
+    #[derive(Clone, Debug)]
+    pub struct Response {
+        pub access_token: String,
+    }
+
+    #[derive(ThisError, Debug, Clone)]
+    pub enum Error {
+        #[error("not allowed")]
+        NotAllowed,
+        #[error("user not found")]
+        UserNotFound,
+        #[error(transparent)]
+        Worker(Arc<BoxError>),
+        #[error(transparent)]
+        MailBox(#[from] Arc<actix::MailboxError>),
+        #[error(transparent)]
+        Other(#[from] Arc<BoxError>),
+    }
+
+    impl From<actix::MailboxError> for Error {
+        fn from(error: actix::MailboxError) -> Self {
+            Error::MailBox(Arc::new(error))
+        }
+    }
+
+    impl Error {
+        pub fn worker(e: BoxError) -> Self {
+            Error::Other(Arc::new(e))
+        }
+
+        pub fn other<E: Into<BoxError>>(e: E) -> Self {
+            Error::Other(Arc::new(e.into()))
+        }
+    }
+
+    impl actix::Message for Request {
+        type Result = Result<Response, Error>;
+    }
+
+    pub type Svc = TowerClient<Request, Response, Error>;
+
+    pub fn unimplemented_svc() -> Svc {
+        Svc::unimplemented(|| Error::other("unimplemented"), Error::worker)
+    }
+}
+
 pub mod signer {
     use crate::{utils::TowerClient, BoxError, UserId};
     use solana_sdk::{pubkey::Pubkey, signature::Signature};
@@ -175,9 +230,10 @@ pub struct Context {
     pub environment: HashMap<String, String>,
     pub user: User,
     pub endpoints: Endpoints,
-    pub signer: signer::Svc,
     pub extensions: Arc<Extensions>,
     pub command: Option<CommandContext>,
+    pub signer: signer::Svc,
+    pub get_supabase_token: get_supabase_token::Svc,
 }
 
 impl Default for Context {
@@ -186,6 +242,7 @@ impl Default for Context {
             &ContextConfig::default(),
             User::default(),
             signer::unimplemented_svc(),
+            get_supabase_token::unimplemented_svc(),
             Extensions::default(),
         );
         ctx.command = Some(CommandContext {
@@ -219,7 +276,7 @@ impl Default for User {
     /// For testing
     fn default() -> Self {
         User {
-            id: uuid::uuid!("00000000-0000-0000-0000-000000000000"),
+            id: uuid::Uuid::nil(),
             jwt: None,
             api_key: None,
         }
@@ -231,6 +288,7 @@ impl Context {
         cfg: &ContextConfig,
         user: User,
         sig_svc: signer::Svc,
+        token_svc: get_supabase_token::Svc,
         extensions: Extensions,
     ) -> Self {
         let solana_client = SolanaClient::new(cfg.solana_client.url.clone());
@@ -242,8 +300,9 @@ impl Context {
             user,
             endpoints: cfg.endpoints.clone(),
             extensions: Arc::new(extensions),
-            signer: sig_svc,
             command: None,
+            signer: sig_svc,
+            get_supabase_token: token_svc,
         }
     }
 
