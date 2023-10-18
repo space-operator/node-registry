@@ -31,6 +31,8 @@ pub mod get_supabase_token {
         NotAllowed,
         #[error("user not found")]
         UserNotFound,
+        #[error("wrong recipient")]
+        WrongRecipient,
         #[error(transparent)]
         Worker(Arc<BoxError>),
         #[error(transparent)]
