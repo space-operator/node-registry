@@ -1,11 +1,11 @@
 use crate::{Error, Map, Value};
 
-pub(self) mod iter_ser;
-pub(self) mod map_key;
-pub(self) mod maps;
-pub(self) mod seq;
-pub(self) mod tagged_bytes;
-pub(self) mod text_repr;
+ mod iter_ser;
+ mod map_key;
+ mod maps;
+ mod seq;
+ mod tagged_bytes;
+ mod text_repr;
 
 use maps::{SerializeMap, SerializeStructVariant, SerializeTupleVariant};
 use seq::{SerializeSeq, SerializeSeqNoBytes};
@@ -231,7 +231,7 @@ impl serde::Serializer for Serializer {
                 // Decimal's index
                 6 => value.serialize(TaggedBytes::Decimal),
                 // Other bytes
-                9 | 10 | 11 => value.serialize(TaggedBytes::Bytes),
+                9..=11 => value.serialize(TaggedBytes::Bytes),
                 // Array
                 12 => value.serialize(SerializeSeqNoBytes::default()),
                 // Other variants can map directly to serde's data model

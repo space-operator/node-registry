@@ -124,6 +124,7 @@ pub struct NodeConfig {
 pub struct Endpoints {
     pub flow_server: String,
     pub supabase: String,
+    pub supabase_anon_key: String,
 }
 
 impl Default for Endpoints {
@@ -131,6 +132,7 @@ impl Default for Endpoints {
         Self {
             flow_server: "http://localhost:8080".to_owned(),
             supabase: "http://localhost:8081".to_owned(),
+            supabase_anon_key: String::new(),
         }
     }
 }
