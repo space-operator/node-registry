@@ -7,10 +7,6 @@
     "version": "0.1",
     "display_name": "HTTP Request",
     "description": "",
-    "width": 200,
-    "height": 425,
-    "backgroundColorDark": "#000000",
-    "backgroundColor": "#ffffff",
     "tags": ["std", "network"],
     "related_to_nodes": [
       {

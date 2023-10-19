@@ -25,12 +25,66 @@ pub struct Permissions {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Data {
+    pub node_definition_version: String,
+    pub unique_id: String,
     pub node_id: String,
     pub version: String,
     pub display_name: String,
     pub description: String,
-    pub width: u32,
-    pub height: u32,
+    pub tags: Option<Vec<String>>,
+    pub related_to: Option<Vec<RelatedTo>>,
+    pub resources: Option<Resources>,
+    pub usage: Option<Usage>,
+    pub authors: Option<Vec<Author>>,
+    pub design: Option<Design>,
+    pub options: Option<serde_json::Value>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RelatedTo {
+    pub id: String,
+    pub r#type: String,
+    pub relationship: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Resources {
+    pub source_code_url: String,
+    pub documentation_url: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Usage {
+    pub license: String,
+    pub license_url: String,
+    pub pricing: Pricing,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Pricing {
+    pub currency: String,
+    pub purchase_price: u64,
+    pub price_per_run: u64,
+    pub custom: Option<CustomPricing>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct CustomPricing {
+    pub unit: String,
+    pub value: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Author {
+    pub name: String,
+    pub contact: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Design {
+    pub width: u64,
+    pub height: u64,
+    pub icon_url: String,
     #[serde(rename = "backgroundColor")]
     pub background_color: String,
     #[serde(rename = "backgroundColorDark")]
