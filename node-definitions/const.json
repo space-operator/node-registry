@@ -1,8 +1,6 @@
 {
   "type": "native",
   "data": {
-    "width": 300,
-    "height": 200,
     "node_definition_version": "0.1",
     "unique_id": "",
     "node_id": "const",
