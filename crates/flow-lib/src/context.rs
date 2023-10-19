@@ -11,7 +11,7 @@ use tower::{Service, ServiceExt};
 
 pub use http::Extensions;
 
-pub mod get_supabase_token {
+pub mod get_jwt {
     use crate::{utils::TowerClient, BoxError, UserId};
     use std::sync::Arc;
     use thiserror::Error as ThisError;
@@ -65,6 +65,10 @@ pub mod get_supabase_token {
 
     pub fn unimplemented_svc() -> Svc {
         Svc::unimplemented(|| Error::other("unimplemented"), Error::worker)
+    }
+
+    pub fn not_allowed() -> Svc {
+        Svc::unimplemented(|| Error::NotAllowed, Error::worker)
     }
 }
 
@@ -228,6 +232,7 @@ pub struct CommandContext {
 #[derive(Clone)]
 pub struct Context {
     pub cfg: ContextConfig,
+    pub http: reqwest::Client,
     pub solana_client: Arc<SolanaClient>,
     pub environment: HashMap<String, String>,
     pub user: User,
@@ -235,7 +240,7 @@ pub struct Context {
     pub extensions: Arc<Extensions>,
     pub command: Option<CommandContext>,
     pub signer: signer::Svc,
-    pub get_supabase_token: get_supabase_token::Svc,
+    pub get_jwt: get_jwt::Svc,
 }
 
 impl Default for Context {
@@ -244,7 +249,7 @@ impl Default for Context {
             &ContextConfig::default(),
             User::default(),
             signer::unimplemented_svc(),
-            get_supabase_token::unimplemented_svc(),
+            get_jwt::unimplemented_svc(),
             Extensions::default(),
         );
         ctx.command = Some(CommandContext {
@@ -260,17 +265,11 @@ impl Default for Context {
 #[derive(Clone)]
 pub struct User {
     pub id: UserId,
-    pub jwt: Option<String>,
-    pub api_key: Option<String>,
 }
 
 impl User {
     pub fn new(id: UserId) -> Self {
-        Self {
-            id,
-            jwt: None,
-            api_key: None,
-        }
+        Self { id }
     }
 }
 
@@ -279,8 +278,6 @@ impl Default for User {
     fn default() -> Self {
         User {
             id: uuid::Uuid::nil(),
-            jwt: None,
-            api_key: None,
         }
     }
 }
@@ -290,13 +287,14 @@ impl Context {
         cfg: &ContextConfig,
         user: User,
         sig_svc: signer::Svc,
-        token_svc: get_supabase_token::Svc,
+        token_svc: get_jwt::Svc,
         extensions: Extensions,
     ) -> Self {
         let solana_client = SolanaClient::new(cfg.solana_client.url.clone());
 
         Self {
             cfg: cfg.clone(),
+            http: reqwest::Client::new(),
             solana_client: Arc::new(solana_client),
             environment: cfg.environment.clone(),
             user,
@@ -304,20 +302,21 @@ impl Context {
             extensions: Arc::new(extensions),
             command: None,
             signer: sig_svc,
-            get_supabase_token: token_svc,
+            get_jwt: token_svc,
         }
     }
 
-    pub async fn get_supabase_token(&mut self) -> Result<String, get_supabase_token::Error> {
-        Ok(self
-            .get_supabase_token
-            .ready()
-            .await?
-            .call(get_supabase_token::Request {
-                user_id: self.user.id,
-            })
-            .await?
-            .access_token)
+    pub async fn get_jwt_header(&mut self) -> Result<String, get_jwt::Error> {
+        Ok("Bearer ".to_owned()
+            + &self
+                .get_jwt
+                .ready()
+                .await?
+                .call(get_jwt::Request {
+                    user_id: self.user.id,
+                })
+                .await?
+                .access_token)
     }
 
     pub fn new_interflow_origin(&self) -> Option<FlowRunOrigin> {
