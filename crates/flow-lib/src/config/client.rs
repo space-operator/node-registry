@@ -7,72 +7,11 @@ use serde_with::serde_as;
 use std::collections::HashMap;
 use uuid::Uuid;
 
-struct SeqVisitor<T> {
-    marker: std::marker::PhantomData<T>,
-    dbg_info: &'static str,
-}
-
-impl<'a, T> serde::de::Visitor<'a> for SeqVisitor<T>
-where
-    T: Sized + Deserialize<'a>,
-{
-    type Value = Vec<T>;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        std::fmt::write(formatter, format_args!("array"))
-    }
-
-    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-    where
-        A: serde::de::SeqAccess<'a>,
-    {
-        let mut vec = Vec::with_capacity(seq.size_hint().unwrap_or(0));
-        loop {
-            match seq.next_element() {
-                Ok(Some(value)) => vec.push(value),
-                Ok(None) => break,
-                Err(error) => {
-                    tracing::warn!("ignoring {}: {}", self.dbg_info, error);
-                    continue;
-                }
-            }
-        }
-        Ok(vec)
-    }
-}
-
-fn ignore_error<'de, D, T>(de: D, dbg_info: &'static str) -> Result<Vec<T>, D::Error>
-where
-    D: serde::de::Deserializer<'de>,
-    T: Sized + Deserialize<'de>,
-{
-    de.deserialize_seq(SeqVisitor {
-        marker: std::marker::PhantomData,
-        dbg_info,
-    })
-}
-
-fn ignore_error_node<'de, D>(de: D) -> Result<Vec<Node>, D::Error>
-where
-    D: serde::de::Deserializer<'de>,
-{
-    ignore_error(de, "node")
-}
-
-fn ignore_error_edge<'de, D>(de: D) -> Result<Vec<Edge>, D::Error>
-where
-    D: serde::de::Deserializer<'de>,
-{
-    ignore_error(de, "edge")
-}
-
 #[serde_as]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ClientConfig {
     pub id: FlowId,
-    #[serde(deserialize_with = "ignore_error_node")]
     pub nodes: Vec<Node>,
-    #[serde(deserialize_with = "ignore_error_edge")]
     pub edges: Vec<Edge>,
     #[serde(default)]
     #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
@@ -193,6 +132,8 @@ impl std::fmt::Debug for TargetsForm {
 pub struct Extra {
     // for WASM node
     pub supabase_id: Option<i64>,
+    #[serde(flatten)]
+    pub rest: HashMap<String, JsonValue>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

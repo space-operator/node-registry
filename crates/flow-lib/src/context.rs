@@ -1,5 +1,7 @@
 use crate::{
-    config::client::FlowRunOrigin, solana::Instructions, ContextConfig, FlowRunId, NodeId, UserId,
+    config::{client::FlowRunOrigin, Endpoints},
+    solana::Instructions,
+    ContextConfig, FlowRunId, NodeId, UserId,
 };
 use bytes::Bytes;
 use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
@@ -8,6 +10,67 @@ use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
 use tower::{Service, ServiceExt};
 
 pub use http::Extensions;
+
+pub mod get_jwt {
+    use crate::{utils::TowerClient, BoxError, UserId};
+    use std::sync::Arc;
+    use thiserror::Error as ThisError;
+
+    pub struct Request {
+        pub user_id: UserId,
+    }
+
+    #[derive(Clone, Debug)]
+    pub struct Response {
+        pub access_token: String,
+    }
+
+    #[derive(ThisError, Debug, Clone)]
+    pub enum Error {
+        #[error("not allowed")]
+        NotAllowed,
+        #[error("user not found")]
+        UserNotFound,
+        #[error("wrong recipient")]
+        WrongRecipient,
+        #[error(transparent)]
+        Worker(Arc<BoxError>),
+        #[error(transparent)]
+        MailBox(#[from] Arc<actix::MailboxError>),
+        #[error(transparent)]
+        Other(#[from] Arc<BoxError>),
+    }
+
+    impl From<actix::MailboxError> for Error {
+        fn from(error: actix::MailboxError) -> Self {
+            Error::MailBox(Arc::new(error))
+        }
+    }
+
+    impl Error {
+        pub fn worker(e: BoxError) -> Self {
+            Error::Other(Arc::new(e))
+        }
+
+        pub fn other<E: Into<BoxError>>(e: E) -> Self {
+            Error::Other(Arc::new(e.into()))
+        }
+    }
+
+    impl actix::Message for Request {
+        type Result = Result<Response, Error>;
+    }
+
+    pub type Svc = TowerClient<Request, Response, Error>;
+
+    pub fn unimplemented_svc() -> Svc {
+        Svc::unimplemented(|| Error::other("unimplemented"), Error::worker)
+    }
+
+    pub fn not_allowed() -> Svc {
+        Svc::unimplemented(|| Error::NotAllowed, Error::worker)
+    }
+}
 
 pub mod signer {
     use crate::{utils::TowerClient, BoxError, UserId};
@@ -169,13 +232,15 @@ pub struct CommandContext {
 #[derive(Clone)]
 pub struct Context {
     pub cfg: ContextConfig,
+    pub http: reqwest::Client,
     pub solana_client: Arc<SolanaClient>,
     pub environment: HashMap<String, String>,
     pub user: User,
     pub endpoints: Endpoints,
-    pub signer: signer::Svc,
     pub extensions: Arc<Extensions>,
     pub command: Option<CommandContext>,
+    pub signer: signer::Svc,
+    pub get_jwt: get_jwt::Svc,
 }
 
 impl Default for Context {
@@ -183,8 +248,8 @@ impl Default for Context {
         let mut ctx = Context::from_cfg(
             &ContextConfig::default(),
             User::default(),
-            Endpoints::default(),
             signer::unimplemented_svc(),
+            get_jwt::unimplemented_svc(),
             Extensions::default(),
         );
         ctx.command = Some(CommandContext {
@@ -198,32 +263,13 @@ impl Default for Context {
 }
 
 #[derive(Clone)]
-pub struct Endpoints {
-    pub flow_server: String,
-}
-
-impl Default for Endpoints {
-    fn default() -> Self {
-        Self {
-            flow_server: "http://localhost:8080".to_owned(),
-        }
-    }
-}
-
-#[derive(Clone)]
 pub struct User {
     pub id: UserId,
-    pub jwt: Option<String>,
-    pub api_key: Option<String>,
 }
 
 impl User {
     pub fn new(id: UserId) -> Self {
-        Self {
-            id,
-            jwt: None,
-            api_key: None,
-        }
+        Self { id }
     }
 }
 
@@ -231,34 +277,46 @@ impl Default for User {
     /// For testing
     fn default() -> Self {
         User {
-            id: uuid::uuid!("00000000-0000-0000-0000-000000000000"),
-            jwt: None,
-            api_key: None,
+            id: uuid::Uuid::nil(),
         }
     }
 }
 
 impl Context {
     pub fn from_cfg(
-        // TODO: pass by value
         cfg: &ContextConfig,
         user: User,
-        endpoints: Endpoints,
         sig_svc: signer::Svc,
+        token_svc: get_jwt::Svc,
         extensions: Extensions,
     ) -> Self {
         let solana_client = SolanaClient::new(cfg.solana_client.url.clone());
 
         Self {
             cfg: cfg.clone(),
+            http: reqwest::Client::new(),
             solana_client: Arc::new(solana_client),
             environment: cfg.environment.clone(),
             user,
-            endpoints,
+            endpoints: cfg.endpoints.clone(),
             extensions: Arc::new(extensions),
-            signer: sig_svc,
             command: None,
+            signer: sig_svc,
+            get_jwt: token_svc,
         }
+    }
+
+    pub async fn get_jwt_header(&mut self) -> Result<String, get_jwt::Error> {
+        Ok("Bearer ".to_owned()
+            + &self
+                .get_jwt
+                .ready()
+                .await?
+                .call(get_jwt::Request {
+                    user_id: self.user.id,
+                })
+                .await?
+                .access_token)
     }
 
     pub fn new_interflow_origin(&self) -> Option<FlowRunOrigin> {

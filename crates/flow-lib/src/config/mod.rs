@@ -121,10 +121,28 @@ pub struct NodeConfig {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Endpoints {
+    pub flow_server: String,
+    pub supabase: String,
+    pub supabase_anon_key: String,
+}
+
+impl Default for Endpoints {
+    fn default() -> Self {
+        Self {
+            flow_server: "http://localhost:8080".to_owned(),
+            supabase: "http://localhost:8081".to_owned(),
+            supabase_anon_key: String::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ContextConfig {
     pub http_client: HttpClientConfig,
     pub solana_client: SolanaClientConfig,
     pub environment: std::collections::HashMap<String, String>,
+    pub endpoints: Endpoints,
 }
 
 impl Default for ContextConfig {
@@ -138,7 +156,8 @@ impl Default for ContextConfig {
                 url: "https://api.devnet.solana.com".to_owned(),
                 cluster: SolanaNet::Devnet,
             },
-            environment: HashMap::new(),
+            environment: <_>::default(),
+            endpoints: <_>::default(),
         }
     }
 }
@@ -259,6 +278,7 @@ impl FlowConfig {
                     cluster: config.sol_network.cluster,
                 },
                 environment: config.environment,
+                endpoints: <_>::default(),
             },
             nodes,
             edges,
