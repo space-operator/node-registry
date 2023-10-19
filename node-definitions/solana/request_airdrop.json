@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Request Airdrop",
     "description": "Airdrop SOL for testing purposes\n\nCurrently takes 30s to complete, pass the signature to a wait command",
-    "width": 200,
-    "height": 155,
-    "backgroundColorDark": "#000000",
-    "backgroundColor": "#fff",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],

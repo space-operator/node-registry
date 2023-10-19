@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Find PDA",
     "description": "Find the PDA address for a given program ID and seeds",
-    "width": 200,
-    "height": 110,
-    "backgroundColorDark": "#2e003f",
-    "backgroundColor": "#fff",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],
@@ -45,7 +42,7 @@
       "width": 0,
       "height": 0,
       "icon_url": "",
-      "backgroundColorDark": "#000000",
+      "backgroundColorDark": "#2e003f",
       "backgroundColor": "#fff"
     },
     "options": {}

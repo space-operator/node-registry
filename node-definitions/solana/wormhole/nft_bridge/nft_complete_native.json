@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "NFT Complete Native",
     "description": "",
-    "width": 200,
-    "height": 201,
-    "backgroundColorDark": "#0d2e51",
-    "backgroundColor": "#8DB7FB",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],

@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Flow Output",
     "description": "",
-    "width": 150,
-    "height": 150,
-    "backgroundColorDark": "#dea10a",
-    "backgroundColor": "#f2fcff",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],
@@ -42,11 +39,11 @@
       }
     ],
     "design": {
-      "width": 0,
-      "height": 0,
+      "width": 150,
+      "height": 150,
       "icon_url": "",
-      "backgroundColorDark": "#000000",
-      "backgroundColor": "#fff"
+      "backgroundColorDark": "#dea10a",
+      "backgroundColor": "#f2fcff"
     },
     "options": {}
   },

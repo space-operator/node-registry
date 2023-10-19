@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Wallet",
     "description": "",
-    "width": 300,
-    "height": 155,
-    "backgroundColorDark": "#149b0f",
-    "backgroundColor": "#baf2b1",
     "tags": ["std", "wallet", "solana"],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],

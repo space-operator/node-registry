@@ -27,9 +27,10 @@
         }
     ],
     "tags": [],
-    "related_to_nodes": [
+   "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],

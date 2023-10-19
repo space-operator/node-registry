@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Write Item",
     "description": "Insert an item to the store, replace and return the old value if exists.",
-    "width": 0,
-    "height": 0,
-    "backgroundColorDark": "#000000",
-    "backgroundColor": "#fff",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],

@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "xNFT Create",
     "description": "",
-    "width": 200,
-    "height": 290,
-    "backgroundColorDark": "#000000",
-    "backgroundColor": "#fff",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],

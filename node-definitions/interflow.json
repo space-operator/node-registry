@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Interflow",
     "description": "",
-    "width": 200,
-    "height": 155,
-    "backgroundColorDark": "#e58900",
-    "backgroundColor": "#ffd9b3",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],
@@ -45,8 +42,8 @@
       "width": 0,
       "height": 0,
       "icon_url": "",
-      "backgroundColorDark": "#000000",
-      "backgroundColor": "#fff"
+      "backgroundColorDark": "#e58900",
+      "backgroundColor": "#ffd9b3"
     },
     "options": {}
   },

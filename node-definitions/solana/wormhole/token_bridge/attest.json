@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Attest Token",
     "description": "",
-    "width": 200,
-    "height": 235,
-    "backgroundColorDark": "#0d2e51",
-    "backgroundColor": "#8DB7FB",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],
@@ -45,8 +42,8 @@
       "width": 0,
       "height": 0,
       "icon_url": "",
-      "backgroundColorDark": "#000000",
-      "backgroundColor": "#fff"
+      "backgroundColorDark": "#0d2e51",
+      "backgroundColor": "#8DB7FB"
     },
     "options": {}
   },

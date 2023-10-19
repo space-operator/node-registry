@@ -30,9 +30,10 @@ Need both JSONSchema and UISchema
     "backgroundColorDark":"#000000" ,
     "backgroundColor": "#fff",
     "tags": [],
-    "related_to_nodes": [
+   "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],

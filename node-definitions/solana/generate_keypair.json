@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Generate Keypair",
     "description": "Generate or load a keypair and it's pubkey.\n\nWill generate a random keypair every run if no inputs are provided. This is useful for testing purpose.",
-    "width": 200,
-    "height": 200,
-    "backgroundColorDark": "#000000",
-    "backgroundColor": "#fff",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],

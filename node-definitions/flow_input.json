@@ -7,14 +7,11 @@
     "version": "0.1",
     "display_name": "Flow Input",
     "description": "",
-    "width": 150,
-    "height": 150,
-    "backgroundColorDark": "#0491d6",
-    "backgroundColor": "#f2fcff",
     "tags": [],
-    "related_to_nodes": [
+    "related_to": [
       {
         "id": "",
+        "type": "",
         "relationship": ""
       }
     ],
@@ -42,11 +39,11 @@
       }
     ],
     "design": {
-      "width": 0,
-      "height": 0,
+      "width": 150,
+      "height": 150,
       "icon_url": "",
-      "backgroundColorDark": "#000000",
-      "backgroundColor": "#fff"
+      "backgroundColorDark": "#0491d6",
+      "backgroundColor": "#f2fcff"
     },
     "options": {}
   },
