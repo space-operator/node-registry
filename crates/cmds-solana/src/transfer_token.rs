@@ -10,7 +10,6 @@ const SOLANA_TRANSFER_TOKEN: &str = "transfer_token";
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/transfer_token.json");
 
 fn build() -> BuildResult {
-    use once_cell::sync::Lazy;
     static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(SOLANA_TRANSFER_TOKEN)?

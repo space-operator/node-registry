@@ -20,7 +20,6 @@ const DEFINITION: &str = include_str!(
 );
 
 fn build() -> BuildResult {
-    use once_cell::sync::Lazy;
     static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(NAME)?

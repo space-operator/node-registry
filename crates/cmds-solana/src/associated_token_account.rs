@@ -8,7 +8,6 @@ const DEFINITION: &str =
     include_str!("../../../node-definitions/solana/associated_token_account.json");
 
 fn build() -> BuildResult {
-    use once_cell::sync::Lazy;
     static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(SOLANA_ASSOCIATED_TOKEN_ACCOUNT)?

@@ -8,7 +8,6 @@ const SOLANA_CREATE_MINT_ACCOUNT: &str = "create_mint_account";
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/create_mint_account.json");
 
 fn build() -> BuildResult {
-    use once_cell::sync::Lazy;
     static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(SOLANA_CREATE_MINT_ACCOUNT)?
