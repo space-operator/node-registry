@@ -26,13 +26,13 @@ pub struct Input {
     pub update_authority: Keypair,
     #[serde(with = "value::pubkey")]
     pub mint_account: Pubkey,
-    #[serde(with = "value::pubkey::opt")]
+    #[serde(default, with = "value::pubkey::opt")]
     pub edition_account: Option<Pubkey>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
 }
 
