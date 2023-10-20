@@ -10,7 +10,7 @@ const DEFINITION: &str = include_str!("../../../../node-definitions/solana/xnft/
 
 fn build() -> BuildResult {
     use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(GRANT_ACCESS)?
             .simple_instruction_info("signature")

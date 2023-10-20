@@ -19,7 +19,7 @@ const DEFINITION: &str =
 
 fn build() -> BuildResult {
     use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(MINT)?
             .simple_instruction_info("signature")
