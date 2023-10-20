@@ -35,27 +35,27 @@ pub struct Data {
     pub options: Option<serde_json::Value>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct RelatedTo {
     pub id: String,
     pub r#type: String,
     pub relationship: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Resources {
     pub source_code_url: String,
     pub documentation_url: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Usage {
     pub license: String,
     pub license_url: String,
     pub pricing: Pricing,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Pricing {
     pub currency: String,
     pub purchase_price: u64,
@@ -63,19 +63,19 @@ pub struct Pricing {
     pub custom: Option<CustomPricing>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct CustomPricing {
     pub unit: String,
     pub value: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Author {
     pub name: String,
     pub contact: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Design {
     pub width: u64,
     pub height: u64,
