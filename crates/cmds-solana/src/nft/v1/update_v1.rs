@@ -5,7 +5,7 @@ use crate::{
 use anchor_lang::AnchorSerialize;
 use borsh::{BorshDeserialize, BorshSerialize};
 use mpl_token_metadata::{
-    accounts::{MasterEdition, Metadata, MetadataDelegateRecord, TokenRecord},
+    accounts::{MasterEdition, Metadata},
     instructions::{
         InstructionAccount, UpdateAsAuthorityItemDelegateV2InstructionArgs,
         UpdateAsCollectionDelegateV2InstructionArgs,
@@ -15,11 +15,10 @@ use mpl_token_metadata::{
         UpdateAsProgrammableConfigItemDelegateV2InstructionArgs,
         UpdateAsUpdateAuthorityV2InstructionArgs, UpdateV1InstructionArgs,
     },
-    types::MetadataDelegateRole,
 };
 use solana_program::{system_program, sysvar};
 
-use super::delegate_v1::{AuthorizationData, DelegateType};
+use super::delegate_v1::AuthorizationData;
 
 // Command Name
 const NAME: &str = "update_v1";
@@ -65,10 +64,10 @@ pub struct Output {
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let (metadata_account, _) = Metadata::find_pda(&input.mint_account);
 
-    let (master_edition_account, _) = MasterEdition::find_pda(&input.mint_account);
+    let (_master_edition_account, _) = MasterEdition::find_pda(&input.mint_account);
 
     // get associated token account pda
-    let token_account = spl_associated_token_account::get_associated_token_address(
+    let _token_account = spl_associated_token_account::get_associated_token_address(
         &input.fee_payer.pubkey(),
         &input.mint_account,
     );
@@ -80,7 +79,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             .update_authority
             .expect("update_authority field must be set")
     });
-    dbg!(authority_or_delegate.pubkey());
 
     let minimum_balance_for_rent_exemption = ctx
         .solana_client
@@ -548,8 +546,8 @@ struct UpdateMetadataAccountV2InstructionData {
     discriminator: u8,
 }
 
-impl UpdateMetadataAccountV2InstructionData {
-    fn new() -> Self {
+impl Default for UpdateMetadataAccountV2InstructionData {
+    fn default() -> Self {
         Self { discriminator: 15 }
     }
 }

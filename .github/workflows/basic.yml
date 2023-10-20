@@ -28,6 +28,7 @@ jobs:
             -D clippy::print_stderr
             -A clippy::uninlined_format_args
             -A clippy::too_many_arguments
+            -D clippy::tests_outside_test_module
   unit-test:
     name: Unit test
     runs-on: ubuntu-latest

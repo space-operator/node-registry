@@ -1,6 +1,6 @@
 use crate::prelude::Pubkey;
 use mpl_candy_machine_core::{CandyMachineData as MPLCandyMachineData, HiddenSettings};
-use mpl_token_metadata::types::{Collection, Creator, DataV2, UseMethod, Uses};
+use mpl_token_metadata::types::{Collection, DataV2, UseMethod, Uses};
 use serde::{Deserialize, Serialize};
 
 // pub mod approve_collection_authority;

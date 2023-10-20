@@ -102,10 +102,6 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             token_id: primitive_types::U256::from(token_id.0),
             uri: uri.to_string(),
         },
-        // ignore other arms
-        _ => {
-            return Err(anyhow::anyhow!("Payload content not supported"));
-        }
     };
     // https://github.com/wormhole-foundation/wormhole/blob/faa397ca4f5cca067a7cfff375ab193463aabe39/sdk/js/src/solana/nftBridge/program.ts#L37
     let mut mint = vec![0u8; 32];

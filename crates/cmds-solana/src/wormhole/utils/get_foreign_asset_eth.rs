@@ -30,7 +30,7 @@ pub struct Output {
     address: String,
 }
 
-async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
+async fn run(ctx: Context, input: Input) -> Result<Output, CommandError> {
     #[derive(Serialize, Deserialize, Debug)]
     struct Payload {
         #[serde(rename = "networkName")]
@@ -49,8 +49,8 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         chain_id: input.chain_id,
     };
 
-    let client = reqwest::Client::new();
-    let response: GetForeignAddress = client
+    let response: GetForeignAddress = ctx
+        .http
         .post("https://gygvoikm3c.execute-api.us-east-1.amazonaws.com/get_foreign_asset_eth")
         .json(&payload)
         .send()
