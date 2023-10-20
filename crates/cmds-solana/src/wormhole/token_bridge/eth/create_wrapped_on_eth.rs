@@ -15,7 +15,7 @@ const DEFINITION: &str = include_str!(
     "../../../../../../node-definitions/solana/wormhole/token_bridge/eth/create_wrapped_on_eth.json"
 );
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> =
         Lazy::new(|| CmdBuilder::new(DEFINITION)?.check_name(NAME));

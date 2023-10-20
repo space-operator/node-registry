@@ -6,7 +6,7 @@ const NAME: &str = "set_token_standard";
 const DEFINITION: &str =
     include_str!("../../../../node-definitions/solana/NFT/set_token_standard.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?

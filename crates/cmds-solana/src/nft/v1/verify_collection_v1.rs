@@ -8,7 +8,7 @@ const NAME: &str = "verify_collection_v1";
 const DEFINITION: &str =
     include_str!("../../../../../node-definitions/solana/NFT/v1/verify_collection_v1.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?

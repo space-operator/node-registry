@@ -17,7 +17,7 @@ const CREATE_PAYMENT: &str = "create_payment";
 const DEFINITION: &str =
     include_str!("../../../../../node-definitions/solana/clockwork/payments/create_payment.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?

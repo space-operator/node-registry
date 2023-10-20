@@ -5,7 +5,7 @@ const SOLANA_MINT_TOKEN: &str = "mint_token";
 
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/mint_token.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?

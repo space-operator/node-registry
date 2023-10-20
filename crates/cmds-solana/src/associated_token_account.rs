@@ -7,7 +7,7 @@ const SOLANA_ASSOCIATED_TOKEN_ACCOUNT: &str = "associated_token_account";
 const DEFINITION: &str =
     include_str!("../../../node-definitions/solana/associated_token_account.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?

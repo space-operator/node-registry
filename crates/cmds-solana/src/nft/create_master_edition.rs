@@ -11,7 +11,7 @@ const NAME: &str = "create_master_edition";
 const DEFINITION: &str =
     include_str!("../../../../node-definitions/solana/NFT/create_master_edition.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?

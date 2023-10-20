@@ -11,7 +11,7 @@ const MINT_COMPRESSED_NFT: &str = "mint_compressed_NFT";
 const DEFINITION: &str =
     include_str!("../../../../node-definitions/solana/compression/mint_compressed_NFT.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?

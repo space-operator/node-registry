@@ -16,7 +16,7 @@ const INITIALIZE_CANDY_MACHINE: &str = "initialize_candy_machine";
 const DEFINITION: &str =
     include_str!("../../../../../node-definitions/solana/NFT/candy_machine/initialize.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
         CmdBuilder::new(DEFINITION)?
