@@ -65,7 +65,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         mint: input.mint_account,
         mint_authority: input.mint_authority,
         payer: input.fee_payer.pubkey(),
-        update_authority: input.update_authority.pubkey(),
+        update_authority: (input.update_authority.pubkey(), true),
         system_program: system_program::id(),
         //TODO double check what this is for
         rent: Some(input.fee_payer.pubkey()),
