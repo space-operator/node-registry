@@ -9,9 +9,8 @@ const SOLANA_TRANSFER_TOKEN: &str = "transfer_token";
 
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/transfer_token.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
-    use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+fn build() -> BuildResult {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(SOLANA_TRANSFER_TOKEN)?
             .simple_instruction_info("signature")

@@ -9,9 +9,9 @@ const CREATE_PERMISSIONED_INSTALL: &str = "create_permissioned_install";
 const DEFINITION: &str =
     include_str!("../../../../node-definitions/solana/xnft/create_permissioned_install.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(CREATE_PERMISSIONED_INSTALL)?
             .simple_instruction_info("signature")
@@ -41,7 +41,7 @@ pub struct Input {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
     //TODO
 }

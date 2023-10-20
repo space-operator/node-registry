@@ -11,9 +11,9 @@ const CREATE_XNFT: &str = "create_xnft";
 
 const DEFINITION: &str = include_str!("../../../../node-definitions/solana/xnft/create_xnft.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(CREATE_XNFT)?
             .simple_instruction_info("signature")
@@ -39,7 +39,7 @@ pub struct Input {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
 }
 

@@ -4,7 +4,11 @@ use solana_program::{instruction::Instruction, system_instruction, system_progra
 use solana_sdk::pubkey::Pubkey;
 
 use mpl_candy_machine_core::{instruction::InitializeV2, CandyMachineData};
-use mpl_token_metadata::{instruction::MetadataDelegateRole, state::TokenStandard};
+use mpl_token_metadata::{
+    accounts::{MasterEdition, Metadata},
+    instruction::MetadataDelegateRole,
+    state::TokenStandard,
+};
 
 // Command Name
 const INITIALIZE_CANDY_MACHINE: &str = "initialize_candy_machine";
@@ -12,9 +16,9 @@ const INITIALIZE_CANDY_MACHINE: &str = "initialize_candy_machine";
 const DEFINITION: &str =
     include_str!("../../../../../node-definitions/solana/NFT/candy_machine/initialize.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(INITIALIZE_CANDY_MACHINE)?
             .simple_instruction_info("signature")
@@ -62,7 +66,7 @@ pub struct Output {
 }
 
 async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
-    let token_metadata_program = mpl_token_metadata::id();
+    let token_metadata_program = mpl_token_metadata::ID;
     let candy_machine_program = mpl_candy_machine_core::id();
     let candy_pubkey = input.candy_machine.pubkey();
 
@@ -71,12 +75,10 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let authority_pda = Pubkey::find_program_address(seeds, &candy_machine_program).0;
 
     // Collection Metadata PDA
-    let collection_metadata =
-        mpl_token_metadata::pda::find_metadata_account(&input.collection_mint).0;
+    let collection_metadata = Metadata::find_pda(&input.collection_mint).0;
 
     // Master Edition PDA
-    let collection_master_edition =
-        mpl_token_metadata::pda::find_master_edition_account(&input.collection_mint).0;
+    let collection_master_edition = MasterEdition::find_pda(&input.collection_mint).0;
 
     // Collection Delegate Record PDA
     let collection_delegate_record =

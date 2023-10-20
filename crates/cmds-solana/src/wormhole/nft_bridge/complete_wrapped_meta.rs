@@ -8,7 +8,7 @@ use solana_program::{instruction::AccountMeta, system_program, sysvar};
 use solana_sdk::pubkey::Pubkey;
 use wormhole_sdk::nft::Message;
 
-use super::{CompleteWrappedMetaData, NFTBridgeInstructions, PayloadTransfer};
+use super::{Address, CompleteWrappedMetaData, NFTBridgeInstructions, PayloadTransfer};
 
 // Command Name
 const NAME: &str = "nft_complete_wrapped_meta";
@@ -17,9 +17,8 @@ const DEFINITION: &str = include_str!(
     "../../../../../node-definitions/solana/wormhole/nft_bridge/nft_complete_wrapped_meta.json"
 );
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
-    use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+fn build() -> BuildResult {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(NAME)?
             .simple_instruction_info("signature")
@@ -42,7 +41,7 @@ pub struct Input {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
 }
 
@@ -72,7 +71,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         } => PayloadTransfer {
             token_address: nft_address.0,
             token_chain: nft_chain.into(),
-            to: to.0,
+            to: Address(to.0),
             to_chain: to_chain.into(),
             symbol: symbol.to_string(),
             name: name.to_string(),
@@ -117,10 +116,10 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let spl_metadata = Pubkey::find_program_address(
         &[
             b"metadata".as_ref(),
-            mpl_token_metadata::id().as_ref(),
+            mpl_token_metadata::ID.as_ref(),
             mint.as_ref(),
         ],
-        &mpl_token_metadata::id(),
+        &mpl_token_metadata::ID,
     )
     .0;
 
@@ -142,7 +141,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
             AccountMeta::new_readonly(wormhole_core_program_id, false),
             AccountMeta::new_readonly(spl_token::id(), false),
             AccountMeta::new_readonly(spl_associated_token_account::id(), false),
-            AccountMeta::new_readonly(mpl_token_metadata::id(), false),
+            AccountMeta::new_readonly(mpl_token_metadata::ID, false),
         ],
         data: (
             NFTBridgeInstructions::CompleteWrappedMeta,

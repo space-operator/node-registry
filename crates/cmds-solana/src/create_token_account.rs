@@ -6,9 +6,8 @@ const SOLANA_CREATE_TOKEN_ACCOUNT: &str = "create_token_account";
 
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/create_token_account.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
-    use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+fn build() -> BuildResult {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(SOLANA_CREATE_TOKEN_ACCOUNT)?
             .simple_instruction_info("signature")

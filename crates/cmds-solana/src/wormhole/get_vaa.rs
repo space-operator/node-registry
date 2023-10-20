@@ -8,7 +8,7 @@ const NAME: &str = "get_vaa";
 
 const DEFINITION: &str = include_str!("../../../../node-definitions/solana/wormhole/get_vaa.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> =
         Lazy::new(|| CmdBuilder::new(DEFINITION)?.check_name(NAME));
@@ -45,8 +45,6 @@ async fn run(ctx: Context, input: Input) -> Result<Output, CommandError> {
         wormhole_endpoint, wormhole_path, input.chain_id, input.emitter, input.sequence
     );
 
-    let client = reqwest::Client::new();
-
     async fn send_wormhole_request(
         client: &reqwest::Client,
         wormhole_url: &str,
@@ -58,7 +56,7 @@ async fn run(ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let timeout = Duration::from_secs(60);
 
-    let mut response = send_wormhole_request(&client, &wormhole_url, timeout).await?;
+    let mut response = send_wormhole_request(&ctx.http, &wormhole_url, timeout).await?;
 
     while response.status() != 200 {
         // Solana
@@ -69,7 +67,7 @@ async fn run(ctx: Context, input: Input) -> Result<Output, CommandError> {
         if input.chain_id == "10002" {
             sleep(Duration::from_secs(45)).await;
         }
-        response = send_wormhole_request(&client, &wormhole_url, timeout).await?;
+        response = send_wormhole_request(&ctx.http, &wormhole_url, timeout).await?;
     }
 
     let response_text = response.text().await?;
@@ -83,10 +81,16 @@ async fn run(ctx: Context, input: Input) -> Result<Output, CommandError> {
     })
 }
 
-#[test]
-fn test() {
-    // const res:&str = "{\"data\":{\"sequence\":420,\"id\":\"10002/000000000000000000000000db5492265f6038831e89f495670ff909ade94bd9/420\",\"version\":1,\"emitterChain\":10002,\"emitterAddr\":\"000000000000000000000000db5492265f6038831e89f495670ff909ade94bd9\",\"guardianSetIndex\":0,\"vaa\":\"AQAAAAABAIGVMaxqz2cou11lb1AVxzNNzPAV9ooflmTPSmcQmChxEfwlzHd+osaDIilfFlxNW7g5IMQPqQDhkgTyU/46qDwAZMBlwLQtAQAnEgAAAAAAAAAAAAAAANtUkiZfYDiDHon0lWcP+Qmt6UvZAAAAAAAAAaQBAgAAAAAAAAAAAAAAAEEKixUC8B8oh/CwWyLMk01FpiinJxISRVJDX1NZTUJPTAAAAAAAAAAAAAAAAAAAAAAAAAAAAABNeUVSQzIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\"timestamp\":\"2023-07-26T00:16:00Z\",\"updatedAt\":\"2023-07-26T00:33:35.942Z\",\"indexedAt\":\"2023-07-26T00:33:35.942Z\",\"txHash\":\"0eacb8738102df585cb5dbbd7664f8e2fd9e04c02bcb7080cdc62b9bfcf09d9d\"},\"pagination\":{\"next\":\"\"}}";
-    // let response: WormholeResponse = ron::de::from_str(&res).unwrap();
+/*
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test() {
+        // const res:&str = "{\"data\":{\"sequence\":420,\"id\":\"10002/000000000000000000000000db5492265f6038831e89f495670ff909ade94bd9/420\",\"version\":1,\"emitterChain\":10002,\"emitterAddr\":\"000000000000000000000000db5492265f6038831e89f495670ff909ade94bd9\",\"guardianSetIndex\":0,\"vaa\":\"AQAAAAABAIGVMaxqz2cou11lb1AVxzNNzPAV9ooflmTPSmcQmChxEfwlzHd+osaDIilfFlxNW7g5IMQPqQDhkgTyU/46qDwAZMBlwLQtAQAnEgAAAAAAAAAAAAAAANtUkiZfYDiDHon0lWcP+Qmt6UvZAAAAAAAAAaQBAgAAAAAAAAAAAAAAAEEKixUC8B8oh/CwWyLMk01FpiinJxISRVJDX1NZTUJPTAAAAAAAAAAAAAAAAAAAAAAAAAAAAABNeUVSQzIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\"timestamp\":\"2023-07-26T00:16:00Z\",\"updatedAt\":\"2023-07-26T00:33:35.942Z\",\"indexedAt\":\"2023-07-26T00:33:35.942Z\",\"txHash\":\"0eacb8738102df585cb5dbbd7664f8e2fd9e04c02bcb7080cdc62b9bfcf09d9d\"},\"pagination\":{\"next\":\"\"}}";
+        // let response: WormholeResponse = ron::de::from_str(&res).unwrap();
 
-    // dbg!(response.clone());
+        // dbg!(response.clone());
+    }
 }
+*/

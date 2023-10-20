@@ -7,10 +7,9 @@ const GENERATE_KEYPAIR: &str = "generate_keypair";
 
 const DEFINITION: &str = include_str!("../../../node-definitions/solana/generate_keypair.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
-    use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> =
-        Lazy::new(|| CmdBuilder::new(DEFINITION)?.check_name(GENERATE_KEYPAIR));
+fn build() -> BuildResult {
+    static CACHE: BuilderCache =
+        BuilderCache::new(|| CmdBuilder::new(DEFINITION)?.check_name(GENERATE_KEYPAIR));
     Ok(CACHE.clone()?.build(run))
 }
 

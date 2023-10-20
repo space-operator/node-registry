@@ -19,9 +19,8 @@ const DEFINITION: &str = include_str!(
     "../../../../../node-definitions/solana/wormhole/nft_bridge/nft_transfer_wrapped.json"
 );
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
-    use once_cell::sync::Lazy;
-    static CACHE: Lazy<Result<CmdBuilder, BuilderError>> = Lazy::new(|| {
+fn build() -> BuildResult {
+    static CACHE: BuilderCache = BuilderCache::new(|| {
         CmdBuilder::new(DEFINITION)?
             .check_name(NAME)?
             .simple_instruction_info("signature")
@@ -54,7 +53,7 @@ pub struct Input {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Output {
-    #[serde(with = "value::signature::opt")]
+    #[serde(default, with = "value::signature::opt")]
     signature: Option<Signature>,
 }
 
@@ -94,10 +93,10 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let spl_metadata = Pubkey::find_program_address(
         &[
             b"metadata".as_ref(),
-            mpl_token_metadata::id().as_ref(),
+            mpl_token_metadata::ID.as_ref(),
             wrapped_mint_key.as_ref(),
         ],
-        &mpl_token_metadata::id(),
+        &mpl_token_metadata::ID,
     )
     .0;
 
@@ -119,7 +118,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let wrapped_data = TransferWrappedData {
         nonce,
-        target_address: input.target_address.0,
+        target_address: super::Address(input.target_address.0),
         target_chain: input.target_chain,
     };
 

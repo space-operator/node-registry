@@ -8,6 +8,7 @@ use solana_client::{
     rpc_response::RpcSimulateTransactionResult,
 };
 use solana_sdk::{
+    commitment_config::CommitmentConfig,
     instruction::Instruction,
     message::Message,
     pubkey::Pubkey,
@@ -111,7 +112,7 @@ impl Instructions {
         user_id: UserId,
     ) -> Result<Signature, Error> {
         let recent_blockhash = rpc.get_latest_blockhash().await?;
-        let balance = rpc.get_balance(&self.fee_payer).await?;
+        let balance: u64 = rpc.get_balance(&self.fee_payer).await?;
 
         let message = Message::new_with_blockhash(
             &self.instructions,
@@ -183,9 +184,11 @@ impl Instructions {
 
             tx.try_sign(&signers, recent_blockhash)?;
         }
-
+        let commitment = CommitmentConfig::confirmed();
         tracing::trace!("submitting transaction");
-        let sig = rpc.send_and_confirm_transaction(&tx).await?;
+        let sig = rpc
+            .send_and_confirm_transaction_with_spinner_and_commitment(&tx, commitment)
+            .await?;
 
         Ok(sig)
     }

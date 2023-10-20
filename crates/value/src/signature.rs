@@ -43,9 +43,9 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
     where
         E: serde::de::Error,
     {
-        match v.len() {
-            64 => Ok(Signature::new(v)),
-            l => Err(serde::de::Error::invalid_length(l, &"64")),
+        match <[u8; 64]>::try_from(v) {
+            Ok(x) => Ok(Signature::from(x)),
+            _ => Err(serde::de::Error::invalid_length(v.len(), &"64")),
         }
     }
 
@@ -76,7 +76,7 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
                 _ => return Err(serde::de::Error::custom("expected array of 64 elements")),
             }
         }
-        Ok(Signature::new(&buf))
+        Ok(Signature::from(buf))
     }
 
     fn visit_newtype_struct<D>(self, d: D) -> Result<Self::Value, D::Error>

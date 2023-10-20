@@ -15,7 +15,7 @@ const DEFINITION: &str = include_str!(
     "../../../../../../node-definitions/solana/wormhole/token_bridge/eth/create_wrapped_on_eth.json"
 );
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> =
         Lazy::new(|| CmdBuilder::new(DEFINITION)?.check_name(NAME));
@@ -40,7 +40,7 @@ pub struct Output {
     address: Address,
 }
 
-async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
+async fn run(ctx: Context, input: Input) -> Result<Output, CommandError> {
     #[derive(Serialize, Deserialize, Debug)]
     struct Payload {
         #[serde(rename = "networkName")]
@@ -58,8 +58,8 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         token: input.token.to_string(),
     };
 
-    let client = reqwest::Client::new();
-    let response: CreateWrappedResponse = client
+    let response: CreateWrappedResponse = ctx
+        .http
         .post("https://gygvoikm3c.execute-api.us-east-1.amazonaws.com/create_wrapped_on_eth")
         .json(&payload)
         .send()

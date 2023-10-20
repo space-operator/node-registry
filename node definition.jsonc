@@ -1,15 +1,58 @@
 {
   "type": "native", // native | WASM | custom
   "data": {
+    "node_definition_version": "0.1",
+    "unique_id": "",
     "node_id": "mint-token",
     "version": "0.1",
     "display_name": "Mint Token",
     "description": "Create a token",
     "width": 0, // add non zero to override front-end
     "height": 0,
+    "backgroundColorDark": "#000000",
     "backgroundColor": "#fff"
   },
   // node outputs
+  "tags": [],
+   "related_to": [
+      {
+        "id": "",
+        "type": "",
+        "relationship": ""
+      }
+    ],
+    "resources": {
+      "source_code_url": "",
+      "documentation_url": ""
+    },
+    "usage": {
+      "license": "Apache-2.0",
+      "license_url": "",
+      "pricing": {
+        "currency": "USDC",
+        "purchase_price": 0,
+        "price_per_run": 0,
+        "custom": {
+          "unit": "monthly",
+          "value": "0"
+        }
+      }
+    },
+    "authors": [
+      {
+        "name": "Space Operator",
+        "contact": ""
+      }
+    ],
+    "design": {
+      "width": 0,
+      "height": 0,
+      "icon_url": "",
+      "backgroundColorDark": "#000000",
+      "backgroundColor": "#fff"
+    },
+    "options": {}
+  },
   "sources": [
     {
       "name": "token_pubkey",
@@ -22,9 +65,7 @@
   "targets": [
     {
       "name": "token_name",
-      "type_bounds": [
-        "string"
-      ],
+      "type_bounds": ["string"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",

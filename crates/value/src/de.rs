@@ -5,9 +5,9 @@ use rust_decimal::{prelude::ToPrimitive, Decimal};
 use serde::de::value::SeqDeserializer;
 
 pub mod const_bytes;
- mod de_enum;
- mod de_struct;
- mod text_repr;
+mod de_enum;
+mod de_struct;
+mod text_repr;
 
 use const_bytes::ConstBytes;
 use de_enum::{EnumDeserializer, ValueEnumAccess};
@@ -267,7 +267,7 @@ impl Value {
     }
 }
 
- fn visit_array<'de, V>(array: Vec<Value>, visitor: V) -> Result<V::Value, Error>
+fn visit_array<'de, V>(array: Vec<Value>, visitor: V) -> Result<V::Value, Error>
 where
     V: serde::de::Visitor<'de>,
 {

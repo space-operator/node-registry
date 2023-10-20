@@ -1,34 +1,75 @@
 {
-    "type": "WASM",
-    "data": {
-        "node_id": "urls",
-        "version": "0.2",
-        "display_name": "Url Parser",
-        "description": "Parses a url into helpful fields.",
-        "width": 200,
-        "height": 180,
-        "backgroundColor": "#ffd9b3"
+  "type": "WASM",
+  "data": {
+    "node_definition_version": "0.1",
+    "unique_id": "",
+    "node_id": "urls",
+    "version": "0.2",
+    "display_name": "Url Parser",
+    "description": "Parses a url into helpful fields.",
+    "width": 200,
+    "height": 180,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "url",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "",
+      "passthrough": false
+    }
+  ],
+  "tags": [],
+   "related_to": [
+      {
+        "id": "",
+        "type": "",
+        "relationship": ""
+      }
+    ],
+    "resources": {
+      "source_code_url": "",
+      "documentation_url": ""
     },
-    "targets": [
-        {
-            "name": "url",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "",
-            "passthrough": false
+    "usage": {
+      "license": "Apache-2.0",
+      "license_url": "",
+      "pricing": {
+        "currency": "USDC",
+        "purchase_price": 0,
+        "price_per_run": 0,
+        "custom": {
+          "unit": "monthly",
+          "value": "0"
         }
+      }
+    },
+    "authors": [
+      {
+        "name": "Space Operator",
+        "contact": ""
+      }
     ],
-    "sources": [
-        {
-            "name": "fields",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
-        }
-    ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    "design": {
+      "width": 0,
+      "height": 0,
+      "icon_url": "",
+      "backgroundColorDark": "#000000",
+      "backgroundColor": "#fff"
+    },
+    "options": {}
+  },
+  "sources": [
+    {
+      "name": "fields",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }

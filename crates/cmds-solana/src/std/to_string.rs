@@ -43,7 +43,7 @@ impl CommandTrait for ToString {
     async fn run(&self, _: Context, mut inputs: ValueSet) -> Result<ValueSet, CommandError> {
         let input = inputs.remove(STRINGIFY).unwrap_or("".into());
 
-        let output = match input {
+        let result = match input {
             Value::Decimal(v) => v.to_string(),
             Value::U64(v) => v.to_string(),
             Value::I64(v) => v.to_string(),
@@ -56,7 +56,7 @@ impl CommandTrait for ToString {
             other => serde_json::to_string_pretty(&other).unwrap(),
         };
 
-        let result = serde_json::to_string(&output).unwrap();
+        // let result = serde_json::to_string(&output).unwrap();
 
         Ok(value::to_map(&Output { result })?)
     }

@@ -10,7 +10,7 @@ const DEFINITION: &str = include_str!(
     "../../../../../../node-definitions/solana/wormhole/token_bridge/eth/redeem_on_eth.json"
 );
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     use once_cell::sync::Lazy;
     static CACHE: Lazy<Result<CmdBuilder, BuilderError>> =
         Lazy::new(|| CmdBuilder::new(DEFINITION)?.check_name(NAME));
@@ -32,7 +32,7 @@ pub struct Output {
     receipt: Receipt,
 }
 
-async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
+async fn run(ctx: Context, input: Input) -> Result<Output, CommandError> {
     #[derive(Serialize, Deserialize, Debug)]
     struct Payload {
         #[serde(rename = "networkName")]
@@ -48,8 +48,8 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         signed_vaa: input.signed_vaa,
     };
 
-    let client = reqwest::Client::new();
-    let response: RedeemOnEthResponse = client
+    let response: RedeemOnEthResponse = ctx
+        .http
         .post("https://gygvoikm3c.execute-api.us-east-1.amazonaws.com/redeem_on_eth")
         .json(&payload)
         .send()

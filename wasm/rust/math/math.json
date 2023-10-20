@@ -1,44 +1,83 @@
 {
-    "type": "WASM",
-    "data": {
-        "node_id": "math",
-        "version": "0.2",
-        "display_name": "Math",
-        "description": "Node which executes math expression with variable values specified in a separate object",
-        "width": 200,
-        "height": 155,
-        "backgroundColor": "#ffd9b3"
+  "type": "WASM",
+  "data": {
+    "node_definition_version": "0.1",
+    "unique_id": "",
+    "node_id": "math",
+    "version": "0.2",
+    "display_name": "Math",
+    "description": "Node which executes math expression with variable values specified in a separate object",
+    "width": 200,
+    "height": 155,
+    "backgroundColorDark": "#000000",
+    "backgroundColor": "#ffd9b3"
+  },
+  "targets": [
+    {
+      "name": "expr",
+      "type_bounds": ["string"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "'x + y'",
+      "passthrough": false
     },
-    "targets": [
-        {
-            "name": "expr",
-            "type_bounds": [
-                "string"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "'x + y'",
-            "passthrough": false
-        },
-        {
-            "name": "vars",
-            "type_bounds": [
-                "JSON"
-            ],
-            "required": true,
-            "defaultValue": "",
-            "tooltip": "{'x': 100, 'y': 20}",
-            "passthrough": false
-        }
+    {
+      "name": "vars",
+      "type_bounds": ["JSON"],
+      "required": true,
+      "defaultValue": "",
+      "tooltip": "{'x': 100, 'y': 20}",
+      "passthrough": false
+    }
+  ],
+  "tags": [],
+   "related_to": [
+      {
+        "id": "",
+        "type": "",
+        "relationship": ""
+      }
     ],
-    "sources": [
-        {
-            "name": "result",
-            "type": "string",
-            "defaultValue": "",
-            "tooltip": ""
+    "resources": {
+      "source_code_url": "",
+      "documentation_url": ""
+    },
+    "usage": {
+      "license": "Apache-2.0",
+      "license_url": "",
+      "pricing": {
+        "currency": "USDC",
+        "purchase_price": 0,
+        "price_per_run": 0,
+        "custom": {
+          "unit": "monthly",
+          "value": "0"
         }
+      }
+    },
+    "authors": [
+      {
+        "name": "Space Operator",
+        "contact": ""
+      }
     ],
-    "targets_form.json_schema": {},
-    "targets_form.ui_schema": {}
+    "design": {
+      "width": 0,
+      "height": 0,
+      "icon_url": "",
+      "backgroundColorDark": "#000000",
+      "backgroundColor": "#fff"
+    },
+    "options": {}
+  },
+  "sources": [
+    {
+      "name": "result",
+      "type": "string",
+      "defaultValue": "",
+      "tooltip": ""
+    }
+  ],
+  "targets_form.json_schema": {},
+  "targets_form.ui_schema": {}
 }
