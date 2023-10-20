@@ -1,11 +1,11 @@
 use crate::{Error, Map, Value};
 
- mod iter_ser;
- mod map_key;
- mod maps;
- mod seq;
- mod tagged_bytes;
- mod text_repr;
+mod iter_ser;
+mod map_key;
+mod maps;
+mod seq;
+mod tagged_bytes;
+mod text_repr;
 
 use maps::{SerializeMap, SerializeStructVariant, SerializeTupleVariant};
 use seq::{SerializeSeq, SerializeSeqNoBytes};

@@ -1,18 +1,14 @@
-
-
+use crate::prelude::*;
 use anyhow::anyhow;
 use flow_lib::config::node::Permissions;
 use reqwest::{header::AUTHORIZATION, StatusCode};
-
-
-use crate::prelude::*;
 
 // Command Name
 const NAME: &str = "supabase";
 
 const DEFINITION: &str = include_str!("../../../../node-definitions/db/supabase.json");
 
-fn build() -> Result<Box<dyn CommandTrait>, CommandError> {
+fn build() -> BuildResult {
     static CACHE: BuilderCache = BuilderCache::new(|| {
         Ok(CmdBuilder::new(DEFINITION)?
             .check_name(NAME)?
