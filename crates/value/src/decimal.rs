@@ -2,6 +2,27 @@ use rust_decimal::Decimal;
 
 pub(crate) const TOKEN: &str = "$$d";
 
+pub type Target = Decimal;
+
+pub mod opt {
+    pub fn serialize<S>(sig: &Option<super::Target>, s: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match sig {
+            Some(sig) => super::serialize(sig, s),
+            None => s.serialize_none(),
+        }
+    }
+
+    pub fn deserialize<'de, D>(d: D) -> Result<Option<super::Target>, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        d.deserialize_option(crate::OptionVisitor(super::Visitor))
+    }
+}
+
 pub fn serialize<S>(d: &Decimal, s: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
@@ -9,9 +30,9 @@ where
     s.serialize_newtype_struct(TOKEN, &crate::Bytes(&d.serialize()))
 }
 
-struct DecimalVisitor;
+struct Visitor;
 
-impl<'de> serde::de::Visitor<'de> for DecimalVisitor {
+impl<'de> serde::de::Visitor<'de> for Visitor {
     type Value = Decimal;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -76,7 +97,7 @@ pub fn deserialize<'de, D>(d: D) -> Result<Decimal, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    d.deserialize_newtype_struct(TOKEN, DecimalVisitor)
+    d.deserialize_newtype_struct(TOKEN, Visitor)
 }
 
 #[cfg(test)]
