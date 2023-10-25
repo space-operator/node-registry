@@ -122,7 +122,7 @@ pub type Map = self::HashMap<Key, Value>;
 ///
 /// # JSON representation
 ///
-/// When using [`Value`] in database and HTTP APIs, it is converted to JSON, as an object:
+/// When using [`Value`] in database and HTTP APIs, it is converted to a JSON object:
 ///
 /// ```json
 /// {
