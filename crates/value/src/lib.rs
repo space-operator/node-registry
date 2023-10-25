@@ -1,3 +1,6 @@
+//! This crate contains [`Value`], an enum representing all values that can be used as
+//! node's input and output, and utilities for working with [`Value`].
+
 use rust_decimal::{prelude::ToPrimitive, Decimal};
 use thiserror::Error as ThisError;
 
@@ -62,22 +65,154 @@ pub type Key = String;
 
 pub type Map = self::HashMap<Key, Value>;
 
+/// [`Value`] represents all values that nodes can use as input and output.
+///
+/// # Data types
+///
+/// - Scalar types:
+///     - Null: [`Value::Null`].
+///     - Boolean: [`Value::Bool`].
+///     - Number: [`Value::U64`], [`Value::I64`], [`Value::U128`], [`Value::I128`], [`Value::Decimal`],
+///     [`Value::F64`].
+///     - String: [`Value::String`].
+///     - Binary: [`Value::B32`], [`Value::B64`], [`Value::Bytes`].
+/// - Array: [`Value::Array`]
+/// - Map: [`Value::Map`]
+///
+/// # JSON representation
+///
+/// When using [`Value`] in database and HTTP APIs, it is converted to JSON, as an object:
+///
+/// ```json
+/// {
+///     "<variant identifier>": <data>
+/// }
+/// ```
+///
+/// Identifiers of each enum variant:
+/// - **N**: [`Value::Null`]
+/// - **S**: [`Value::String`]
+/// - **B**: [`Value::Bool`]
+/// - **U**: [`Value::U64`]
+/// - **I**: [`Value::I64`]
+/// - **F**: [`Value::F64`]
+/// - **D**: [`Value::Decimal`]
+/// - **U1**: [`Value::U128`]
+/// - **I1**: [`Value::I128`]
+/// - **B3**: [`Value::B32`]
+/// - **B6**: [`Value::B64`]
+/// - **BY**: [`Value::Bytes`]
+/// - **A**: [`Value::Array`]
+/// - **M**: [`Value::Map`]
+///
+/// See variant's documentation to see how data are encoded.
 #[derive(Clone, PartialEq, Default)]
 pub enum Value {
+    /// JSON representation:
+    /// ```json
+    /// { "N": 0 }
+    /// ```
     #[default]
     Null,
+    /// UTF-8 string.
+    ///
+    /// JSON representation:
+    /// ```json
+    /// { "S": "hello" }
+    /// ```
     String(String),
+    /// JSON representation:
+    /// ```json
+    /// { "B": true }
+    /// ```
     Bool(bool),
+    /// JSON representation:
+    /// ```json
+    /// { "U": "100" }
+    /// ```
+    ///
+    /// Numbers are encoded as JSON string to avoid losing precision when reading them in
+    /// Javascript/Typescript.
     U64(u64),
+    /// JSON representation:
+    /// ```json
+    /// { "I": "-100" }
+    /// ```
     I64(i64),
+    /// JSON representation:
+    /// ```json
+    /// { "F": "0.0" }
+    /// ```
+    /// Scientific notation is supported:
+    /// ```json
+    /// { "F": "1e9" }
+    /// ```
     F64(f64),
+    /// [`rust_decimal::Decimal`], suitable for financial calculations.
+    ///
+    /// JSON representation:
+    /// ```json
+    /// { "D": "3.1415926535897932384626433832" }
+    /// ```
     Decimal(Decimal),
-    I128(i128),
+    /// JSON representation:
+    /// ```json
+    /// { "U1": "340282366920938463463374607431768211455" }
+    /// ```
     U128(u128),
+    /// JSON representation:
+    /// ```json
+    /// { "I1": "-170141183460469231731687303715884105728" }
+    /// ```
+    I128(i128),
+    /// 32-bytes binary values, usually a Solana public key.
+    ///
+    /// JSON representation: encoded as a base-58 string
+    /// ```json
+    /// { "B3": "FMQUifdAHTytSxhiK4N7LmpvKRZaUmBnNnZmzFsdTPHB" }
+    /// ```
     B32([u8; 32]),
+    /// 64-bytes binary values, usually a Solana signature or keypair.
+    ///
+    /// JSON representation: encoded as a base-58 string
+    /// ```json
+    /// { "B6": "4onDpbfeT7nNN9MNMvTEZRn6pbtrQc1pdTBJB4a7HbfhAE6c5bkbuuFfYtkqs99hAqp5o6j7W1VyuKDxCn79k3Tk" }
+    /// ```
     B64([u8; 64]),
+    /// Binary values with length other than 32 and 64.
+    ///
+    /// JSON representation: encoded as a base-64 string
+    /// ```json
+    /// { "BY": "UmFpbnk=" }
+    /// ```
     Bytes(bytes::Bytes),
+    /// An array of [`Value`]. Array can contains other arrays, maps, ect. Array elements do not
+    /// have to be of the same type.
+    ///
+    /// JSON representation:
+    ///
+    /// Example array containing a number and a string:
+    /// ```json
+    /// {
+    ///     "A": [
+    ///         { "U": 0 },
+    ///         { "S": "hello" }
+    ///     ]
+    /// }
+    /// ```
     Array(Vec<Self>),
+    /// A key-value map, implemented with [`indexmap::IndexMap`], will preserve insertion order.
+    /// Keys are strings and values can be any [`Value`].
+    ///
+    /// JSON representation:
+    /// ```json
+    /// {
+    ///     "M": {
+    ///         "first name": { "S": "John" },
+    ///         "age": { "U": "20" }
+    ///     }
+    /// }
+    /// ```
     Map(Map),
 }
 
