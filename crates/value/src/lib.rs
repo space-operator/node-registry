@@ -67,6 +67,18 @@ pub type Map = self::HashMap<Key, Value>;
 
 /// [`Value`] represents all values that nodes can use as input and output.
 ///
+/// # Data Types
+///
+/// - Scalar types:
+///     - Null: [`Value::Null`].
+///     - Boolean: [`Value::Bool`].
+///     - Number: [`Value::U64`], [`Value::I64`], [`Value::U128`], [`Value::I128`], [`Value::Decimal`],
+///     [`Value::F64`].
+///     - String: [`Value::String`].
+///     - Binary: [`Value::B32`], [`Value::B64`], [`Value::Bytes`].
+/// - Array: [`Value::Array`]
+/// - Map: [`Value::Map`]
+///
 /// # Node Input
 ///
 /// Node receives a [`value::Map`][Map] as its input. It is possible to use the map directly, but
@@ -107,18 +119,6 @@ pub type Map = self::HashMap<Key, Value>;
 /// })
 /// .unwrap();
 /// ```
-///
-/// # Data Types
-///
-/// - Scalar types:
-///     - Null: [`Value::Null`].
-///     - Boolean: [`Value::Bool`].
-///     - Number: [`Value::U64`], [`Value::I64`], [`Value::U128`], [`Value::I128`], [`Value::Decimal`],
-///     [`Value::F64`].
-///     - String: [`Value::String`].
-///     - Binary: [`Value::B32`], [`Value::B64`], [`Value::Bytes`].
-/// - Array: [`Value::Array`]
-/// - Map: [`Value::Map`]
 ///
 /// # JSON representation
 ///
