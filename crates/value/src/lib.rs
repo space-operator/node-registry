@@ -67,7 +67,48 @@ pub type Map = self::HashMap<Key, Value>;
 
 /// [`Value`] represents all values that nodes can use as input and output.
 ///
-/// # Data types
+/// # Node Input
+///
+/// Node receives a [`value::Map`][Map] as its input. It is possible to use the map directly, but
+/// it is often preferred to convert it to structs or enums of your choice.
+///
+/// [`Value`] implements [`Deserializer`][serde::Deserializer], therefore it can be converted to
+/// any types supported by Serde. We provide 2 helpers:
+///
+/// - [`value::from_value`][from_value] - [`Value`] to any `T: Deserialize`.
+/// - [`value::from_map`][from_map] - [`Map`] to any `T: Deserialize`.
+///
+/// # Node Output
+///
+/// Node returns a [`value::Map`][Map] as its output.
+///
+/// Building the output directly with [`value::map!`][macro@map] and
+/// [`value::array!`][macro@array] macros:
+/// ```
+/// let value = value::map! {
+///     "customer_name" => "John",
+///     "items" => value::array![1, 2, 3],
+/// };
+/// ```
+///
+/// [`Value`] also implements [`Serializer`][serde::Serializer], you can use
+/// [`value::to_map`][to_map] to convert any type `T: Serialize` into [`value::Map`][Map].
+///
+/// ```
+/// #[derive(serde::Serialize)]
+/// struct Order {
+///     customer_name: String,
+///     items: Vec<i32>,
+/// }
+///
+/// value::to_map(&Order {
+///     customer_name: "John".to_owned(),
+///     items: [1, 2, 3].into(),
+/// })
+/// .unwrap();
+/// ```
+///
+/// # Data Types
 ///
 /// - Scalar types:
 ///     - Null: [`Value::Null`].
