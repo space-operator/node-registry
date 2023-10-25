@@ -11,10 +11,10 @@ json = ["dep:serde_json"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-rust_decimal = { version = "1.26", features = ["serde-with-str"] }
+rust_decimal = { version = "1", default-features = false }
 thiserror = "1"
 bs58 = "0.4"
-indexmap = { version = "1.9.1", features = ["serde-1"] }
+indexmap = { version = "2", features = ["serde"] }
 bytes = { version = "1", features = ["serde"] }
 itoa = "1"
 ryu = "1"

@@ -214,14 +214,8 @@ inventory::submit!(CommandDescription::new(SCRIPT_CMD, |_| {
 
 #[cfg(test)]
 mod test {
-
-    use flow_lib::{command::CommandTrait, Context, ValueSet};
-    use indexmap::indexmap;
-    use value::Value;
-
-    const OUTPUT: &str = "output";
-
-    use super::{ScriptCommand, SCRIPT, VALUES};
+    use super::*;
+    use value::{array, map, Value};
 
     #[tokio::test]
     async fn test_simple_command() {
@@ -229,9 +223,9 @@ mod test {
         let ctx = Context::default();
 
         // Compare integers
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String("${0} + ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2)]),
+        let inputs = map! {
+            SCRIPT => "${0} + ${1}",
+            VALUES => array![1, 2],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
@@ -253,9 +247,9 @@ mod test {
         "#;
 
         // Compare integers
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String(expression.to_string()),
-            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2), Value::U64(3), Value::U64(5)]),
+        let inputs = map! {
+            SCRIPT => expression,
+            VALUES => array![1, 2, 3, 5],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
@@ -274,18 +268,18 @@ mod test {
         let ctx = Context::default();
 
         // Compare integers
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String("${0} * ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2)]),
+        let inputs = map! {
+            SCRIPT => "${0} * ${1}",
+            VALUES => array![1, 2],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
         assert!(outputs.is_ok());
 
         // Compare mixed types
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String("${0} - ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![Value::String("1".to_string()), Value::U64(2)]),
+        let inputs = map! {
+            SCRIPT => "${0} - ${1}",
+            VALUES => array!["1", 2],
         };
         dbg!(&inputs);
 
@@ -293,9 +287,9 @@ mod test {
         assert!(outputs.is_err());
 
         // Compare strings
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String(r#"if ${0} == ${1} {"They match"}else{"They don't match"}"#.to_string()),
-            VALUES.into() => Value::Array(vec![Value::String("1".to_string()), Value::String("2".to_string())]),
+        let inputs = map! {
+            SCRIPT => r#"if ${0} == ${1} {"They match"}else{"They don't match"}"#,
+            VALUES => array!["1", "2"],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
@@ -308,45 +302,45 @@ mod test {
         let ctx = Context::default();
 
         // More values than expression slots
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String("${0} > ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2), Value::U64(3)]),
+        let inputs = map! {
+            SCRIPT => "${0} > ${1}",
+            VALUES => array![1, 2, 3],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
         dbg!(&outputs);
 
         // More expression slots than values
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String(r#"${0} > ${1} && ${1} > ${2}"#.to_string()),
-            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2)]),
+        let inputs = map! {
+            SCRIPT => r#"${0} > ${1} && ${1} > ${2}"#,
+            VALUES => array![1, 2],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
         assert!(outputs.is_err());
 
         // No slots
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String("1 > 2".to_string()),
-            VALUES.into() => Value::Array(vec![Value::U64(1), Value::U64(2)]),
+        let inputs = map! {
+            SCRIPT => "1 > 2",
+            VALUES => array![1, 2],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
         assert!(outputs.is_err());
 
         // No values
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String("${0} == ${1}".to_string()),
-            VALUES.into() => Value::Array(vec![]),
+        let inputs = map! {
+            SCRIPT => "${0} == ${1}",
+            VALUES => array![],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
         assert!(outputs.is_err());
 
         // No inputs
-        let inputs: ValueSet = indexmap! {
-            SCRIPT.into() => Value::String("1 > 2".to_string()),
-            VALUES.into() => Value::Array(vec![]),
+        let inputs = map! {
+            SCRIPT => "1 > 2",
+            VALUES => array![],
         };
 
         let outputs = cmd.run(ctx.clone(), inputs).await;
