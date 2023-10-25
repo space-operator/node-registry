@@ -6289,6 +6289,7 @@ dependencies = [
  "ryu",
  "serde",
  "serde_json",
+ "solana-program",
  "solana-sdk",
  "thiserror",
 ]

@@ -1,8 +1,10 @@
 //! This crate contains [`Value`], an enum representing all values that can be used as
 //! node's input and output, and utilities for working with [`Value`].
 
-use rust_decimal::{prelude::ToPrimitive, Decimal};
+use rust_decimal::prelude::ToPrimitive;
 use thiserror::Error as ThisError;
+
+pub use rust_decimal::Decimal;
 
 pub(crate) mod value_type;
 
@@ -23,6 +25,25 @@ pub mod pubkey;
 #[cfg(feature = "solana")]
 pub mod signature;
 
+/// Interpret a [`Value`] as an instance of type `T`
+///
+/// # Example
+///
+/// ```
+/// use solana_sdk::pubkey::Pubkey;
+/// use solana_sdk::pubkey;
+/// use value::Value;
+///
+/// #[derive(serde::Deserialize)]
+/// pub struct User {
+///     pubkey: Pubkey,
+/// }
+///
+/// let value = Value::Map(value::map! {
+///     "pubkey" => pubkey!("My11111111111111111111111111111111111111111"),
+/// });
+/// value::from_value::<User>(value).unwrap();
+/// ```
 pub fn from_value<T>(value: Value) -> Result<T, Error>
 where
     T: for<'de> serde::Deserialize<'de>,
@@ -30,6 +51,25 @@ where
     T::deserialize(value)
 }
 
+/// Interpret a [`Map`] as an instance of type `T`
+///
+/// # Example
+///
+/// ```
+/// use solana_sdk::pubkey::Pubkey;
+/// use solana_sdk::pubkey;
+/// use value::Value;
+///
+/// #[derive(serde::Deserialize)]
+/// pub struct User {
+///     pubkey: Pubkey,
+/// }
+///
+/// let map = value::map! {
+///     "pubkey" => pubkey!("My11111111111111111111111111111111111111111"),
+/// };
+/// value::from_map::<User>(map).unwrap();
+/// ```
 pub fn from_map<T>(map: Map) -> Result<T, Error>
 where
     T: for<'de> serde::Deserialize<'de>,
@@ -37,6 +77,17 @@ where
     T::deserialize(Value::Map(map))
 }
 
+/// Convert a `T` into [`Value`].
+///
+/// # Example
+///
+/// ```
+/// use solana_sdk::signature::Signature;
+/// use value::Value;
+///
+/// let val = value::to_value(&Signature::new_unique()).unwrap();
+/// assert!(matches!(val, Value::B64(_)));
+/// ```
 pub fn to_value<T>(t: &T) -> Result<Value, Error>
 where
     T: serde::Serialize,
@@ -44,6 +95,16 @@ where
     t.serialize(ser::Serializer)
 }
 
+/// Convert a `T` into [`Map`].
+///
+/// # Example
+///
+/// ```
+/// use value::Value;
+///
+/// let map = value::to_map(&serde_json::json!({"A": "B"})).unwrap();
+/// assert_eq!(map, value::map! { "A" => "B" });
+/// ```
 pub fn to_map<T>(t: &T) -> Result<Map, Error>
 where
     T: serde::Serialize,
@@ -57,10 +118,10 @@ where
     })
 }
 
-// allow for switching HashMap implementation
+/// Allow for switching HashMap implementation
 pub type HashMap<K, V> = indexmap::IndexMap<K, V>;
 
-// could use smartstring?
+/// Key type of [`Map`]
 pub type Key = String;
 
 pub type Map = self::HashMap<Key, Value>;
