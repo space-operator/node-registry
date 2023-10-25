@@ -10,11 +10,12 @@ pub(crate) mod value_type;
 
 pub(crate) const TOKEN: &str = "$V";
 
+mod de;
+mod ser;
+
 pub use value_type::keys;
 pub mod crud;
-pub mod de;
 pub mod macros;
-pub mod ser;
 
 // custom serialize and deserialize modules
 pub mod decimal;
