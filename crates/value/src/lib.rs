@@ -106,6 +106,21 @@ pub type Map = self::HashMap<Key, Value>;
 /// - **M**: [`Value::Map`]
 ///
 /// See variant's documentation to see how data are encoded.
+///
+/// Use [`serde_json`] to encode and decode [`Value`] as JSON:
+/// ```
+/// use value::Value;
+///
+/// let value = Value::U64(10);
+///
+/// // encode Value to JSON
+/// let json = serde_json::to_string(&value).unwrap();
+/// assert_eq!(json, r#"{"U":"10"}"#);
+///
+/// // decode JSON to Value
+/// let value1 = serde_json::from_str::<Value>(&json).unwrap();
+/// assert_eq!(value1, value);
+/// ```
 #[derive(Clone, PartialEq, Default)]
 pub enum Value {
     /// JSON representation:
