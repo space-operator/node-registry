@@ -72,7 +72,7 @@ pub type Map = self::HashMap<Key, Value>;
 /// - Scalar types:
 ///     - Null: [`Value::Null`].
 ///     - Boolean: [`Value::Bool`].
-///     - Number: [`Value::U64`], [`Value::I64`], [`Value::U128`], [`Value::I128`], [`Value::Decimal`],
+///     - Numbers: [`Value::U64`], [`Value::I64`], [`Value::U128`], [`Value::I128`], [`Value::Decimal`],
 ///     [`Value::F64`].
 ///     - String: [`Value::String`].
 ///     - Binary: [`Value::B32`], [`Value::B64`], [`Value::Bytes`].
