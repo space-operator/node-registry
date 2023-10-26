@@ -1,5 +1,13 @@
 //! This crate contains [`Value`], an enum representing all values that can be used as
 //! node's input and output, and utilities for working with [`Value`].
+//!
+//! Common operations:
+//! - Converting [`Value`] to Rust types.
+//! - Converting Rust types to [`Value`].
+//! - Receiving [`value::Map`][Map] as node's input.
+//! - Returning [`value::Map`][Map] as node's output.
+//! - Converting [`Value`] to/from JSON to use in HTTP APIs and database.
+//! - Getting and updating nested values with JSON Pointer syntax.
 
 use rust_decimal::prelude::ToPrimitive;
 use thiserror::Error as ThisError;
