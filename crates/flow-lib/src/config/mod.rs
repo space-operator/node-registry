@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use std::{collections::HashMap, num::NonZeroU64, str::FromStr};
 use thiserror::Error as ThisError;
-use url::Url;
 use uuid::Uuid;
 
 pub mod client;
@@ -202,14 +201,12 @@ impl FromStr for SolanaNet {
 }
 
 impl SolanaNet {
-    pub fn url(&self) -> Url {
-        let solana_url = match self {
+    pub fn url(&self) -> &'static str {
+        match self {
             SolanaNet::Devnet => "https://api.devnet.solana.com",
             SolanaNet::Testnet => "https://api.testnet.solana.com",
             SolanaNet::Mainnet => "https://api.mainnet-beta.solana.com",
-        };
-
-        Url::parse(solana_url).unwrap()
+        }
     }
 
     pub fn from_url(url: &str) -> Result<Self, UnknownNetwork> {

@@ -1,5 +1,4 @@
-use futures_util::future::BoxFuture;
-use std::{error::Error as StdError, future::Future, task::Poll};
+use std::{error::Error as StdError, future::Future, pin::Pin, task::Poll};
 use tower::{buffer::Buffer, util::BoxService, Service, ServiceExt};
 
 pub struct TowerClient<T, U, E> {
@@ -100,7 +99,7 @@ where
 pin_project_lite::pin_project! {
     pub struct ResponseFuture<U, E> {
         #[pin]
-        fut: tower::buffer::future::ResponseFuture<BoxFuture<'static, Result<U, E>>>,
+        fut: tower::buffer::future::ResponseFuture<Pin<Box<dyn Future<Output = Result<U, E>> + Send + 'static>>>,
         worker_error: fn(tower::BoxError) -> E,
     }
 }

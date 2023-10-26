@@ -4,9 +4,8 @@ use crate::{
     config::node::{Definition, Permissions},
     Context, Name,
 };
-use futures::future::BoxFuture;
 use serde::{de::DeserializeOwned, Serialize};
-use std::future::Future;
+use std::{future::Future, pin::Pin};
 use thiserror::Error as ThisError;
 
 pub type BuildResult = Result<Box<dyn CommandTrait>, CommandError>;
@@ -108,7 +107,8 @@ impl CmdBuilder {
                 &'a self,
                 ctx: Context,
                 params: crate::ValueSet,
-            ) -> BoxFuture<'b, Result<crate::ValueSet, CommandError>> {
+            ) -> Pin<Box<dyn Future<Output = Result<crate::ValueSet, CommandError>> + Send + 'b>>
+            {
                 match value::from_map(params) {
                     Ok(input) => {
                         let fut = (self.run)(ctx, input);

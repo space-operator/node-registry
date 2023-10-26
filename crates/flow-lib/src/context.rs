@@ -9,7 +9,9 @@ use solana_sdk::{pubkey::Pubkey, signature::Signature};
 use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
 use tower::{Service, ServiceExt};
 
-pub use http::Extensions;
+mod extensions;
+
+pub use extensions::Extensions;
 
 pub mod get_jwt {
     use crate::{utils::TowerClient, BoxError, UserId};
