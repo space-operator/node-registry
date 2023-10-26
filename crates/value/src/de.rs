@@ -1,5 +1,3 @@
-//! Turn a `Value` into an abitrary Rust type `T: Deserialize`.
-
 use crate::{value_type::Variant, Error, Map, Value};
 use rust_decimal::{prelude::ToPrimitive, Decimal};
 use serde::de::value::SeqDeserializer;
