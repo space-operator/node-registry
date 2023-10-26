@@ -7,12 +7,12 @@
     "version": "0.1",
     "display_name": "Create Master Edition",
     "description": "",
-    "tags": [],
+    "tags": ["NFT", "Solana"],
     "related_to": [
       {
-        "id": "",
-        "type": "",
-        "relationship": ""
+        "id": "create_metadata_account",
+        "type": "node",
+        "relationship": "group"
       }
     ],
     "resources": {

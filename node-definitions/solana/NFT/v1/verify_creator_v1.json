@@ -3,16 +3,16 @@
   "data": {
     "node_definition_version": "0.1",
     "unique_id": "",
-    "node_id": "verify_collection_v1",
+    "node_id": "verify_creator_v1",
     "version": "0.1",
-    "display_name": "Verify Collection V1",
+    "display_name": "Verify Creator V1",
     "description": "",
     "tags": ["NFT", "Solana", "V1"],
     "related_to": [
       {
-        "id": "",
-        "type": "",
-        "relationship": ""
+        "id": "create_v1",
+        "type": "node",
+        "relationship": "group"
       }
     ],
     "resources": {
@@ -57,14 +57,6 @@
   ],
   "targets": [
     {
-      "name": "mint_account",
-      "type_bounds": ["pubkey"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
       "name": "fee_payer",
       "type_bounds": ["keypair"],
       "required": true,
@@ -73,15 +65,23 @@
       "passthrough": true
     },
     {
-      "name": "collection_authority",
+      "name": "authority",
       "type_bounds": ["keypair"],
       "required": true,
+      "defaultValue": "",
+      "tooltip": "Creator to verify, collection update authority or delegate",
+      "passthrough": false
+    },
+    {
+      "name": "delegate_record",
+      "type_bounds": ["pubkey"],
+      "required": false,
       "defaultValue": "",
       "tooltip": "",
       "passthrough": false
     },
     {
-      "name": "collection_mint_account",
+      "name": "metadata",
       "type_bounds": ["pubkey"],
       "required": true,
       "defaultValue": "",
@@ -89,7 +89,7 @@
       "passthrough": false
     },
     {
-      "name": "delegate_record",
+      "name": "collection_mint_account",
       "type_bounds": ["pubkey"],
       "required": false,
       "defaultValue": "",

@@ -18,7 +18,7 @@ use mpl_token_metadata::{
 };
 use solana_program::{system_program, sysvar};
 
-use super::delegate_v1::AuthorizationData;
+use super::AuthorizationData;
 
 // Command Name
 const NAME: &str = "update_v1";
