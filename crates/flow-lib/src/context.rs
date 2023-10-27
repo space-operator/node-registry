@@ -319,6 +319,7 @@ impl Context {
         }
     }
 
+    /// Call [`get_jwt`] service, the result will have `Bearer ` prefix.
     pub async fn get_jwt_header(&mut self) -> Result<String, get_jwt::Error> {
         Ok("Bearer ".to_owned()
             + &self
@@ -341,6 +342,7 @@ impl Context {
         })
     }
 
+    /// Call [`execute`] service.
     pub async fn execute(
         &mut self,
         instructions: Instructions,
@@ -360,6 +362,7 @@ impl Context {
         }
     }
 
+    /// Call [`signer`] service.
     pub async fn request_signature(
         &self,
         pubkey: Pubkey,
@@ -382,11 +385,12 @@ impl Context {
         Ok(signature)
     }
 
+    /// Get an extension by type.
     pub fn get<T: Any + Send + Sync + 'static>(&self) -> Option<&T> {
         self.extensions.get::<T>()
     }
 
-    // Just a function to make sure Context is Send + Sync,
+    // A function to make sure Context is Send + Sync,
     // because !Sync will make it really hard to write async code.
     #[allow(dead_code)]
     const fn assert_send_sync() {
