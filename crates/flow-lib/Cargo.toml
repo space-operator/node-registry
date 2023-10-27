@@ -4,7 +4,7 @@ version = "0.0.1"
 edition = "2021"
 
 [dependencies]
-value = { path = "../value" , version = "0.0.1" }
+value = { path = "../value", version = "0.0.1" }
 
 anyhow = "1.0"
 inventory = "0.3"
