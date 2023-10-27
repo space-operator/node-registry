@@ -3,7 +3,7 @@
 //! Table of contents:
 //! - [`command`]: implementing a new command.
 //! - [`config`]: types definition
-//! - [`context`]: [`Context`] provides services and information for nodes to use.
+//! - [`context`]: providing services and information for nodes to use.
 //! - [`solana`]: utilities for working with Solana.
 //! - [`utils`]: other utilities.
 
