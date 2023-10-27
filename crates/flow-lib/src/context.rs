@@ -1,6 +1,7 @@
 use crate::{
     config::{client::FlowRunOrigin, Endpoints},
     solana::Instructions,
+    utils::Extensions,
     ContextConfig, FlowRunId, NodeId, UserId,
 };
 use bytes::Bytes;
@@ -8,10 +9,6 @@ use solana_client::nonblocking::rpc_client::RpcClient as SolanaClient;
 use solana_sdk::{pubkey::Pubkey, signature::Signature};
 use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
 use tower::{Service, ServiceExt};
-
-mod extensions;
-
-pub use extensions::Extensions;
 
 pub mod get_jwt {
     use crate::{utils::TowerClient, BoxError, UserId};
