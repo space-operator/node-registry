@@ -45,7 +45,7 @@ mod tests {
 
     #[test]
     fn test_parse_all() {
-        let root = std::env::var("CARGO_MANIFEST_DIR").unwrap() + "/../../node-definitions";
+        let root = concat!(env!("CARGO_MANIFEST_DIR"), "/../../node-definitions");
         for e in WalkDir::new(&root)
             .into_iter()
             .filter_map(|e| e.ok())
