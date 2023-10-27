@@ -1,3 +1,5 @@
+//! Providing services and information for nodes to use.
+
 use crate::{
     config::{client::FlowRunOrigin, Endpoints},
     solana::Instructions,
