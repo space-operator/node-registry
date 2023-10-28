@@ -82,7 +82,7 @@ impl Extensions {
     /// ```
     pub fn insert<T: Send + Sync + 'static>(&mut self, val: T) -> Option<T> {
         self.map
-            .get_or_insert_with(|| Box::new(HashMap::default()))
+            .get_or_insert_with(Box::<HashMap<TypeId, Box<dyn Any + Send + Sync>, BuildHasherDefault<IdHasher>>>::default)
             .insert(TypeId::of::<T>(), Box::new(val))
             .and_then(|boxed| {
                 (boxed as Box<dyn Any + 'static>)

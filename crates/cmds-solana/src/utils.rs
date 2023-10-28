@@ -80,7 +80,8 @@ pub async fn try_sign_wallet(
 
     let futs = keypairs
         .iter()
-        .filter_map(|k| k.is_user_wallet().then(|| k.pubkey()))
+        .filter(|&k| k.is_user_wallet())
+        .map(|k| k.pubkey())
         .collect::<BTreeSet<_>>()
         .into_iter()
         .map(|pk| {

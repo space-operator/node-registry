@@ -145,9 +145,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
         token_standard,
         collection,
         uses,
-        collection_details: input
-            .collection_details
-            .map_or(None, |details| Some(details.into())),
+        collection_details: input.collection_details.map(|details| details.into()),
         rule_set: input.rule_set,
         decimals: input.decimals,
         print_supply,
