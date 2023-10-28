@@ -1,10 +1,8 @@
-//! Turn a `Value` into an abitrary Rust type `T: Deserialize`.
-
 use crate::{value_type::Variant, Error, Map, Value};
 use rust_decimal::{prelude::ToPrimitive, Decimal};
 use serde::de::value::SeqDeserializer;
 
-pub mod const_bytes;
+pub(crate) mod const_bytes;
 mod de_enum;
 mod de_struct;
 mod text_repr;

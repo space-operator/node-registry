@@ -1,6 +1,17 @@
+//! Providing services and information for nodes to use.
+//!
+//! Services are abstracted with [`tower::Service`] trait, using our
+//! [`TowerClient`][crate::utils::TowerClient] utility to make it easier to use.
+//!
+//! Each service is defined is a separated module:
+//! - [`get_jwt`]
+//! - [`execute`]
+//! - [`signer`]
+
 use crate::{
     config::{client::FlowRunOrigin, Endpoints},
     solana::Instructions,
+    utils::Extensions,
     ContextConfig, FlowRunId, NodeId, UserId,
 };
 use bytes::Bytes;
@@ -9,8 +20,8 @@ use solana_sdk::{pubkey::Pubkey, signature::Signature};
 use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
 use tower::{Service, ServiceExt};
 
-pub use http::Extensions;
-
+/// Get user's JWT, require
+/// [`user_token`][crate::config::node::Permissions::user_tokens] permission.
 pub mod get_jwt {
     use crate::{utils::TowerClient, BoxError, UserId};
     use std::sync::Arc;
@@ -72,6 +83,7 @@ pub mod get_jwt {
     }
 }
 
+/// Request Solana signature from external wallets.
 pub mod signer {
     use crate::{utils::TowerClient, BoxError, UserId};
     use solana_sdk::{pubkey::Pubkey, signature::Signature};
@@ -118,6 +130,7 @@ pub mod signer {
     }
 }
 
+/// Output values and Solana instructions to be executed.
 pub mod execute {
     use crate::{solana::Instructions, utils::TowerClient, BoxError};
     use futures::channel::oneshot::Canceled;
@@ -306,6 +319,7 @@ impl Context {
         }
     }
 
+    /// Call [`get_jwt`] service, the result will have `Bearer ` prefix.
     pub async fn get_jwt_header(&mut self) -> Result<String, get_jwt::Error> {
         Ok("Bearer ".to_owned()
             + &self
@@ -328,6 +342,7 @@ impl Context {
         })
     }
 
+    /// Call [`execute`] service.
     pub async fn execute(
         &mut self,
         instructions: Instructions,
@@ -347,6 +362,7 @@ impl Context {
         }
     }
 
+    /// Call [`signer`] service.
     pub async fn request_signature(
         &self,
         pubkey: Pubkey,
@@ -369,11 +385,12 @@ impl Context {
         Ok(signature)
     }
 
+    /// Get an extension by type.
     pub fn get<T: Any + Send + Sync + 'static>(&self) -> Option<&T> {
         self.extensions.get::<T>()
     }
 
-    // Just a function to make sure Context is Send + Sync,
+    // A function to make sure Context is Send + Sync,
     // because !Sync will make it really hard to write async code.
     #[allow(dead_code)]
     const fn assert_send_sync() {

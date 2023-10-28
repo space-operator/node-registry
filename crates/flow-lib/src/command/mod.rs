@@ -1,3 +1,11 @@
+//! [`CommandTrait`] and command [`builder`].
+//!
+//! To make a new [`native`][crate::config::CommandType::Native] command:
+//! 1. Implement [`CommandTrait`], 2 ways;
+//!     - Manually implement it to your types.
+//!     - Use [`builder`] helper.
+//! 2. Use [`inventory::submit`] with a [`CommandDescription`] to register the command at compile-time.
+
 use crate::{
     config::{
         client::NodeData, node::Permissions, CmdInputDescription, CmdOutputDescription, Name,
@@ -11,18 +19,25 @@ use value::Value;
 
 pub mod builder;
 
+/// Error type when of commmands.
 pub type CommandError = anyhow::Error;
 
+/// Generic trait for implementing commands.
 #[async_trait::async_trait]
 pub trait CommandTrait: Send + Sync + 'static {
+    /// Unique name to identify the command.
     fn name(&self) -> Name;
 
+    /// List of inputs that the command can receive.
     fn inputs(&self) -> Vec<CmdInputDescription>;
 
+    /// List of outputs that the command will return.
     fn outputs(&self) -> Vec<CmdOutputDescription>;
 
+    /// Run the command.
     async fn run(&self, ctx: Context, params: ValueSet) -> Result<ValueSet, CommandError>;
 
+    /// Specify how [`form_data`][crate::config::NodeConfig::form_data] are read.
     fn read_form_data(&self, data: serde_json::Value) -> ValueSet {
         let mut result = ValueSet::new();
         for i in self.inputs() {
@@ -34,6 +49,7 @@ pub trait CommandTrait: Send + Sync + 'static {
         result
     }
 
+    /// Specify how to convert inputs into passthrough outputs.
     fn passthrough_outputs(&self, inputs: &ValueSet) -> ValueSet {
         let mut res = ValueSet::new();
         for i in self.inputs() {
@@ -69,15 +85,22 @@ pub trait CommandTrait: Send + Sync + 'static {
         res
     }
 
+    /// Specify if and how would this command output Solana instructions.
     fn instruction_info(&self) -> Option<InstructionInfo> {
         None
     }
 
+    /// Specify requested permissions of this command.
     fn permissions(&self) -> Permissions {
         Permissions::default()
     }
 }
 
+/// Specify the order with which a command will return its output:
+/// - [`before`][InstructionInfo::before]: list of output names returned before instructions are
+/// sent.
+/// - [`signature`][InstructionInfo::signature]: name of the signature output. 
+/// - [`after`][InstructionInfo::after]: list of output names returned after instructions are sent.
 #[derive(Debug, Clone)]
 pub struct InstructionInfo {
     pub before: Vec<Name>,
@@ -86,8 +109,9 @@ pub struct InstructionInfo {
 }
 
 impl InstructionInfo {
-    /// before: All passthroughs and outputs, except for `signature`.
-    /// after: empty.
+    /// Simple `InstructionInfo` that can describe most commands:
+    /// - [`before`][InstructionInfo::before]: All passthroughs and outputs, except for `signature`.
+    /// - [`after`][InstructionInfo::after]: empty.
     pub fn simple<C: CommandTrait>(cmd: &C, signature: &str) -> Self {
         let before = cmd
             .inputs()
@@ -109,9 +133,12 @@ impl InstructionInfo {
     }
 }
 
+/// Use [`inventory::submit`] to register commands at compile-time.
 #[derive(Clone)]
 pub struct CommandDescription {
+    /// Name of the command, must be equal to the value returned by [`CommandTrait::name`].
     pub name: Cow<'static, str>,
+    /// Function to initialize the command from a [`NodeData`].
     pub fn_new: fn(&NodeData) -> Result<Box<dyn CommandTrait>, CommandError>,
 }
 

@@ -1,15 +1,29 @@
-use rust_decimal::{prelude::ToPrimitive, Decimal};
+//! This crate contains [`Value`], an enum representing all values that can be used as
+//! node's input and output, and utilities for working with [`Value`].
+//!
+//! Common operations:
+//! - Converting [`Value`] to Rust types.
+//! - Converting Rust types to [`Value`].
+//! - Receiving [`value::Map`][Map] as node's input.
+//! - Returning [`value::Map`][Map] as node's output.
+//! - Converting [`Value`] to/from JSON to use in HTTP APIs and database.
+//! - Getting and updating nested values with JSON Pointer syntax.
+
+use rust_decimal::prelude::ToPrimitive;
 use thiserror::Error as ThisError;
+
+pub use rust_decimal::Decimal;
 
 pub(crate) mod value_type;
 
 pub(crate) const TOKEN: &str = "$V";
 
+mod de;
+mod ser;
+
 pub use value_type::keys;
 pub mod crud;
-pub mod de;
 pub mod macros;
-pub mod ser;
 
 // custom serialize and deserialize modules
 pub mod decimal;
@@ -20,6 +34,25 @@ pub mod pubkey;
 #[cfg(feature = "solana")]
 pub mod signature;
 
+/// Interpret a [`Value`] as an instance of type `T`
+///
+/// # Example
+///
+/// ```
+/// use solana_sdk::pubkey::Pubkey;
+/// use solana_sdk::pubkey;
+/// use value::Value;
+///
+/// #[derive(serde::Deserialize)]
+/// pub struct User {
+///     pubkey: Pubkey,
+/// }
+///
+/// let value = Value::Map(value::map! {
+///     "pubkey" => pubkey!("My11111111111111111111111111111111111111111"),
+/// });
+/// value::from_value::<User>(value).unwrap();
+/// ```
 pub fn from_value<T>(value: Value) -> Result<T, Error>
 where
     T: for<'de> serde::Deserialize<'de>,
@@ -27,6 +60,25 @@ where
     T::deserialize(value)
 }
 
+/// Interpret a [`Map`] as an instance of type `T`
+///
+/// # Example
+///
+/// ```
+/// use solana_sdk::pubkey::Pubkey;
+/// use solana_sdk::pubkey;
+/// use value::Value;
+///
+/// #[derive(serde::Deserialize)]
+/// pub struct User {
+///     pubkey: Pubkey,
+/// }
+///
+/// let map = value::map! {
+///     "pubkey" => pubkey!("My11111111111111111111111111111111111111111"),
+/// };
+/// value::from_map::<User>(map).unwrap();
+/// ```
 pub fn from_map<T>(map: Map) -> Result<T, Error>
 where
     T: for<'de> serde::Deserialize<'de>,
@@ -34,6 +86,17 @@ where
     T::deserialize(Value::Map(map))
 }
 
+/// Convert a `T` into [`Value`].
+///
+/// # Example
+///
+/// ```
+/// use solana_sdk::signature::Signature;
+/// use value::Value;
+///
+/// let val = value::to_value(&Signature::new_unique()).unwrap();
+/// assert!(matches!(val, Value::B64(_)));
+/// ```
 pub fn to_value<T>(t: &T) -> Result<Value, Error>
 where
     T: serde::Serialize,
@@ -41,6 +104,16 @@ where
     t.serialize(ser::Serializer)
 }
 
+/// Convert a `T` into [`Map`].
+///
+/// # Example
+///
+/// ```
+/// use value::Value;
+///
+/// let map = value::to_map(&serde_json::json!({"A": "B"})).unwrap();
+/// assert_eq!(map, value::map! { "A" => "B" });
+/// ```
 pub fn to_map<T>(t: &T) -> Result<Map, Error>
 where
     T: serde::Serialize,
@@ -54,30 +127,218 @@ where
     })
 }
 
-// allow for switching HashMap implementation
+/// Allow for switching HashMap implementation
 pub type HashMap<K, V> = indexmap::IndexMap<K, V>;
 
-// could use smartstring?
+/// Key type of [`Map`]
 pub type Key = String;
 
 pub type Map = self::HashMap<Key, Value>;
 
+/// [`Value`] represents all values that nodes can use as input and output.
+///
+/// # Data Types
+///
+/// - Scalar types:
+///     - Null: [`Value::Null`].
+///     - Boolean: [`Value::Bool`].
+///     - Numbers: [`Value::U64`], [`Value::I64`], [`Value::U128`], [`Value::I128`], [`Value::Decimal`],
+///     [`Value::F64`].
+///     - String: [`Value::String`].
+///     - Binary: [`Value::B32`], [`Value::B64`], [`Value::Bytes`].
+/// - Array: [`Value::Array`]
+/// - Map: [`Value::Map`]
+///
+/// # Node Input
+///
+/// Node receives a [`value::Map`][Map] as its input. It is possible to use the map directly, but
+/// it is often preferred to convert it to structs or enums of your choice.
+///
+/// [`Value`] implements [`Deserializer`][serde::Deserializer], therefore it can be converted to
+/// any types supported by Serde. We provide 2 helpers:
+///
+/// - [`value::from_value`][from_value] - [`Value`] to any `T: Deserialize`.
+/// - [`value::from_map`][from_map] - [`Map`] to any `T: Deserialize`.
+///
+/// # Node Output
+///
+/// Node returns a [`value::Map`][Map] as its output.
+///
+/// Building the output directly with [`value::map!`][macro@map] and
+/// [`value::array!`][macro@array] macros:
+/// ```
+/// let value = value::map! {
+///     "customer_name" => "John",
+///     "items" => value::array![1, 2, 3],
+/// };
+/// ```
+///
+/// [`Value`] also implements [`Serializer`][serde::Serializer], you can use
+/// [`value::to_map`][to_map] to convert any type `T: Serialize` into [`value::Map`][Map].
+///
+/// ```
+/// #[derive(serde::Serialize)]
+/// struct Order {
+///     customer_name: String,
+///     items: Vec<i32>,
+/// }
+///
+/// value::to_map(&Order {
+///     customer_name: "John".to_owned(),
+///     items: [1, 2, 3].into(),
+/// })
+/// .unwrap();
+/// ```
+///
+/// # JSON representation
+///
+/// When using [`Value`] in database and HTTP APIs, it is converted to a JSON object:
+///
+/// ```json
+/// {
+///     "<variant identifier>": <data>
+/// }
+/// ```
+///
+/// Identifiers of each enum variant:
+/// - **N**: [`Value::Null`]
+/// - **S**: [`Value::String`]
+/// - **B**: [`Value::Bool`]
+/// - **U**: [`Value::U64`]
+/// - **I**: [`Value::I64`]
+/// - **F**: [`Value::F64`]
+/// - **D**: [`Value::Decimal`]
+/// - **U1**: [`Value::U128`]
+/// - **I1**: [`Value::I128`]
+/// - **B3**: [`Value::B32`]
+/// - **B6**: [`Value::B64`]
+/// - **BY**: [`Value::Bytes`]
+/// - **A**: [`Value::Array`]
+/// - **M**: [`Value::Map`]
+///
+/// See variant's documentation to see how data are encoded.
+///
+/// Use [`serde_json`] to encode and decode [`Value`] as JSON:
+/// ```
+/// use value::Value;
+///
+/// let value = Value::U64(10);
+///
+/// // encode Value to JSON
+/// let json = serde_json::to_string(&value).unwrap();
+/// assert_eq!(json, r#"{"U":"10"}"#);
+///
+/// // decode JSON to Value
+/// let value1 = serde_json::from_str::<Value>(&json).unwrap();
+/// assert_eq!(value1, value);
+/// ```
 #[derive(Clone, PartialEq, Default)]
 pub enum Value {
+    /// JSON representation:
+    /// ```json
+    /// { "N": 0 }
+    /// ```
     #[default]
     Null,
+    /// UTF-8 string.
+    ///
+    /// JSON representation:
+    /// ```json
+    /// { "S": "hello" }
+    /// ```
     String(String),
+    /// JSON representation:
+    /// ```json
+    /// { "B": true }
+    /// ```
     Bool(bool),
+    /// JSON representation:
+    /// ```json
+    /// { "U": "100" }
+    /// ```
+    ///
+    /// Numbers are encoded as JSON string to avoid losing precision when reading them in
+    /// Javascript/Typescript.
     U64(u64),
+    /// JSON representation:
+    /// ```json
+    /// { "I": "-100" }
+    /// ```
     I64(i64),
+    /// JSON representation:
+    /// ```json
+    /// { "F": "0.0" }
+    /// ```
+    /// Scientific notation is supported:
+    /// ```json
+    /// { "F": "1e9" }
+    /// ```
     F64(f64),
+    /// [`rust_decimal::Decimal`], suitable for financial calculations.
+    ///
+    /// JSON representation:
+    /// ```json
+    /// { "D": "3.1415926535897932384626433832" }
+    /// ```
     Decimal(Decimal),
-    I128(i128),
+    /// JSON representation:
+    /// ```json
+    /// { "U1": "340282366920938463463374607431768211455" }
+    /// ```
     U128(u128),
+    /// JSON representation:
+    /// ```json
+    /// { "I1": "-170141183460469231731687303715884105728" }
+    /// ```
+    I128(i128),
+    /// 32-bytes binary values, usually a Solana public key.
+    ///
+    /// JSON representation: encoded as a base-58 string
+    /// ```json
+    /// { "B3": "FMQUifdAHTytSxhiK4N7LmpvKRZaUmBnNnZmzFsdTPHB" }
+    /// ```
     B32([u8; 32]),
+    /// 64-bytes binary values, usually a Solana signature or keypair.
+    ///
+    /// JSON representation: encoded as a base-58 string
+    /// ```json
+    /// { "B6": "4onDpbfeT7nNN9MNMvTEZRn6pbtrQc1pdTBJB4a7HbfhAE6c5bkbuuFfYtkqs99hAqp5o6j7W1VyuKDxCn79k3Tk" }
+    /// ```
     B64([u8; 64]),
+    /// Binary values with length other than 32 and 64.
+    ///
+    /// JSON representation: encoded as a base-64 string
+    /// ```json
+    /// { "BY": "UmFpbnk=" }
+    /// ```
     Bytes(bytes::Bytes),
+    /// An array of [`Value`]. Array can contains other arrays, maps, ect. Array elements do not
+    /// have to be of the same type.
+    ///
+    /// JSON representation:
+    ///
+    /// Example array containing a number and a string:
+    /// ```json
+    /// {
+    ///     "A": [
+    ///         { "U": 0 },
+    ///         { "S": "hello" }
+    ///     ]
+    /// }
+    /// ```
     Array(Vec<Self>),
+    /// A key-value map, implemented with [`indexmap::IndexMap`], will preserve insertion order.
+    /// Keys are strings and values can be any [`Value`].
+    ///
+    /// JSON representation:
+    /// ```json
+    /// {
+    ///     "M": {
+    ///         "first name": { "S": "John" },
+    ///         "age": { "U": "20" }
+    ///     }
+    /// }
+    /// ```
     Map(Map),
 }
 

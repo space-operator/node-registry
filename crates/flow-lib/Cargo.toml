@@ -4,24 +4,19 @@ version = "0.0.1"
 edition = "2021"
 
 [dependencies]
-value = { path = "../value" , version = "0.0.1" }
+value = { path = "../value", version = "0.0.1" }
 
 anyhow = "1.0"
 inventory = "0.3"
 async-trait = "0.1"
-bincode = "1"
-ureq = "2.5.0"
 bytes = "1.2.1"
 thiserror = "1.0.31"
-url = { version = "2.2.2", features = ["serde"] }
 uuid = { version = "1.0.0", features = ["v4", "serde"] }
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1"
 serde_with = "2.2"
-http = "0.2"
 tower = { version = "0.4", features = ["buffer", "util"] }
 tracing = "0.1"
-futures-util = "0.3"
 pin-project-lite = "0.2"
 actix = "0.13"
 tokio = "1"

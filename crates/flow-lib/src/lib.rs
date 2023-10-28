@@ -1,3 +1,12 @@
+//! Utilities to use within nodes and flows.
+//!
+//! Table of contents:
+//! - [`command`]: implementing a new command.
+//! - [`config`]: types definition
+//! - [`context`]: providing services and information for nodes to use.
+//! - [`solana`]: utilities for working with Solana.
+//! - [`utils`]: other utilities.
+
 pub mod command;
 pub mod config;
 pub mod context;

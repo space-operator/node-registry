@@ -1,8 +1,7 @@
 //! Note: only add fields that are needed in backend.
-//!
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Definition {
     pub r#type: super::CommandType,
     pub data: Data,
@@ -12,24 +11,24 @@ pub struct Definition {
     pub permissions: Permissions,
 }
 
-#[derive(Deserialize, Debug, Clone, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct Permissions {
     #[serde(default)]
     pub user_tokens: bool,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Data {
     pub node_id: String,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Source {
     pub name: String,
     pub r#type: super::ValueType,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Target {
     pub name: String,
     pub type_bounds: Vec<super::ValueType>,
@@ -45,7 +44,7 @@ mod tests {
 
     #[test]
     fn test_parse_all() {
-        let root = std::env::var("CARGO_MANIFEST_DIR").unwrap() + "/../../node-definitions";
+        let root = concat!(env!("CARGO_MANIFEST_DIR"), "/../../node-definitions");
         for e in WalkDir::new(&root)
             .into_iter()
             .filter_map(|e| e.ok())
@@ -74,5 +73,17 @@ mod tests {
                 .all(|t| t.type_bounds.iter().all(|t| *t != crate::ValueType::Other)));
             */
         }
+    }
+
+    #[test]
+    fn print_nd() {
+        let s = std::fs::read_to_string(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../node-definitions/std/math_operation.json"
+        ))
+        .unwrap();
+        let prettied =
+            serde_json::to_string_pretty(&serde_json::from_str::<Definition>(&s).unwrap()).unwrap();
+        println!("{}", prettied);
     }
 }

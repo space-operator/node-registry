@@ -2,12 +2,12 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use std::{collections::HashMap, num::NonZeroU64, str::FromStr};
 use thiserror::Error as ThisError;
-use url::Url;
 use uuid::Uuid;
 
 pub mod client;
 pub mod node;
 
+/// Use to describe input types and output types of nodes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ValueType {
     #[serde(rename = "bool")]
@@ -64,7 +64,6 @@ pub enum ValueType {
     Other,
 }
 
-// ID types
 pub type FlowId = i32;
 pub type NodeId = Uuid;
 pub type FlowRunId = Uuid;
@@ -184,6 +183,7 @@ pub enum SolanaNet {
     Mainnet,
 }
 
+/// Unknown Sonana network.
 #[derive(Debug, ThisError)]
 #[error("unknown network: {0}")]
 pub struct UnknownNetwork(pub String);
@@ -202,14 +202,12 @@ impl FromStr for SolanaNet {
 }
 
 impl SolanaNet {
-    pub fn url(&self) -> Url {
-        let solana_url = match self {
+    pub fn url(&self) -> &'static str {
+        match self {
             SolanaNet::Devnet => "https://api.devnet.solana.com",
             SolanaNet::Testnet => "https://api.testnet.solana.com",
             SolanaNet::Mainnet => "https://api.mainnet-beta.solana.com",
-        };
-
-        Url::parse(solana_url).unwrap()
+        }
     }
 
     pub fn from_url(url: &str) -> Result<Self, UnknownNetwork> {
