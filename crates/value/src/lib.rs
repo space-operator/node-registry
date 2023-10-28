@@ -15,13 +15,15 @@ use thiserror::Error as ThisError;
 pub use rust_decimal::Decimal;
 
 pub(crate) mod value_type;
+pub use value_type::keys;
 
 pub(crate) const TOKEN: &str = "$V";
 
 mod de;
+pub use de::const_bytes::ConstBytes;
+
 mod ser;
 
-pub use value_type::keys;
 pub mod crud;
 pub mod macros;
 
