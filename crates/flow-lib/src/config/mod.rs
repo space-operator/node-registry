@@ -7,6 +7,7 @@ use uuid::Uuid;
 pub mod client;
 pub mod node;
 
+/// Use to describe input types and output types of nodes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ValueType {
     #[serde(rename = "bool")]
@@ -63,7 +64,6 @@ pub enum ValueType {
     Other,
 }
 
-// ID types
 pub type FlowId = i32;
 pub type NodeId = Uuid;
 pub type FlowRunId = Uuid;
