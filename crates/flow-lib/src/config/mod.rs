@@ -183,6 +183,7 @@ pub enum SolanaNet {
     Mainnet,
 }
 
+/// Unknown Sonana network.
 #[derive(Debug, ThisError)]
 #[error("unknown network: {0}")]
 pub struct UnknownNetwork(pub String);
