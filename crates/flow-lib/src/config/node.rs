@@ -45,7 +45,7 @@ mod tests {
     #[test]
     fn test_parse_all() {
         let root = concat!(env!("CARGO_MANIFEST_DIR"), "/../../node-definitions");
-        for e in WalkDir::new(&root)
+        for e in WalkDir::new(root)
             .into_iter()
             .filter_map(|e| e.ok())
             .filter(|e| {
@@ -56,7 +56,7 @@ mod tests {
                 "reading: {}",
                 e.path()
                     .to_string_lossy()
-                    .strip_prefix(&root)
+                    .strip_prefix(root)
                     .unwrap_or_default()
             );
             let _node =

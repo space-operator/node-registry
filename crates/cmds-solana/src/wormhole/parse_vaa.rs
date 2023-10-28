@@ -139,11 +139,7 @@ async fn run(_ctx: Context, input: Input) -> Result<Output, CommandError> {
         _ => None,
     };
 
-    let nft_token_id = if let Some(token_id) = token_id {
-        Some(U256::from_big_endian(&token_id.0).to_string())
-    } else {
-        None
-    };
+    let nft_token_id = token_id.map(|token_id| U256::from_big_endian(&token_id.0).to_string());
 
     Ok(Output {
         parsed_vaa: parsed_vaa.clone(),
@@ -239,11 +235,7 @@ mod tests {
             _ => None,
         };
 
-        let _token_id = if let Some(token_id) = token_id {
-            Some(U256::from_big_endian(&token_id.0).to_string())
-        } else {
-            None
-        };
+        let _token_id = token_id.map(|token_id| U256::from_big_endian(&token_id.0).to_string());
         // dbg!(token_id);
         // panic!("test");
 

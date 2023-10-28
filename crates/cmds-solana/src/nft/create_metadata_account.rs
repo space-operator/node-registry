@@ -73,9 +73,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let args = mpl_token_metadata::instructions::CreateMetadataAccountV3InstructionArgs {
         data: input.metadata.into(),
         is_mutable: input.is_mutable,
-        collection_details: input
-            .collection_details
-            .map_or(None, |details| Some(details.into())),
+        collection_details: input.collection_details.map(|details| details.into()),
     };
 
     let ins = create_ix.instruction(args);
