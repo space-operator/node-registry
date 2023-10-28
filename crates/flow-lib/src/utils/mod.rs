@@ -1,5 +1,9 @@
-pub mod tower_client;
-pub mod extensions;
+use std::{future::Future, pin::Pin};
 
-pub use tower_client::TowerClient;
+pub mod extensions;
+pub mod tower_client;
+
 pub use extensions::Extensions;
+pub use tower_client::TowerClient;
+
+pub type BoxFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;

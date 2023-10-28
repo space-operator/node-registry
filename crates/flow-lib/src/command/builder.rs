@@ -67,10 +67,11 @@ use super::{CommandError, CommandTrait};
 use crate::{
     command::InstructionInfo,
     config::node::{Definition, Permissions},
+    utils::BoxFuture,
     Context, Name,
 };
 use serde::{de::DeserializeOwned, Serialize};
-use std::{future::Future, pin::Pin};
+use std::future::Future;
 use thiserror::Error as ThisError;
 
 /// `fn build() -> BuildResult`.
@@ -186,8 +187,7 @@ impl CmdBuilder {
                 &'a self,
                 ctx: Context,
                 params: crate::ValueSet,
-            ) -> Pin<Box<dyn Future<Output = Result<crate::ValueSet, CommandError>> + Send + 'b>>
-            {
+            ) -> BoxFuture<'b, Result<crate::ValueSet, CommandError>> {
                 match value::from_map(params) {
                     Ok(input) => {
                         let fut = (self.run)(ctx, input);
