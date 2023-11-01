@@ -96,6 +96,38 @@ pub struct NodeData {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NodeDataSkipWasm {
+    pub r#type: CommandType,
+    pub node_id: String,
+    pub sources: Vec<Source>,
+    pub targets: Vec<Target>,
+    pub targets_form: TargetsFormSkipWasm,
+}
+
+impl From<NodeData> for NodeDataSkipWasm {
+    fn from(
+        NodeData {
+            r#type,
+            node_id,
+            sources,
+            targets,
+            targets_form,
+        }: NodeData,
+    ) -> Self {
+        let TargetsForm {
+            form_data, extra, ..
+        } = targets_form;
+        NodeDataSkipWasm {
+            r#type,
+            node_id,
+            sources,
+            targets,
+            targets_form: TargetsFormSkipWasm { form_data, extra },
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Source {
     pub id: Uuid,
     pub name: String,
@@ -115,11 +147,26 @@ pub struct TargetsForm {
     #[serde(default)]
     pub extra: Extra,
 
-    #[serde(skip)]
     pub wasm_bytes: Option<bytes::Bytes>,
 }
 
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TargetsFormSkipWasm {
+    pub form_data: JsonValue,
+    #[serde(default)]
+    pub extra: Extra,
+}
+
 impl std::fmt::Debug for TargetsForm {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TargetsForm")
+            .field("form_data", &self.form_data)
+            .field("extra", &self.extra)
+            .finish_non_exhaustive()
+    }
+}
+
+impl std::fmt::Debug for TargetsFormSkipWasm {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("TargetsForm")
             .field("form_data", &self.form_data)
