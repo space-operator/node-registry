@@ -3,11 +3,11 @@
   "data": {
     "node_definition_version": "0.1",
     "unique_id": "",
-    "node_id": "add_config_lines",
+    "node_id": "table",
     "version": "0.1",
-    "display_name": "Add Config Lines",
-    "description": "",
-    "tags": ["NFT", "Solana", "Candy Machine"],
+    "display_name": "Table",
+    "description": "Display data in a table",
+    "tags": ["display", "table"],
     "related_to": [
       {
         "id": "",
@@ -47,64 +47,25 @@
     },
     "options": {}
   },
-  "sources": [
-    {
-      "name": "signature",
-      "type": "string",
-      "defaultValue": "",
-      "tooltip": ""
-    }
-  ],
   "targets": [
     {
-      "name": "candy_machine",
-      "type_bounds": ["keypair"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": true
-    },
-    {
-      "name": "authority",
-      "type_bounds": ["pubkey"],
+      "name": "data",
+      "type_bounds": ["json"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",
       "passthrough": false
     },
     {
-      "name": "payer",
-      "type_bounds": ["keypair"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": true
-    },
-    {
-      "name": "index",
-      "type_bounds": ["u32"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": true
-    },
-    {
-      "name": "config_lines",
-      "type_bounds": ["free"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
-      "name": "submit",
+      "name": "flatten",
       "type_bounds": ["bool"],
       "required": false,
-      "defaultValue": true,
-      "tooltip": "",
+      "defaultValue": "false",
+      "tooltip": "Flattens the JSON to remove the nesting",
       "passthrough": false
     }
   ],
+  "sources": [],
   "targets_form.json_schema": {},
   "targets_form.ui_schema": {}
 }

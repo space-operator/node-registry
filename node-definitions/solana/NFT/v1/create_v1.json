@@ -7,7 +7,7 @@
     "version": "0.1",
     "display_name": "Create V1",
     "description": "",
-    "tags": [],
+    "tags": ["NFT", "Solana", "V1"],
     "related_to": [
       {
         "id": "",
@@ -68,12 +68,6 @@
     },
     {
       "name": "master_edition_account",
-      "type": "pubkey",
-      "defaultValue": null,
-      "tooltip": ""
-    },
-    {
-      "name": "token",
       "type": "pubkey",
       "defaultValue": null,
       "tooltip": ""

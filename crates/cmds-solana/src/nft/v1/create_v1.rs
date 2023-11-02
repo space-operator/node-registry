@@ -64,11 +64,11 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
 
     let (master_edition_account, _) = MasterEdition::find_pda(&input.mint_account.pubkey());
 
-    // get associated token account pda
-    let token_account = spl_associated_token_account::get_associated_token_address(
-        &input.fee_payer.pubkey(),
-        &input.mint_account.pubkey(),
-    );
+    // // get associated token account pda
+    // let token_account = spl_associated_token_account::get_associated_token_address(
+    //     &input.fee_payer.pubkey(),
+    //     &input.mint_account.pubkey(),
+    // );
 
     let minimum_balance_for_rent_exemption = ctx
         .solana_client
@@ -174,7 +174,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
                 "metadata_account" => metadata_account,
                 "master_edition_account" => master_edition_account,
                 "mint_account" => input.mint_account.pubkey(),
-                "token"=> token_account,
+                // "token"=> token_account,
             },
         )
         .await?

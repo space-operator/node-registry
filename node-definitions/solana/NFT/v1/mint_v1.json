@@ -3,16 +3,16 @@
   "data": {
     "node_definition_version": "0.1",
     "unique_id": "",
-    "node_id": "verify_collection_v1",
+    "node_id": "mint_v1",
     "version": "0.1",
-    "display_name": "Verify Collection V1",
+    "display_name": "Mint V1",
     "description": "",
     "tags": ["NFT", "Solana", "V1"],
     "related_to": [
       {
-        "id": "",
-        "type": "",
-        "relationship": ""
+        "id": "create_v1",
+        "type": "node",
+        "relationship": "group"
       }
     ],
     "resources": {
@@ -51,40 +51,55 @@
     {
       "name": "signature",
       "type": "signature",
-      "defaultValue": "",
+      "defaultValue": null,
+      "tooltip": ""
+    },
+
+    {
+      "name": "token",
+      "type": "pubkey",
+      "defaultValue": null,
       "tooltip": ""
     }
   ],
   "targets": [
     {
-      "name": "mint_account",
-      "type_bounds": ["pubkey"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
       "name": "fee_payer",
       "type_bounds": ["keypair"],
       "required": true,
-      "defaultValue": "",
+      "defaultValue": null,
       "tooltip": "",
       "passthrough": true
     },
     {
-      "name": "collection_authority",
+      "name": "authority",
       "type_bounds": ["keypair"],
-      "required": true,
-      "defaultValue": "",
+      "required": false,
+      "defaultValue": null,
       "tooltip": "",
       "passthrough": false
     },
     {
-      "name": "collection_mint_account",
+      "name": "mint_account",
       "type_bounds": ["pubkey"],
       "required": true,
-      "defaultValue": "",
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": true
+    },
+    {
+      "name": "token_owner",
+      "type_bounds": ["pubkey"],
+      "required": true,
+      "defaultValue": null,
+      "tooltip": "Recipient of the mint",
+      "passthrough": false
+    },
+    {
+      "name": "amount",
+      "type_bounds": ["u64"],
+      "required": false,
+      "defaultValue": null,
       "tooltip": "",
       "passthrough": false
     },
@@ -92,15 +107,39 @@
       "name": "delegate_record",
       "type_bounds": ["pubkey"],
       "required": false,
-      "defaultValue": "",
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "authorization_rules_program",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "authorization_rules",
+      "type_bounds": ["pubkey"],
+      "required": false,
+      "defaultValue": null,
+      "tooltip": "",
+      "passthrough": false
+    },
+    {
+      "name": "authorization_data",
+      "type_bounds": ["json"],
+      "required": false,
+      "defaultValue": null,
       "tooltip": "",
       "passthrough": false
     },
     {
       "name": "submit",
       "type_bounds": ["bool"],
-      "required": true,
-      "defaultValue": "",
+      "required": false,
+      "defaultValue": true,
       "tooltip": "",
       "passthrough": false
     }

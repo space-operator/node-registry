@@ -3,11 +3,11 @@
   "data": {
     "node_definition_version": "0.1",
     "unique_id": "",
-    "node_id": "verify_collection_v1",
+    "node_id": "chart",
     "version": "0.1",
-    "display_name": "Verify Collection V1",
-    "description": "",
-    "tags": ["NFT", "Solana", "V1"],
+    "display_name": "Chart",
+    "description": "Chart, bar chart to start",
+    "tags": ["display", "chart"],
     "related_to": [
       {
         "id": "",
@@ -47,64 +47,25 @@
     },
     "options": {}
   },
-  "sources": [
-    {
-      "name": "signature",
-      "type": "signature",
-      "defaultValue": "",
-      "tooltip": ""
-    }
-  ],
   "targets": [
     {
-      "name": "mint_account",
-      "type_bounds": ["pubkey"],
+      "name": "data",
+      "type_bounds": ["json"],
       "required": true,
       "defaultValue": "",
       "tooltip": "",
       "passthrough": false
     },
     {
-      "name": "fee_payer",
-      "type_bounds": ["keypair"],
+      "name": "columns",
+      "type_bounds": ["json"],
       "required": true,
       "defaultValue": "",
-      "tooltip": "",
-      "passthrough": true
-    },
-    {
-      "name": "collection_authority",
-      "type_bounds": ["keypair"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
-      "name": "collection_mint_account",
-      "type_bounds": ["pubkey"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
-      "name": "delegate_record",
-      "type_bounds": ["pubkey"],
-      "required": false,
-      "defaultValue": "",
-      "tooltip": "",
-      "passthrough": false
-    },
-    {
-      "name": "submit",
-      "type_bounds": ["bool"],
-      "required": true,
-      "defaultValue": "",
-      "tooltip": "",
+      "tooltip": "['column_A', 'column_B', etc.]",
       "passthrough": false
     }
   ],
+  "sources": [],
   "targets_form.json_schema": {},
   "targets_form.ui_schema": {}
 }
