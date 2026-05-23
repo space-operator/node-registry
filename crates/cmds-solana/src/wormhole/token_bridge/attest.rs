@@ -125,6 +125,7 @@ async fn run(mut ctx: Context, input: Input) -> Result<Output, CommandError> {
     let ins = input.submit.then_some(ins).unwrap_or_default();
 
     let sequence_data: SequenceTracker = get_sequence_number(&ctx, sequence).await;
+// https://github.com/wormhole-foundation/connect-sdk/blob/develop/platforms/solana/protocols/core/src/core.ts#L208-L308
 
     let signature = ctx
         .execute(
